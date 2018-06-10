@@ -1,0 +1,26 @@
+accompany [example2] name rhythm
+accompany [example3] name pattern_lib
+---
+title: "High Noon Chorus Lead"
+author: pattern_lib
+coauthors: pattern_lib
+key: pattern_lib
+time: pattern_lib
+tempo: pattern_lib
+octave: 5
+=>
+Any notes on the piece can be written here in a multi-line comment
+<=
+---
+& this is a single-line comment
+pattern [chorus1]:
+E....A..G..F.G.D,..A..G.F. & this is the lead pattern for high noon
+& this is another comment
+---
+layer(rhythm)
+repeat(2) {
+	chorus1
+	pattern_lib>chorus2
+	pattern_lib>chorus_end
+}
+---

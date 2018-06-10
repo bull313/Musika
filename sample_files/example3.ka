@@ -1,0 +1,16 @@
+title: "High Noon Chorus Patterns"
+author: "Benjamin Ladick"
+coauthors: "Masking The Fallen"
+key: Em
+time: common
+tempo: 4 = 144
+octave: 4
+---
+pattern [chorus2]:
+E.B,.D,.E.A..G..F.G.D..B.A.G.F.
+pattern [chorus_end]:
+G..F..F.G.D,.F.E.
+! octave: -1 !
+B.D.B.D.B.D.E'.
+---
+---

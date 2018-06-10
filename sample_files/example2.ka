@@ -1,0 +1,20 @@
+accompany [example3] name lib
+accompany [chords] name c
+---
+title: "High Noon Chorus Rhythm"
+author: lib
+coauthors: lib
+key: lib
+time: lib
+tempo: lib
+octave: 2
+=>
+	This is the rhythm part of High Noon
+<=
+---
+pattern [chorus]:
+c>E5...c>B5..c>B5.c>B5.c>B5.
+---
+chorus*2*3
+c>E8.*4 c>B8.*4 c>C8.*4 c>D8.*4
+---
