@@ -1,0 +1,66 @@
+body {
+  font: 62.5% "Bookman", serif;
+  background-color: #151515;
+  color: white;
+
+  margin: 0;
+}
+
+dl {
+  margin: 0;
+  margin-left: 50px;
+}
+
+dt, dd {
+  display: inline-block;
+  margin: 10px 0;
+}
+
+dt {
+  color: aqua;
+  font-weight: bold;
+}
+
+section {
+  font-size: 2.4em;
+
+  padding: 0 25px;
+}
+
+h1 {
+  font-size: 3.2em;
+  text-align: center;
+  background-color: #13e366;
+
+  margin: 0;
+  padding: 15px;
+}
+
+h2 {
+  margin-top: 20px;
+  margin-bottom: 5px;
+}
+
+h3 {
+  margin: 0;
+}
+
+ul {
+  list-style-type: none;
+}
+
+.mark {
+  font-family: "Verdana";
+  color: yellow;
+  font-weight: bold;
+}
+
+.token {
+  color: red;
+}
+
+@media(max-width: 575px) {
+  dl {
+    margin: 0;
+  }
+}
