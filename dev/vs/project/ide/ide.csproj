@@ -50,10 +50,10 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\src\script\App.xaml.cs">
+    <Compile Include="..\..\..\src\ide\script\App.xaml.cs">
       <Link>App.xaml.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\src\script\MainWindow.xaml.cs">
+    <Compile Include="..\..\..\src\ide\script\MainWindow.xaml.cs">
       <Link>MainWindow.xaml.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -73,7 +73,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="..\..\..\src\config\App.config">
+    <None Include="..\..\..\src\ide\config\App.config">
       <Link>App.config</Link>
     </None>
     <None Include="Properties\Settings.settings">
@@ -82,12 +82,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="..\..\..\src\ui\App.xaml">
+    <ApplicationDefinition Include="..\..\..\src\ide\ui\App.xaml">
       <Link>App.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="..\..\..\src\ui\MainWindow.xaml">
+    <Page Include="..\..\..\src\ide\ui\MainWindow.xaml">
       <Link>MainWindow.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
