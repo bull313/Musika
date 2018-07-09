@@ -14,6 +14,7 @@ Any notes on the piece can be written here in a multi-line comment
 ---
 & this is a single-line comment
 pattern [chorus1]:
+! time: 8 !
 E....A..G..F.G.D,..A..G.F. & this is the lead pattern for high noon
 & this is another comment
 ---
