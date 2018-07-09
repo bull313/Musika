@@ -1,10 +1,16 @@
 /*
+  Global Variables
+*/
+const DEFINITION_TAG = "dd".toUpperCase();  /* JS uses tag names in all caps */
+const SPAN_TAG = "span";
+const TERM_TAG = "dt".toUpperCase(); /* JS uses tag names in all caps */
+
+/*
   Adds the pipe character (|) next to each every dictionary definition that is not next to a term.
   This is done to signify that a nonterminal (dictionary term) has multiple forms and the pipe represents OR.
 */
 function addPipes() {
   /* Local Variables */
-  const DEFINITION_TAG = "dd".toUpperCase(); /* JS uses tag names in all caps */
   const PIPE = "| ";
   var nonFirstDefinitions = [];
   var cachedText;
@@ -38,8 +44,6 @@ function addPipes() {
 function addArrows() {
   /* Local Variables */
   const MARK_CLASSNAME = "mark";
-  const SPAN_TAG = "span";
-  const TERM_TAG = "dt".toUpperCase(); /* JS uses tag names in all caps */
   const ARROW = " -> ";
   var arrowElement;
   var arrowNode;
@@ -67,24 +71,21 @@ function addArrows() {
 function addLineBreaks() {
   /* Local Variables */
   const BREAK_ELEMENT = "br";
-  const DEFINITION_TAG = "dd";
-  const TERM_TAG = "dt".toUpperCase(); /* JS uses tag names in all caps */
   var lastDefinitions = [];
   var nextElement;
   var defList;
   var i;
 
-  /* Get all dictionary definitions that come right before a new term */
+  /* Get all dictionary definitions that come right before a new term (last definition element in a rule) */
   defList = document.getElementsByTagName(DEFINITION_TAG);
   for (i = 0; i < defList.length; ++i) {
     var nextElement = defList[i].nextSibling.nextSibling;
     if (nextElement != null && nextElement.tagName == TERM_TAG) /* Go forward two siblings since the first one */
       lastDefinitions.push(defList[i]);                         /* is always a text node  */
-    }
+  }
 
   for (i = 0; i < lastDefinitions.length; ++i)
-    /* Append line break tag */
-    lastDefinitions[i].parentElement.insertBefore(document.createElement(BREAK_ELEMENT), lastDefinitions[i].nextSibling);
+    lastDefinitions[i].parentElement.insertBefore(document.createElement(BREAK_ELEMENT), lastDefinitions[i].nextSibling); /* Append line break tag */
 }
 
 /*
@@ -93,10 +94,8 @@ function addLineBreaks() {
 function markTokens() {
   /* Local Variables */
   const TOKEN_CLASSNAME = "token";
-  const DEFINITION_TAG = "dd";
   const LETTERS_ONLY = /^[A-Za-z_]{2,}$/; /* Made of only letters and has a length of at least 2 characters */
   const WORD_DELIM = " ";
-  const SPAN_TAG = "span";
   var wordNode;
   var spanNode;
   var cachedDef;
@@ -108,12 +107,12 @@ function markTokens() {
   defList = document.getElementsByTagName(DEFINITION_TAG);
 
   for (i = 0; i < defList.length; ++i) {
-    /* Cache definition into variable and remove text */
+    /* Cache definition text into variable and remove text from element */
     cachedDef = defList[i].textContent;
     while (defList[i].firstChild)
       defList[i].removeChild(defList[i].firstChild);
 
-    /* Break definition into list of words */
+    /* Break definition into a list of words */
     wordList = cachedDef.split(WORD_DELIM);
 
     for (j = 0; j < wordList.length; ++j) {
