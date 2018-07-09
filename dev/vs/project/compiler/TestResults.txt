@@ -1,0 +1,347 @@
+BEGIN TOKEN TEST:
+Verify that the 1st token content is what was passed => PASSES
+Verify that the 1st token type is what was passed => PASSES
+Verify that the 2nd token content is what was passed => PASSES
+Verify that the 2nd token type is what was passed => PASSES
+Verify that the 3rd token content is what was passed => PASSES
+Verify that the 3rd token type is what was passed => PASSES
+
+OVERALL CASE RESULTS:
+Total Comparisons: 6
+Total Failures: 0
+Test Result: PASS
+
+BEGIN INPUT BUFFER TEST:
+Verify that the 1st character was received => PASSES
+Verify that the 2nd character was received => PASSES
+Verify that the 3rd character was a newline => PASSES
+Verify that the 4th character was received => PASSES
+Verify that the 5th character was a newline => PASSES
+Verify that the 6th character was received => PASSES
+Verify that the 7th character was received => PASSES
+Verify that the 8th character was a newline => PASSES
+Verify that the 9th character was a null terminator => PASSES
+Verify that the 10th character was a null terminator => PASSES
+Verify that the 11th character was a null terminator => PASSES
+Verify that the new character was put into the program => PASSES
+Verify that the new character was put into the program => PASSES
+Verify that the previously inserted character was pushed to the 1st index => PASSES
+
+OVERALL CASE RESULTS:
+Total Comparisons: 14
+Total Failures: 0
+Test Result: PASS
+
+BEGIN LEXICAL ANALYZER TEST:
+Verify that next token has content "accompany" => PASSES
+Verify that this token has a type of ACCOMPANY => PASSES
+Verify that next token has content "[" => PASSES
+Verify that this token has a type of LBRACKET => PASSES
+Verify that next token has content "example2" => PASSES
+Verify that this token has a type of ID => PASSES
+Verify that next token has content "]" => PASSES
+Verify that this token has a type of RBRACKET => PASSES
+Verify that next token has content "name" => PASSES
+Verify that this token has a type of NAME => PASSES
+Verify that next token has content "rhythm" => PASSES
+Verify that this token has a type of ID => PASSES
+Verify that next token has content "
+---
+" => PASSES
+Verify that this token has a type of BREAK => PASSES
+Verify that next token has content "title" => PASSES
+Verify that this token has a type of TITLE => PASSES
+Verify that next token has content ":" => PASSES
+Verify that this token has a type of COLON => PASSES
+Verify that next token has content "High Noon Chorus Lead" => PASSES
+Verify that this token has a type of STRING => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "author" => PASSES
+Verify that this token has a type of AUTHOR => PASSES
+Verify that next token has content ":" => PASSES
+Verify that this token has a type of COLON => PASSES
+Verify that next token has content "pattern_lib" => PASSES
+Verify that this token has a type of ID => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "coauthors" => PASSES
+Verify that this token has a type of COAUTHORS => PASSES
+Verify that next token has content ":" => PASSES
+Verify that this token has a type of COLON => PASSES
+Verify that next token has content "pattern_lib" => PASSES
+Verify that this token has a type of ID => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "key" => PASSES
+Verify that this token has a type of KEY => PASSES
+Verify that next token has content ":" => PASSES
+Verify that this token has a type of COLON => PASSES
+Verify that next token has content "Amaj" => PASSES
+Verify that this token has a type of SIGN => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "time" => PASSES
+Verify that this token has a type of TIME => PASSES
+Verify that next token has content ":" => PASSES
+Verify that this token has a type of COLON => PASSES
+Verify that next token has content "6" => PASSES
+Verify that this token has a type of NUMBER => PASSES
+Verify that next token has content "/" => PASSES
+Verify that this token has a type of SLASH => PASSES
+Verify that next token has content "8" => PASSES
+Verify that this token has a type of NUMBER => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "tempo" => PASSES
+Verify that this token has a type of TEMPO => PASSES
+Verify that next token has content ":" => PASSES
+Verify that this token has a type of COLON => PASSES
+Verify that next token has content "4" => PASSES
+Verify that this token has a type of NUMBER => PASSES
+Verify that next token has content "=" => PASSES
+Verify that this token has a type of EQUAL => PASSES
+Verify that next token has content "180" => PASSES
+Verify that this token has a type of NUMBER => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "octave" => PASSES
+Verify that this token has a type of OCTAVE => PASSES
+Verify that next token has content ":" => PASSES
+Verify that this token has a type of COLON => PASSES
+Verify that next token has content "5" => PASSES
+Verify that this token has a type of NUMBER => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "=>" => PASSES
+Verify that this token has a type of RARROWLARGE => PASSES
+Verify that next token has content "<=" => PASSES
+Verify that this token has a type of LARROWLARGE => PASSES
+Verify that next token has content "
+---
+" => PASSES
+Verify that this token has a type of BREAK => PASSES
+Verify that next token has content "pattern" => PASSES
+Verify that this token has a type of PATTERN => PASSES
+Verify that next token has content "[" => PASSES
+Verify that this token has a type of LBRACKET => PASSES
+Verify that next token has content "chorus1" => PASSES
+Verify that this token has a type of ID => PASSES
+Verify that next token has content "]" => PASSES
+Verify that this token has a type of RBRACKET => PASSES
+Verify that next token has content ":" => PASSES
+Verify that this token has a type of COLON => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "!" => PASSES
+Verify that this token has a type of BANG => PASSES
+Verify that next token has content "key" => PASSES
+Verify that this token has a type of KEY => PASSES
+Verify that next token has content ":" => PASSES
+Verify that this token has a type of COLON => PASSES
+Verify that next token has content "Bbm" => PASSES
+Verify that this token has a type of SIGN => PASSES
+Verify that next token has content "!" => PASSES
+Verify that this token has a type of BANG => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "Eb" => PASSES
+Verify that this token has a type of NOTE => PASSES
+Verify that next token has content "." => PASSES
+Verify that this token has a type of DOT => PASSES
+Verify that next token has content "A#" => PASSES
+Verify that this token has a type of NOTE => PASSES
+Verify that next token has content "." => PASSES
+Verify that this token has a type of DOT => PASSES
+Verify that next token has content "D" => PASSES
+Verify that this token has a type of NOTE => PASSES
+Verify that next token has content "," => PASSES
+Verify that this token has a type of COMMA => PASSES
+Verify that next token has content "." => PASSES
+Verify that this token has a type of DOT => PASSES
+Verify that next token has content "." => PASSES
+Verify that this token has a type of DOT => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "chord" => PASSES
+Verify that this token has a type of CHORD => PASSES
+Verify that next token has content "E5" => PASSES
+Verify that this token has a type of ID => PASSES
+Verify that next token has content "is" => PASSES
+Verify that this token has a type of IS => PASSES
+Verify that next token has content "E" => PASSES
+Verify that this token has a type of NOTE => PASSES
+Verify that next token has content ";" => PASSES
+Verify that this token has a type of SEMICOLON => PASSES
+Verify that next token has content "B" => PASSES
+Verify that this token has a type of NOTE => PASSES
+Verify that next token has content ";" => PASSES
+Verify that this token has a type of SEMICOLON => PASSES
+Verify that next token has content "E" => PASSES
+Verify that this token has a type of NOTE => PASSES
+Verify that next token has content "'" => PASSES
+Verify that this token has a type of APOS => PASSES
+Verify that next token has content "
+---
+" => PASSES
+Verify that this token has a type of BREAK => PASSES
+Verify that next token has content "&" => PASSES
+Verify that this token has a type of AMPERSAND => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "!" => PASSES
+Verify that this token has a type of BANG => PASSES
+Verify that next token has content "time" => PASSES
+Verify that this token has a type of TIME => PASSES
+Verify that next token has content ":" => PASSES
+Verify that this token has a type of COLON => PASSES
+Verify that next token has content "common" => PASSES
+Verify that this token has a type of COMMON => PASSES
+Verify that next token has content "!" => PASSES
+Verify that this token has a type of BANG => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "!" => PASSES
+Verify that this token has a type of BANG => PASSES
+Verify that next token has content "time" => PASSES
+Verify that this token has a type of TIME => PASSES
+Verify that next token has content ":" => PASSES
+Verify that this token has a type of COLON => PASSES
+Verify that next token has content "cut" => PASSES
+Verify that this token has a type of CUT => PASSES
+Verify that next token has content "!" => PASSES
+Verify that this token has a type of BANG => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "layer" => PASSES
+Verify that this token has a type of LAYER => PASSES
+Verify that next token has content "(" => PASSES
+Verify that this token has a type of LPAREN => PASSES
+Verify that next token has content "rhythm" => PASSES
+Verify that this token has a type of ID => PASSES
+Verify that next token has content ")" => PASSES
+Verify that this token has a type of RPAREN => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "repeat" => PASSES
+Verify that this token has a type of REPEAT => PASSES
+Verify that next token has content "(" => PASSES
+Verify that this token has a type of LPAREN => PASSES
+Verify that next token has content "2" => PASSES
+Verify that this token has a type of NUMBER => PASSES
+Verify that next token has content ")" => PASSES
+Verify that this token has a type of RPAREN => PASSES
+Verify that next token has content "{" => PASSES
+Verify that this token has a type of LBRACE => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "A" => PASSES
+Verify that this token has a type of NOTE => PASSES
+Verify that next token has content "^" => PASSES
+Verify that this token has a type of CARROT => PASSES
+Verify that next token has content "4" => PASSES
+Verify that this token has a type of NUMBER => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "}" => PASSES
+Verify that this token has a type of RBRACE => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "%" => PASSES
+Verify that this token has a type of UNKNOWN => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content " " => PASSES
+Verify that this token has a type of EOF => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "-" => PASSES
+Verify that this token has a type of UNKNOWN => PASSES
+Verify that next token has content "-" => PASSES
+Verify that this token has a type of UNKNOWN => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "$$$_money_$$$" => PASSES
+Verify that this token has a type of ID => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "inva#lid_id" => PASSES
+Verify that this token has a type of UNKNOWN => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "this_*id_is_also_invalid" => PASSES
+Verify that this token has a type of UNKNOWN => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "this string does not close" => PASSES
+Verify that this token has a type of UNKNOWN => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
+Verify that next token has content "<" => PASSES
+Verify that this token has a type of UNKNOWN => PASSES
+Verify that next token has content "-" => PASSES
+Verify that this token has a type of UNKNOWN => PASSES
+Verify that next token has content "a b c" => PASSES
+Verify that this token has a type of STRING => PASSES
+Verify that next token has content "benisawesome" => PASSES
+Verify that this token has a type of ID => PASSES
+Verify that next token has content " " => PASSES
+Verify that this token has a type of EOF => PASSES
+Verify that the tokens received by PeekToken() are the same (i.e. PeekToken does not remove the token from the buffer => PASSES
+
+OVERALL CASE RESULTS:
+Total Comparisons: 249
+Total Failures: 0
+Test Result: PASS
+
+BEGIN SYNTAX ERROR EXCEPTION TEST:
+Verify that syntax error string is correct when there's only one expected token type => PASSES
+Verify that syntax error string is correct when there's only two expected token types => PASSES
+Verify that syntax error string is correct when there's more than two expected token types => PASSES
+Verify that syntax error string is correct when there's more than two expected token types => PASSES
+
+OVERALL CASE RESULTS:
+Total Comparisons: 4
+Total Failures: 0
+Test Result: PASS
+
+BEGIN PARSER TEST:
+Verify that the program has successfully removed the first token => PASSES
+Verify that the Reset method has restored the program => PASSES
+Expect function does not throw syntax error when next token was as expected => PASSES
+Expect function threw syntax error when token was incorrect => PASSES
+Verify that the correct syntax error was thrown => PASSES
+
+OVERALL CASE RESULTS:
+Total Comparisons: 5
+Total Failures: 0
+Test Result: PASS
+
+OVERALL TEST SET:
+Total Tests: 5
+Total Failures: 0
+Results: TEST PASSED

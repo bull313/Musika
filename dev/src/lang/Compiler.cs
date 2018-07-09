@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace compiler
 {
-    class Parser
+    partial class Parser
     {
         private string program;
         private LexicalAnalyzer lexer;
@@ -22,7 +22,7 @@ namespace compiler
             lexer = new LexicalAnalyzer(program);
         }
 
-        public void Expect(TokenType etype)
+        private void Expect(TokenType etype)
         {
             Token next = lexer.GetToken();
             if (next.Type != etype)
@@ -246,12 +246,12 @@ namespace compiler
                 lexer.PutToken(next);
                 ParseOctaveChange();
                 next = lexer.GetToken();
-                if (next.Type == TokenType.POUND)
+                if (next.Type == TokenType.SEMICOLON)
                     ParseChordType();
                 else
                     lexer.PutToken(next);
             }
-            else if (next.Type == TokenType.POUND)
+            else if (next.Type == TokenType.SEMICOLON)
                 ParseChordType();
             else
                 lexer.PutToken(next);
@@ -328,7 +328,7 @@ namespace compiler
                 if (next.Type == TokenType.DOT)
                     ParseDotSet();
             }
-            else if (next.Type == TokenType.ASTERISK)
+            else if (next.Type == TokenType.CARROT)
                 Expect(TokenType.NUMBER);
             else if (next.Type == TokenType.BANG)
             {
@@ -343,7 +343,7 @@ namespace compiler
                     ParseOctave(false);
                 else throw new SyntaxError(next.Type, TokenType.KEY, TokenType.TIME, TokenType.TEMPO, TokenType.OCTAVE);
             }
-            else throw new SyntaxError(next.Type, TokenType.NOTE, TokenType.ID, TokenType.ASTERISK, TokenType.BANG);
+            else throw new SyntaxError(next.Type, TokenType.NOTE, TokenType.ID, TokenType.CARROT, TokenType.BANG);
         }
 
         private void ParseDotSet()
@@ -372,7 +372,7 @@ namespace compiler
         }
     }
 
-    class SyntaxError : Exception
+    partial class SyntaxError : Exception
     {
         public SyntaxError(TokenType actual, params TokenType[] expected) : base(CreateErrorString(actual, expected)) { }
 
@@ -387,16 +387,16 @@ namespace compiler
             {
                 for (int i = 0; i < expected.Length - 1; ++i)
                     errorMsg += expected[i].ToString() + ", ";
-                errorMsg += " or " + expected[expected.Length - 1].ToString();
+                errorMsg += "or " + expected[expected.Length - 1].ToString();
             }
-            errorMsg += "; received: " + actual.ToString() + "\n";
+            errorMsg += "; received: " + actual.ToString();
 
             return errorMsg;
         }
     }
 
     /* Gets and manages tokens from the input buffer */
-    class LexicalAnalyzer
+    partial class LexicalAnalyzer
     {
         private InputBuffer input;
         private Stack<Token> tokenBuffer;
@@ -423,25 +423,21 @@ namespace compiler
                 /* Single-character tokens */
                 case '[': return new Token(char.ToString(nextChar), TokenType.LBRACKET);
                 case ']': return new Token(char.ToString(nextChar), TokenType.RBRACKET);
-                case '_': return new Token(char.ToString(nextChar), TokenType.UNDERSCORE);
-                case '$': return new Token(char.ToString(nextChar), TokenType.DOLLARSIGN);
                 case '!': return new Token(char.ToString(nextChar), TokenType.BANG);
-                case '#': return new Token(char.ToString(nextChar), TokenType.POUND);
                 case '(': return new Token(char.ToString(nextChar), TokenType.LPAREN);
                 case ')': return new Token(char.ToString(nextChar), TokenType.RPAREN);
                 case '{': return new Token(char.ToString(nextChar), TokenType.LBRACE);
                 case '}': return new Token(char.ToString(nextChar), TokenType.RBRACE);
                 case '&': return new Token(char.ToString(nextChar), TokenType.AMPERSAND);
-                case '*': return new Token(char.ToString(nextChar), TokenType.ASTERISK);
-                case ';': return new Token(char.ToString(nextChar), TokenType.SEMICOLON);
                 case '.': return new Token(char.ToString(nextChar), TokenType.DOT);
                 case '\'': return new Token(char.ToString(nextChar), TokenType.APOS);
                 case ',': return new Token(char.ToString(nextChar), TokenType.COMMA);
                 case '>': return new Token(char.ToString(nextChar), TokenType.GREATER);
-                case '<': return new Token(char.ToString(nextChar), TokenType.LESS);
                 case '|': return new Token(char.ToString(nextChar), TokenType.NOTE);
                 case '/': return new Token(char.ToString(nextChar), TokenType.SLASH);
                 case ':': return new Token(char.ToString(nextChar), TokenType.COLON);
+                case ';': return new Token(char.ToString(nextChar), TokenType.SEMICOLON);
+                case '^': return new Token(char.ToString(nextChar), TokenType.CARROT);
                 case '\0': return new Token(char.ToString(nextChar), TokenType.EOF);
             }
 
@@ -456,7 +452,7 @@ namespace compiler
                 nextChar = input.GetChar();
 
                 int dashCount = 0;
-                while (dashCount <= 3 && nextChar == '-')
+                while (dashCount < 3 && nextChar == '-')
                 {
                     returnTokenString += nextChar;
                     nextChar = input.GetChar();
@@ -477,6 +473,7 @@ namespace compiler
                 }
                 else
                 {
+                    input.PutChar(nextChar);
                     while (returnTokenString.Length > 1)
                     {
                         input.PutChar(returnTokenString[returnTokenString.Length - 1]);
@@ -487,11 +484,11 @@ namespace compiler
             }
 
             /* ID, keyword, sign, or note */
-            else if (char.IsLetter(nextChar))
+            else if (char.IsLetter(nextChar) || nextChar == '_' || nextChar == '$')
             {
                 returnTokenString += nextChar;
                 nextChar = input.GetChar();
-                while (nextChar == '#' || nextChar == '*' || char.IsLetterOrDigit(nextChar))
+                while (nextChar == '#' || nextChar == '*' || nextChar == '_' || nextChar == '$' || char.IsLetterOrDigit(nextChar))
                 {
                     returnTokenString += nextChar;
                     nextChar = input.GetChar();
@@ -607,37 +604,15 @@ namespace compiler
             }
 
             /* Arrow */
-            /* Left arrow (large or small) */
+            /* Left arrow large */
             else if (nextChar == '<')
             {
                 returnTokenString += nextChar;
                 nextChar = input.GetChar();
-                if (nextChar == '-')
-                {
-                    returnTokenString += nextChar;
-                    return new Token(returnTokenString, TokenType.LARROW);
-                }
-                else if (nextChar == '=')
+                if (nextChar == '=')
                 {
                     returnTokenString += nextChar;
                     return new Token(returnTokenString, TokenType.LARROWLARGE);
-                }
-                else
-                {
-                    input.PutChar(nextChar);
-                    return new Token(returnTokenString, TokenType.UNKNOWN);
-                }
-            }
-
-            /* Right arrow small */
-            else if (nextChar == '-')
-            {
-                returnTokenString += nextChar;
-                nextChar = input.GetChar();
-                if (nextChar == '>')
-                {
-                    returnTokenString += nextChar;
-                    return new Token(returnTokenString, TokenType.RARROW);
                 }
                 else
                 {
@@ -699,13 +674,14 @@ namespace compiler
     }
 
     /* Holds the program as a raw string and allows other classes to access it char by char */
-    class InputBuffer
+    partial class InputBuffer
     {
         private string programText;
 
         public InputBuffer(string programText)
         {
-            this.programText = programText;
+            this.programText = programText.Replace("\r\n", "\n").Replace("\r", "\n");
+                                                                      /* This replaces remove newline character differences among OSs with one universal \n */
         }
 
         public char GetChar()
@@ -714,6 +690,7 @@ namespace compiler
                 return '\0';
             char retVal = programText[0];
             programText = programText.Substring(1, programText.Length - 1);
+
             return retVal;
         }
 
@@ -729,7 +706,7 @@ namespace compiler
     }
 
     /* Object representation of a lexical token in the Musika grammar */
-    class Token
+    partial class Token
     {
         public readonly string Content;
         public readonly TokenType Type;
@@ -745,9 +722,9 @@ namespace compiler
     enum TokenType
     {
         /* Basic Lexicons */
-        NEWLINE, LBRACKET, RBRACKET, UNDERSCORE, DOLLARSIGN, BANG, POUND, LPAREN, RPAREN, LBRACE, RBRACE, AMPERSAND, ASTERISK, SEMICOLON, DOT, APOS, COMMA, EQUAL, GREATER, LESS, SLASH, COLON,
+        NEWLINE, LBRACKET, RBRACKET, BANG, LPAREN, RPAREN, LBRACE, RBRACE, AMPERSAND, DOT, APOS, COMMA, EQUAL, GREATER, SLASH, COLON, SEMICOLON, CARROT,
         /* Compound Lexicons */
-        BREAK, ID, SIGN, NOTE, STRING, LARROW, RARROW, LARROWLARGE, RARROWLARGE, NUMBER,
+        BREAK, ID, SIGN, NOTE, STRING, LARROWLARGE, RARROWLARGE, NUMBER,
         /* Tier 1 Keywords */
         ACCOMPANY, NAME, AUTHOR, COAUTHORS, TITLE, KEY, TIME, TEMPO, OCTAVE, PATTERN, CHORD, IS,
         /* Tier 2 Keywords */
