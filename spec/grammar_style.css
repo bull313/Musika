@@ -1,3 +1,4 @@
+/* -------- BODY -------- */
 body {
   font: 62.5% "Bookman", serif;
   background-color: #151515;
@@ -5,28 +6,10 @@ body {
 
   margin: 0;
 }
+/* ---------------------- */
 
-dl {
-  margin: 0;
-  margin-left: 50px;
-}
 
-dt, dd {
-  display: inline-block;
-  margin: 10px 0;
-}
-
-dt {
-  color: aqua;
-  font-weight: bold;
-}
-
-section {
-  font-size: 2.4em;
-
-  padding: 0 25px;
-}
-
+/* -------- HEADERS -------- */
 h1 {
   font-size: 3.2em;
   text-align: center;
@@ -44,11 +27,45 @@ h2 {
 h3 {
   margin: 0;
 }
+/* ---------------------- */
+
+
+
+/* -------- CONTENT CONTAINERS -------- */
+section {
+  font-size: 2.4em;
+
+  padding: 0 25px;
+}
+
+dl {
+  margin: 0;
+  margin-left: 50px;
+}
+
+@media(max-width: 575px) {
+  dl {
+    margin: 0;
+  }
+}
+
+dt, dd {
+  display: inline-block;
+  margin: 10px 0;
+}
+
+dt {
+  color: aqua;
+  font-weight: bold;
+}
 
 ul {
   list-style-type: none;
 }
+/* ------------------------------------ */
 
+
+/* -------- CONTENT -------- */
 .mark {
   font-family: "Verdana";
   color: yellow;
@@ -58,9 +75,5 @@ ul {
 .token {
   color: red;
 }
+/* ------------------------- */
 
-@media(max-width: 575px) {
-  dl {
-    margin: 0;
-  }
-}
