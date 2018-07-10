@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace compiler
 {
+    /* All the possible token types */
     enum TokenType
     {
         /* Basic Lexicons */
@@ -22,6 +23,7 @@ namespace compiler
         UNKNOWN
     };
 
+    /* Object representation of a lexical token in the Musika grammar */
     class Token
     {
         public readonly string Content;
@@ -31,6 +33,36 @@ namespace compiler
         {
             this.Content = content;
             this.Type = type;
+        }
+    }
+
+    /* Holds the program as a raw string and allows other classes to access it char by char */
+    class Input
+    {
+        private string programText;
+
+        public Input(string programText)
+        {
+            this.programText = programText;
+        }
+
+        public char GetChar()
+        {
+            if (programText.Length == 0)
+                return '\0';
+            char retVal = programText[0];
+            programText = programText.Substring(1, programText.Length - 1);
+            return retVal;
+        }
+
+        public void PutChar(char c)
+        {
+            programText = c + programText;
+        }
+
+        public string GetRemainingText()
+        {
+            return programText;
         }
     }
 }
