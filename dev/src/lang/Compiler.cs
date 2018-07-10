@@ -37,11 +37,11 @@ namespace compiler
     }
 
     /* Holds the program as a raw string and allows other classes to access it char by char */
-    class Input
+    class InputBuffer
     {
         private string programText;
 
-        public Input(string programText)
+        public InputBuffer(string programText)
         {
             this.programText = programText;
         }
@@ -63,6 +63,33 @@ namespace compiler
         public string GetRemainingText()
         {
             return programText;
+        }
+    }
+
+    /* Gets and manages tokens from the input buffer */
+    class LexicalAnalyzer
+    {
+        private InputBuffer input;
+        private Stack<Token> tokenBuffer;
+
+        public LexicalAnalyzer(string programText)
+        {
+            input = new InputBuffer(programText);
+            tokenBuffer = new Stack<Token>();
+        }
+
+        public Token GetToken()
+        {
+            if (tokenBuffer.Count > 0)
+                return tokenBuffer.Pop();
+
+            char nextChar = input.GetChar();
+            // THIS IS WHERE WE FIGURE OUT WHICH TOKEN THIS BELONGS TO
+        }
+
+        public void PutToken(Token t)
+        {
+            tokenBuffer.Push(t);
         }
     }
 }

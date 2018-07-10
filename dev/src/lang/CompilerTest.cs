@@ -13,7 +13,7 @@ namespace compilerTest
         {
             int tests = 0, testFailures = 0;
             Console.WriteLine("Compiler Tests:");
-            Test[] testList = { new Test__Token(), new Test__LexicalAnalyzer() }; /* ADD INSTANCES OF NEW TEST CASES HERE */
+            Test[] testList = { new Test__Token(), new Test__InputBuffer() }; /* ADD INSTANCES OF NEW TEST CASES HERE */
 
             foreach (Test test in testList)
             {
@@ -60,15 +60,15 @@ namespace compilerTest
         }
     }
 
-    class Test__LexicalAnalyzer : Test
+    class Test__InputBuffer : Test
     {
-        private Input input;
+        private InputBuffer input;
 
-        public Test__LexicalAnalyzer()
+        public Test__InputBuffer()
         {
-            testName = "Lexical Analyzer";
+            testName = "Input Buffer";
             string program = "accompany [example2] name rhythm\naccompany [example3] name pattern_lib\n---\ntitle: \"High Noon Chorus Lead\"\nauthor: pattern_lib\ncoauthors: pattern_lib\nkey: pattern_lib\ntime: pattern_lib\ntempo: pattern_lib\noctave: 5\n=>\nAny notes on the piece can be written here in a multi-line comment\n<=\n---\n& this is a single-line comment\npattern [chorus1]:\n! time: 8 !\nE....A..G..F.G.D,..A..G.F. & this is the lead pattern for high noon\n& this is another comment\n---\nlayer(rhythm)\nrepeat(2) {\nchorus1\npattern_lib>chorus2\npattern_lib>chorus_end\n}\n---";
-            input = new Input(program);
+            input = new InputBuffer(program);
         }
 
         public void TestGetChar()
