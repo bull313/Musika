@@ -85,6 +85,7 @@ namespace compiler
 
             char nextChar = input.GetChar();
             // THIS IS WHERE WE FIGURE OUT WHICH TOKEN THIS BELONGS TO
+            return null; // temporary
         }
 
         public void PutToken(Token t)
