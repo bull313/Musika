@@ -129,7 +129,7 @@ namespace compiler
                 nextChar = input.GetChar();
 
                 int dashCount = 0;
-                while (dashCount < 3 && nextChar == '-')
+                while (dashCount <= 3 && nextChar == '-')
                 {
                     returnTokenString += nextChar;
                     nextChar = input.GetChar();
@@ -138,7 +138,6 @@ namespace compiler
 
                 if (dashCount == 3)
                 {
-                    nextChar = input.GetChar();
                     if (nextChar == '\n')
                     {
                         returnTokenString += nextChar;
@@ -349,5 +348,186 @@ namespace compiler
         {
             tokenBuffer.Push(t);
         }
+    }
+
+    class SyntaxError : Exception
+    {
+        public SyntaxError(TokenType actual, params TokenType[] expected) : base(CreateErrorString(actual, expected)) {}
+
+        private static string CreateErrorString(TokenType actual, TokenType[] expected)
+        {
+            string errorMsg = "SYNTAX ERROR: expected: ";
+            if (expected.Length == 1)
+                errorMsg += expected[0].ToString();
+            else
+            {
+                for (int i = 0; i < expected.Length - 1; ++i)
+                    errorMsg += expected[i].ToString() + ", ";
+                errorMsg += " or " + expected[expected.Length - 1].ToString();
+            }
+            errorMsg += "; received: " + actual.ToString() + "\n";
+
+            return errorMsg;
+        }
+    }
+
+    class Parser
+    {
+        private string program, errorMsg;
+        private LexicalAnalyzer lexer;
+
+        public Parser(string program)
+        {
+            this.program = program;
+            Reset();
+        }
+
+        public void Reset()
+        {
+            lexer = new LexicalAnalyzer(program);
+        }
+
+        public void Expect(TokenType etype)
+        {
+            Token next = lexer.GetToken();
+            if (next.Type != etype && errorMsg == "")
+                throw new SyntaxError(next.Type, etype);
+        }
+
+        private Token PeekToken()
+        {
+            Token returnToken = lexer.GetToken();
+            lexer.PutToken(returnToken);
+            return returnToken;
+        }
+
+        public void ParseProgram() /* This would be considered a score */
+        {
+            Reset();
+            Token next = PeekToken();
+            if (next.Type == TokenType.ACCOMPANY)
+            {
+                ParseAccompaniment();
+                Expect(TokenType.BREAK);
+                ParseSheet();
+            }
+            else if (next.Type == TokenType.TITLE)
+            {
+                ParseSheet();
+            }
+            else
+            {
+                throw new SyntaxError(next.Type, TokenType.ACCOMPANY, TokenType.TITLE);
+            }
+        }
+
+        private void ParseSheet()
+        {
+            ParseInfo();
+            Expect(TokenType.BREAK);
+            ParsePatterns();
+            Expect(TokenType.BREAK);
+            ParseMusic();
+            Expect(TokenType.BREAK);
+        }
+
+        private void ParseAccompaniment()
+        {
+            Expect(TokenType.ACCOMPANY);
+            Expect(TokenType.LBRACKET);
+            Expect(TokenType.ID);
+            Expect(TokenType.RBRACKET);
+            Expect(TokenType.NAME);
+            Expect(TokenType.ID);
+        }
+
+        private void ParseInfo()
+        {
+            ParseTitle();
+            Token next = lexer.GetToken();
+            lexer.PutToken(next); /* This is effectively a peek at the token without taking it out */
+            if (next.Type == TokenType.AUTHOR)
+                ParseAuthorDefine();
+            ParseMusicInfo();
+        }
+
+        private void ParseMusicInfo()
+        {
+            ParseKey();
+            ParseTime();
+            ParseTempo();
+            ParseOctave();
+        }
+
+        private void ParsePatterns()
+        {
+            ParsePcDefinition();
+            Token next = PeekToken();
+            if (next.Type == TokenType.PATTERN)
+                ParsePatterns();
+        }
+
+        private void ParseMusic()
+        {
+        }
+
+        private void ParseTitle()
+        {
+        }
+
+        private void ParseAuthorDefine()
+        { }
+
+        private void ParseAuthor()
+        {
+        }
+
+        private void ParseCoauthors()
+        { }
+
+        private void ParseKey()
+        { }
+
+        private void ParseTime()
+        { }
+
+        private void ParseTempo()
+        { }
+
+        private void ParseOctave()
+        { }
+
+        private void ParsePcDefinition()
+        { }
+
+        private void ParseChordType()
+        { }
+
+        private void MusicElement()
+        { }
+
+        private void ParseFunction()
+        { }
+
+        private void ParseRepeat()
+        { }
+
+        private void ParseLayer()
+        { }
+
+        private void ParseRiff()
+        { }
+
+        private void ParseRiffElement()
+        { }
+
+        private void ParseDotSet()
+        { }
+
+        private void ParseOctaveChange()
+        { }
+
+        private void ParseCallback()
+        { }
     }
 }

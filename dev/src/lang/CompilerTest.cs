@@ -1,8 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using compiler;
 
 namespace compilerTest
@@ -13,7 +9,11 @@ namespace compilerTest
         {
             int tests = 0, testFailures = 0;
             Console.WriteLine("Compiler Tests:");
-            Test[] testList = { new Test__Token(), new Test__InputBuffer(), new Test__LexicalAnalyzer() }; /* ADD INSTANCES OF NEW TEST CASES HERE */
+            Test[] testList = 
+            {
+                new Test__Token(), new Test__InputBuffer(), new Test__LexicalAnalyzer(),
+                new Test__SyntaxError(), new Test__Parser()
+            }; /* ADD INSTANCES OF NEW TEST CASES HERE */
 
             foreach (Test test in testList)
             {
@@ -31,6 +31,32 @@ namespace compilerTest
 
     /* ---------------- TESTS ---------------- */
 
+    class Test__Parser : Test
+    {
+        public Test__Parser()
+        {
+            testName = "Parser";
+        }
+
+        public override void RunTests()
+        {
+
+        }
+    }
+
+    class Test__SyntaxError : Test
+    {
+        public Test__SyntaxError()
+        {
+            testName = "Syntax Error Exception";
+        }
+
+        public override void RunTests()
+        {
+
+        }
+    }
+
     class Test__LexicalAnalyzer : Test
     {
         private LexicalAnalyzer lexer;
@@ -42,7 +68,7 @@ namespace compilerTest
 
         private void TestGetToken()
         {
-            string program = "accompany [example3]";
+            string program = "accompany [example3] \n---\n";
             lexer = new LexicalAnalyzer(program);
 
             Token t1 = lexer.GetToken();
@@ -51,19 +77,23 @@ namespace compilerTest
 
             Token t2 = lexer.GetToken();
             VerifyEqual(t2.Content, "[", "Verify that the left bracket string was put into the second token");
-            VerifyEqualObj(t2.Type, TokenType.LBRACKET, "Verify that the first token was recognized as the left bracket");
+            VerifyEqualObj(t2.Type, TokenType.LBRACKET, "Verify that the second token was recognized as the left bracket");
 
             Token t3 = lexer.GetToken();
             VerifyEqual(t3.Content, "example3", "Verify that the example3 id string was put into the third token");
-            VerifyEqualObj(t3.Type, TokenType.ID, "Verify that the first token was recognized as an id");
+            VerifyEqualObj(t3.Type, TokenType.ID, "Verify that the first third was recognized as an id");
 
             Token t4 = lexer.GetToken();
             VerifyEqual(t4.Content, "]", "Verify that the right bracket string was put into the fourth token");
-            VerifyEqualObj(t4.Type, TokenType.RBRACKET, "Verify that the first token was recognized as the right bracket");
+            VerifyEqualObj(t4.Type, TokenType.RBRACKET, "Verify that the fourth token was recognized as the right bracket");
 
             Token t5 = lexer.GetToken();
-            VerifyEqual(t5.Content, "\0", "Verify that the end of file has been reached");
-            VerifyEqualObj(t5.Type, TokenType.EOF, "Verify that the fifth token was recognized as the end of file");
+            VerifyEqual(t5.Content, "\n---\n", "Verify that the break has been read");
+            VerifyEqualObj(t5.Type, TokenType.BREAK, "Verify that the fifth token was the break statement");
+
+            Token t6 = lexer.GetToken();
+            VerifyEqual(t6.Content, "\0", "Verify that the end of file has been reached");
+            VerifyEqualObj(t6.Type, TokenType.EOF, "Verify that the sixth token was recognized as the end of file");  
         }
 
         private void TestPutToken()
