@@ -12,7 +12,7 @@ octave: 5
 pattern [chorus1]:
 ! key: Bbm !
 Eb.A#.D,..
-chord E5 is E#B#E'
+chord E5 is E;B;E'
 ---
 &
 ! time: common !
