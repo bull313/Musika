@@ -19,6 +19,6 @@ chord E5 is E;B;E'
 ! time: cut !
 layer(rhythm)
 repeat(2) {
-    A*4
+    A^4
 }
 %

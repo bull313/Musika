@@ -16,6 +16,6 @@ pattern [chorus]:
 ! time: 8 !
 c>E5...c>B5..c>B5.c>B5.c>B5.
 ---
-chorus*2*3
-c>E8.*4 c>B8.*4 c>C8.*4 c>D8.*4
+chorus^2^3
+c>E8.^4 c>B8.^4 c>C8.^4 c>D8.^4
 ---
