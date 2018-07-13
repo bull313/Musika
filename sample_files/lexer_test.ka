@@ -1,0 +1,24 @@
+accompany [example2] name rhythm
+---
+title: "High Noon Chorus Lead"
+author: pattern_lib
+coauthors: pattern_lib
+key: Amaj
+time: 6 / 8
+tempo: 4 = 180
+octave: 5
+=><=
+---
+pattern [chorus1]:
+! key: Bbm !
+Eb.A#.D,..
+chord E5 is E#B#E'
+---
+&
+! time: common !
+! time: cut !
+layer(rhythm)
+repeat(2) {
+    A*4
+}
+%
