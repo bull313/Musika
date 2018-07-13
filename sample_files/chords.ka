@@ -5,11 +5,11 @@ time: common
 tempo: 4 = 1
 octave: 1
 ---
-chord E5 is E#B#E'
-chord B5 is B#F#'
-chord E8 is E'#E''
-chord B8 is B#B'
-chord C8 is C#C'
-chord D8 is D#D'
+chord E5 is E;B;E'
+chord B5 is B;F;'
+chord E8 is E';E''
+chord B8 is B;B'
+chord C8 is C;C'
+chord D8 is D;D'
 ---
 ---
