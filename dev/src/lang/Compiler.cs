@@ -72,8 +72,7 @@ namespace compiler
         private void ParseInfo()
         {
             ParseTitle();
-            Token next = lexer.GetToken();
-            lexer.PutToken(next); /* This is effectively a peek at the token without taking it out */
+            Token next = lexer.PeekToken();
             if (next.Type == TokenType.AUTHOR)
                 ParseAuthorDefine();
             ParseMusicInfo();
