@@ -241,7 +241,7 @@ Verify that next token has content "repeat" => PASSES
 Verify that this token has a type of REPEAT => PASSES
 Verify that next token has content "(" => PASSES
 Verify that this token has a type of LPAREN => PASSES
-Verify that next token has content "2" => PASSES
+Verify that next token has content "-2" => PASSES
 Verify that this token has a type of NUMBER => PASSES
 Verify that next token has content ")" => PASSES
 Verify that this token has a type of RPAREN => PASSES
@@ -256,6 +256,8 @@ Verify that next token has content "^" => PASSES
 Verify that this token has a type of CARROT => PASSES
 Verify that next token has content "4" => PASSES
 Verify that this token has a type of NUMBER => PASSES
+Verify that next token has content "_" => PASSES
+Verify that this token has a type of NOTE => PASSES
 Verify that next token has content "
 " => PASSES
 Verify that this token has a type of NEWLINE => PASSES
@@ -314,7 +316,7 @@ Verify that this token has a type of EOF => PASSES
 Verify that the tokens received by PeekToken() are the same (i.e. PeekToken does not remove the token from the buffer => PASSES
 
 OVERALL CASE RESULTS:
-Total Comparisons: 249
+Total Comparisons: 251
 Total Failures: 0
 Test Result: PASS
 
@@ -333,15 +335,17 @@ BEGIN PARSER TEST:
 Verify that the program has successfully removed the first token => PASSES
 Verify that the Reset method has restored the program => PASSES
 Expect function does not throw syntax error when next token was as expected => PASSES
+Expect function does not throw syntax error when next token was as expected(even though comment was present) => PASSES
 Expect function threw syntax error when token was incorrect => PASSES
-Verify that the correct syntax error was thrown => PASSES
+Testing Example 3: Parser threw a syntax error when no syntax error was expected:
+	SYNTAX ERROR: expected: BREAK; received: UNKNOWN => FAILURE: "True" is not "False"
 
 OVERALL CASE RESULTS:
-Total Comparisons: 5
-Total Failures: 0
-Test Result: PASS
+Total Comparisons: 6
+Total Failures: 1
+Test Result: FAIL
 
 OVERALL TEST SET:
 Total Tests: 5
-Total Failures: 0
-Results: TEST PASSED
+Total Failures: 1
+Results: TEST FAILED

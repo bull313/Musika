@@ -27,9 +27,12 @@ namespace compiler
             }
 
             output += "Overall Test Set:\n".ToUpper() + "Total Tests: " + tests
-                    + "\nTotal Failures: " + testFailures + "\nResults: " + ((tests > 0 && testFailures == 0) ? "TEST PASSED" : "TEST FAILED") + "\n";
+                    + "\nTotal Failures: " + testFailures + "\nResults: "
+                    + ((tests > 0 && testFailures == 0) ? "TEST PASSED" : "TEST FAILED") + "\n";
             System.IO.File.WriteAllText("../../TestResults.txt", output);
             Console.WriteLine(output);
+
+            System.Environment.Exit(testFailures);
         }
     }
 
@@ -58,7 +61,7 @@ namespace compiler
 
             private void TestExpect()
             {
-                string program = "accompany }";
+                string program = "accompany =>test comment<= } (";
                 parser = new Parser(program);
                 try
                 {
@@ -72,36 +75,54 @@ namespace compiler
 
                 try
                 {
+                    parser.Expect(TokenType.RBRACE);
+                    VerifyEqual(true, true, "Expect function does not throw syntax error when next token was as expected"
+                                            + "(even though comment was present)");
+                }
+                catch(SyntaxError)
+                {
+                    VerifyEqual(true, false, "Expect function threw syntax error when the token was as expected");
+                }
+
+                try
+                {
                     parser.Expect(TokenType.ID);
                     VerifyEqual(true, false, "Expect function did not throw syntax error when token was incorrect");
                 }
-                catch(SyntaxError)
+                catch (SyntaxError)
                 {
                     VerifyEqual(true, true, "Expect function threw syntax error when token was incorrect");
                 }
             }
 
-            private void TestParse(string program, string errorString)
+            private void TestParse(string name, string program, string errorString)
             {
                 parser = new Parser(program);
                 try
                 {
                     parser.ParseProgram();
                     if (errorString != "")
-                        VerifyEqual(true, false, "Parser threw no syntax error when syntax error was expected");
+                        VerifyEqual(true, false, "Testing " + name + ": Parser threw no syntax error when syntax error was expected");
                 }
                 catch (SyntaxError s)
                 {
                     if (errorString == "")
-                        VerifyEqual(true, false, "Parser threw a syntax error when no syntax error was expected:\n\t" + s.Message);
+                        VerifyEqual(true, false, "Testing " + name + ": Parser threw a syntax error when no syntax error was expected:\n\t" + s.Message);
                     else
-                        VerifyEqual(errorString, s.Message, "Verify that the correct syntax error was thrown");
+                        VerifyEqual(errorString, s.Message, "Testing " + name + ": Verify that the correct syntax error was thrown");
                 }
             }
 
-            private string GetFile(string filename)
+            private string GetTestFile(string filename)
             {
-                return System.IO.File.ReadAllText("../../../../../test/lang/parser/" + filename); /* Get test file text from the test directory */
+                return System.IO.File.ReadAllText("../../../../../test/lang/parser/" + filename);
+                                                                /* Get test file text from the test directory */
+            }
+
+            private string GetSampleFile(string filename)
+            {
+                return System.IO.File.ReadAllText("../../../../../../sample_files/" + filename);
+                                                                /* Get test file from the sample file directory */
             }
 
             public override void RunTests()
@@ -109,10 +130,12 @@ namespace compiler
                 TestReset();
                 TestExpect();
 
-                TestParse("", "SYNTAX ERROR: expected: ACCOMPANY or TITLE; received: EOF");
-                //TestParse(GetFile("parser_test1.ka"), "");
-                //TestParse(GetFile("parser_test2.ka"), ""); TODO: add expected messages
-                //TestParse(GetFile("parser_test3.ka"), "");
+                //TestParse("Empty program", "", "SYNTAX ERROR: expected: ACCOMPANY or TITLE; received: EOF");
+                //TestParse("Completely invalid program", "ben is awesome!", "SYNTAX ERROR: expected: ACCOMPANY or TITLE; received: ID");
+                //TestParse("Example 1", GetSampleFile("example1.ka"), "");
+                //TestParse("Example 2", GetSampleFile("example2.ka"), "");
+                TestParse("Example 3", GetSampleFile("example3.ka"), "");
+                //TestParse("Chords", GetSampleFile("chords.ka"), "");
             }
         }
     }
@@ -184,7 +207,8 @@ namespace compiler
                 TestCreateErrorString__1(TokenType.NEWLINE, TokenType.ACCOMPANY);
                 TestCreateErrorString__2(TokenType.KEY, TokenType.BANG, TokenType.LPAREN);
                 TestCreateErrorString__3(TokenType.RPAREN, TokenType.TIME, TokenType.RBRACE, TokenType.AMPERSAND);
-                TestCreateErrorString__6(TokenType.SEMICOLON, TokenType.DOT, TokenType.OCTAVE, TokenType.COMMA, TokenType.EQUAL, TokenType.GREATER, TokenType.SLASH);
+                TestCreateErrorString__6(TokenType.SEMICOLON, TokenType.DOT, TokenType.OCTAVE, TokenType.COMMA,
+                                                                        TokenType.EQUAL, TokenType.GREATER, TokenType.SLASH);
             }
         }
     }
@@ -210,7 +234,7 @@ namespace compiler
             private void TestGetToken()
             {
                 /* NOTE: This test case does not test returning a token via the tokeBuffer */
-                LoadSampleFile("lexer_test.ka");
+                LoadSampleFile("../../../../../test/lang/lexer_test.ka");
                 VerifyNextToken("accompany", TokenType.ACCOMPANY);
                 VerifyNextToken("[", TokenType.LBRACKET);
                 VerifyNextToken("example2", TokenType.ID);
@@ -305,13 +329,14 @@ namespace compiler
                 VerifyNextToken("\n", TokenType.NEWLINE);
                 VerifyNextToken("repeat", TokenType.REPEAT);
                 VerifyNextToken("(", TokenType.LPAREN);
-                VerifyNextToken("2", TokenType.NUMBER);
+                VerifyNextToken("-2", TokenType.NUMBER);
                 VerifyNextToken(")", TokenType.RPAREN);
                 VerifyNextToken("{", TokenType.LBRACE);
                 VerifyNextToken("\n", TokenType.NEWLINE);
                 VerifyNextToken("A", TokenType.NOTE);
                 VerifyNextToken("^", TokenType.CARROT);
                 VerifyNextToken("4", TokenType.NUMBER);
+                VerifyNextToken("_", TokenType.NOTE);
                 VerifyNextToken("\n", TokenType.NEWLINE);
                 VerifyNextToken("}", TokenType.RBRACE);
                 VerifyNextToken("\n", TokenType.NEWLINE);
@@ -363,7 +388,7 @@ namespace compiler
                 /* NOTE: The dependencies in this case are okay because PeekToken() is solely
                  *          a combination of these methods and should test them together accordingly */
 
-                LoadSampleFile("example1.ka");
+                LoadSampleFile("../../../../../../sample_files/example1.ka");
 
                 Token test = lexer.PeekToken();
                 Token test2 = lexer.PeekToken();
@@ -383,8 +408,7 @@ namespace compiler
             /* Used to load sample files into the lexer instance */
             private void LoadSampleFile(string file)
             {
-                const string BASE_DIRECTORY = "../../../../../../sample_files/"; /* Directory to the sample Musika files to use as test cases */
-                string program = System.IO.File.ReadAllText(BASE_DIRECTORY + file);
+                string program = System.IO.File.ReadAllText(file);
                 lexer = new LexicalAnalyzer(program);
             }
         }
