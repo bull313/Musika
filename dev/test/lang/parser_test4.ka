@@ -1,0 +1,15 @@
+&this is a Musika parser test file
+title: "The title"
+key: F#maj
+time: =>the time<= 3 / 4
+tempo: 4 = 144
+octave: 5
+
+
+---
+pattern [the_pattern]:
+    ! author: "tool" !
+    A....
+---
+
+---

@@ -95,6 +95,45 @@ namespace compiler
                 }
             }
 
+            private void TestCheckForComment()
+            {
+                /* NOTE: This test has a dependency on the correct functioning of ParseComment */
+
+                Parser p = new Parser("");
+                Token next = new Token("}", TokenType.RBRACE);
+                try
+                {
+                    parser.CheckForComment(next, TokenType.LBRACE); /* dummy token type param */
+                    VerifyEqual(true, false, "Syntax error not thrown when it was supposed to");
+                }
+                catch (SyntaxError s)
+                {
+                    VerifyEqual(s.Message, "SYNTAX ERROR: expected: LBRACE; received: RBRACE", "Verify correct syntax error thrown");
+                }
+
+                parser = new Parser("&this is a comment\n");
+                try
+                {
+                    parser.CheckForComment(parser.lexer.GetToken(), TokenType.RBRACKET, TokenType.LBRACKET); /* dummy token type params */
+                    VerifyEqual(true, true, "Syntax error correctly not thrown");
+                }
+                catch (SyntaxError)
+                {
+                    VerifyEqual(true, false, "Syntax error incorrectly thrown");
+                }
+
+                parser = new Parser("=>This is another comment<=");
+                try
+                {
+                    parser.CheckForComment(parser.lexer.GetToken(), TokenType.RBRACKET, TokenType.LBRACKET); /* dummy token type params */
+                    VerifyEqual(true, true, "Syntax error correctly not thrown");
+                }
+                catch (SyntaxError)
+                {
+                    VerifyEqual(true, false, "Syntax error incorrectly thrown");
+                }
+            }
+
             private void TestParse(string name, string program, string errorString)
             {
                 parser = new Parser(program);
@@ -103,6 +142,8 @@ namespace compiler
                     parser.ParseProgram();
                     if (errorString != "")
                         VerifyEqual(true, false, "Testing " + name + ": Parser threw no syntax error when syntax error was expected");
+                    else
+                        VerifyEqual(true, true, "Testing " + name + ": Parser correctly threw no syntax error");
                 }
                 catch (SyntaxError s)
                 {
@@ -125,17 +166,31 @@ namespace compiler
                                                                 /* Get test file from the sample file directory */
             }
 
+            private string GetParseFile(string filename)
+            {
+                return System.IO.File.ReadAllText("../../../../../test/lang/" + filename);
+                                                                /* Get test file from the sample file directory */
+            }
+
             public override void RunTests()
             {
                 TestReset();
                 TestExpect();
+                TestCheckForComment();
 
-                //TestParse("Empty program", "", "SYNTAX ERROR: expected: ACCOMPANY or TITLE; received: EOF");
-                //TestParse("Completely invalid program", "ben is awesome!", "SYNTAX ERROR: expected: ACCOMPANY or TITLE; received: ID");
-                //TestParse("Example 1", GetSampleFile("example1.ka"), "");
-                //TestParse("Example 2", GetSampleFile("example2.ka"), "");
+                /* Base Test Cases */
+                TestParse("Empty program", "", "SYNTAX ERROR: expected: ACCOMPANY or TITLE; received: EOF");
+                TestParse("Completely invalid program", "ben is awesome!", "SYNTAX ERROR: expected: ACCOMPANY or TITLE; received: ID");
+                TestParse("Example 1", GetSampleFile("example1.ka"), "");
+                TestParse("Example 2", GetSampleFile("example2.ka"), "");
                 TestParse("Example 3", GetSampleFile("example3.ka"), "");
-                //TestParse("Chords", GetSampleFile("chords.ka"), "");
+                TestParse("Chords", GetSampleFile("chords.ka"), "");
+
+                /* Destructive Testing */
+                TestParse("Destructive Test 1", GetParseFile("parser_test1.ka"), "");
+                TestParse("Destructive Test 2", GetParseFile("parser_test2.ka"), "SYNTAX ERROR: expected: BREAK; received: UNKNOWN");
+                TestParse("Destructive Test 3", GetParseFile("parser_test3.ka"), "SYNTAX ERROR: expected: DOT, COMMA, or APOS; received: SEMICOLON");
+                TestParse("Destructive Test 4", GetParseFile("parser_test4.ka"), "SYNTAX ERROR: expected: KEY, TIME, TEMPO, or OCTAVE; received: AUTHOR");
             }
         }
     }
@@ -293,7 +348,7 @@ namespace compiler
                 VerifyNextToken(".", TokenType.DOT);
                 VerifyNextToken("A#", TokenType.NOTE);
                 VerifyNextToken(".", TokenType.DOT);
-                VerifyNextToken("D", TokenType.NOTE);
+                VerifyNextToken("D$", TokenType.NOTE);
                 VerifyNextToken(",", TokenType.COMMA);
                 VerifyNextToken(".", TokenType.DOT);
                 VerifyNextToken(".", TokenType.DOT);

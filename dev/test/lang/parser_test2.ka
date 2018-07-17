@@ -1,0 +1,55 @@
+accompany [x] name x
+accompany [ asasdf ] name a
+
+
+
+
+---
+title: titulo
+author: a
+coauthors: x
+key: x
+time: cut
+tempo: x
+octave: 4
+
+---
+pattern [the_pattern]:
+
+chord X is C;E;F*'''
+
+pattern [nothing]:
+    =>
+
+        NOTHING HERE :O
+
+    <=
+
+
+chord Q is A
+
+
+
+---
+A.
+
+B.
+
+C,'',,,...
+
+
+D. ^ 4
+
+layer(x>pat)
+layer(a>pat)
+layer(a>pat2)
+
+repeat(1) { A.B.C.D.E.F.G.Q. Q. }
+repeat( =>the ring must be destroyed<= 16 ) {
+    !octave: -1 !
+    !tempo:-2 !
+    A.
+}
+!time: 3!
+Bb... ^ 7
+---

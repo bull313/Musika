@@ -58,6 +58,10 @@ namespace compiler
             else
             {
                 CheckForComment(next, TokenType.ACCOMPANY, TokenType.TITLE);
+                next = lexer.GetToken();
+                while (next.Type == TokenType.NEWLINE)
+                    next = lexer.GetToken();             /* Parse excess newlines */
+                lexer.PutToken(next);
                 ParseProgram(false);
             }
         }
@@ -81,7 +85,8 @@ namespace compiler
                 while (next.Type == TokenType.NEWLINE)
                     next = lexer.GetToken();
                 lexer.PutToken(next);
-                ParseAccompaniment();
+                if (next.Type == TokenType.ACCOMPANY)
+                    ParseAccompaniment();
             }
             else
                 lexer.PutToken(next);
@@ -101,7 +106,7 @@ namespace compiler
         {
             ParseTitle();
             Token next = lexer.PeekToken();
-            if (next.Type == TokenType.AUTHOR)
+            if (next.Type == TokenType.AUTHOR || next.Type == TokenType.COAUTHORS)
                 ParseAuthorDefine();
             ParseMusicInfo();
         }
@@ -116,9 +121,11 @@ namespace compiler
 
         private void ParsePatterns()
         {
-            ParsePcDefinition();
             Token next = lexer.PeekToken();
-            if (next.Type == TokenType.PATTERN)
+            if (next.Type == TokenType.PATTERN || next.Type == TokenType.CHORD || next.Type == TokenType.AMPERSAND || next.Type == TokenType.RARROWLARGE)
+                ParsePcDefinition();
+            next = lexer.PeekToken();
+            if (next.Type == TokenType.PATTERN || next.Type == TokenType.CHORD)
                 ParsePatterns();
             else if (next.Type == TokenType.NEWLINE)
             {
@@ -126,7 +133,7 @@ namespace compiler
                 while (next.Type == TokenType.NEWLINE)
                     next = lexer.GetToken();
                 lexer.PutToken(next);
-                if (next.Type == TokenType.PATTERN)
+                if (next.Type == TokenType.PATTERN || next.Type == TokenType.CHORD)
                     ParsePatterns();
             }
         }
@@ -135,10 +142,13 @@ namespace compiler
         {
             Token next = lexer.PeekToken();
             if (next.Type == TokenType.REPEAT || next.Type == TokenType.LAYER || next.Type == TokenType.NOTE
-                || next.Type == TokenType.ID || next.Type == TokenType.CARROT || next.Type == TokenType.BANG)
+                    || next.Type == TokenType.ID || next.Type == TokenType.CARROT || next.Type == TokenType.BANG
+                    || next.Type == TokenType.AMPERSAND || next.Type == TokenType.RARROWLARGE)
                 ParseMusicElement();
             next = lexer.PeekToken();
-            if (next.Type == TokenType.REPEAT || next.Type == TokenType.LAYER)
+            if (next.Type == TokenType.REPEAT || next.Type == TokenType.LAYER || next.Type == TokenType.NOTE
+                    || next.Type == TokenType.ID || next.Type == TokenType.CARROT || next.Type == TokenType.BANG
+                    || next.Type == TokenType.AMPERSAND || next.Type == TokenType.RARROWLARGE)
                 ParseMusic();
             else if (next.Type == TokenType.NEWLINE)
             {
@@ -146,7 +156,9 @@ namespace compiler
                 while (next.Type == TokenType.NEWLINE)
                     next = lexer.GetToken();
                 lexer.PutToken(next);
-                if (next.Type == TokenType.REPEAT || next.Type == TokenType.LAYER)
+                if (next.Type == TokenType.REPEAT || next.Type == TokenType.LAYER || next.Type == TokenType.NOTE
+                        || next.Type == TokenType.ID || next.Type == TokenType.CARROT || next.Type == TokenType.BANG
+                        || next.Type == TokenType.AMPERSAND || next.Type == TokenType.RARROWLARGE)
                     ParseMusic();
             }
         }
@@ -225,11 +237,17 @@ namespace compiler
             }
             Token next = lexer.GetToken();
             if (next.Type == TokenType.SIGN || next.Type == TokenType.ID)
+            {
                 if (endWithNewline)
                     Expect(TokenType.NEWLINE);
+            }
             else
             {
                 CheckForComment(next, TokenType.STRING, TokenType.ID);
+                next = lexer.GetToken();
+                while (next.Type == TokenType.NEWLINE)
+                    next = lexer.GetToken();             /* Parse excess newlines */
+                lexer.PutToken(next);
                 ParseKey(endWithNewline, false);
             }
         }
@@ -260,6 +278,10 @@ namespace compiler
             else
             {
                 CheckForComment(next, TokenType.COMMON, TokenType.CUT, TokenType.ID, TokenType.NUMBER);
+                next = lexer.GetToken();
+                while (next.Type == TokenType.NEWLINE)
+                    next = lexer.GetToken();             /* Parse excess newlines */
+                lexer.PutToken(next);
                 ParseTime(endWithNewline, false);
             }
         }
@@ -288,6 +310,10 @@ namespace compiler
             else
             {
                 CheckForComment(next, TokenType.STRING, TokenType.ID);
+                next = lexer.GetToken();
+                while (next.Type == TokenType.NEWLINE)
+                    next = lexer.GetToken();             /* Parse excess newlines */
+                lexer.PutToken(next);
                 ParseTempo(endWithNewline, false);
             }
         }
@@ -304,21 +330,17 @@ namespace compiler
             {
                 next = lexer.GetToken();
                 while (next.Type == TokenType.NEWLINE)
-                    Expect(TokenType.NEWLINE);
+                    next = lexer.GetToken();
                 lexer.PutToken(next);
             }
             else
             {
-                if (next.Type == TokenType.AMPERSAND || next.Type == TokenType.LARROWLARGE) /* Check if a comment has been reached */
-                {
-                    lexer.PutToken(next);
-                    ParseComment(next.Type == TokenType.LARROWLARGE);
-                }
-                else
-                {
-                    CheckForComment(next, TokenType.STRING, TokenType.ID);
-                    ParseOctave();
-                }
+                CheckForComment(next, TokenType.STRING, TokenType.ID);
+                next = lexer.GetToken();
+                while (next.Type == TokenType.NEWLINE)
+                    next = lexer.GetToken();             /* Parse excess newlines */
+                lexer.PutToken(next);
+                ParseOctave(false);
             }
         }
 
@@ -392,6 +414,10 @@ namespace compiler
             else
             {
                 CheckForComment(next, TokenType.REPEAT, TokenType.LAYER);
+                next = lexer.GetToken();
+                while (next.Type == TokenType.NEWLINE)
+                    next = lexer.GetToken();             /* Parse excess newlines */
+                lexer.PutToken(next);
                 ParseFunction();
             }
         }
@@ -415,7 +441,7 @@ namespace compiler
         {
             Expect(TokenType.LAYER);
             Expect(TokenType.LPAREN);
-            Expect(TokenType.ID);
+            ParseCallback();
             Expect(TokenType.RPAREN);
         }
 
@@ -440,12 +466,13 @@ namespace compiler
             }
         }
 
-        private void ParseRiffElement(bool afterBang = false)
+        private void ParseRiffElement(bool afterNote = false, bool afterBang = false)
         {
             Token next = lexer.GetToken();
-            if (next.Type == TokenType.NOTE)
+            if (next.Type == TokenType.NOTE || afterNote)
             {
-                next = lexer.PeekToken();
+                if (!afterNote)
+                    next = lexer.PeekToken();
                 if (next.Type == TokenType.DOT)
                     ParseDotSet();
                 else if (next.Type == TokenType.COMMA || next.Type == TokenType.APOS)
@@ -453,13 +480,15 @@ namespace compiler
                     ParseOctaveChange();
                     ParseDotSet();
                 }
-                else if (next.Type == TokenType.AMPERSAND || next.Type == TokenType.LARROWLARGE) /* Check if a comment has been reached */
-                {
-                    lexer.PutToken(next);
-                    ParseComment(next.Type == TokenType.LARROWLARGE);
-                }
                 else
+                {
                     CheckForComment(next, TokenType.DOT, TokenType.COMMA, TokenType.APOS);
+                    next = lexer.GetToken();
+                    while (next.Type == TokenType.NEWLINE)
+                        next = lexer.GetToken();             /* Parse excess newlines */
+                    lexer.PutToken(next);
+                    ParseRiffElement(true); /* jump back to the note condition */
+                }
             }
             else if (next.Type == TokenType.ID)
             {
@@ -473,7 +502,11 @@ namespace compiler
                 Expect(TokenType.NUMBER);
             else if (next.Type == TokenType.BANG || afterBang)
             {
-                next = lexer.PeekToken();
+                if (!afterBang)
+                    next = lexer.PeekToken();
+                else
+                    lexer.PutToken(next);
+
                 if (next.Type == TokenType.KEY)
                 {
                     ParseKey(false);
@@ -497,13 +530,15 @@ namespace compiler
                 else
                 {
                     CheckForComment(next, TokenType.KEY, TokenType.TIME, TokenType.TEMPO, TokenType.OCTAVE);
-                    ParseRiffElement(true);
+                    next = lexer.GetToken();
+                    while (next.Type == TokenType.NEWLINE)
+                        next = lexer.GetToken();             /* Parse excess newlines */
+                    lexer.PutToken(next);
+                    ParseRiffElement(false, true); /* Jump back to the bang condition */
                 }
             }
             else
-            {
                 CheckForComment(next, TokenType.NOTE, TokenType.ID, TokenType.CARROT, TokenType.BANG);
-            }
         }
 
         private void ParseDotSet()
@@ -516,18 +551,23 @@ namespace compiler
 
         private void ParseOctaveChange()
         {
+            //A'=>comment<='',,
             Token next = lexer.GetToken();
-            if (next.Type != TokenType.COMMA && next.Type != TokenType.APOS)
-                if (next.Type == TokenType.AMPERSAND || next.Type == TokenType.LARROWLARGE) /* Check if a comment has been reached */
-                {
-                    lexer.PutToken(next);
-                    ParseComment(next.Type == TokenType.LARROWLARGE);
-                }
-                else
-                {
-                    CheckForComment(next, TokenType.COMMA, TokenType.APOS);
-                    ParseOctaveChange();
-                }
+            if (next.Type == TokenType.COMMA || next.Type == TokenType.APOS)
+            {
+                while (next.Type == TokenType.COMMA || next.Type == TokenType.APOS)
+                    next = lexer.GetToken();
+                lexer.PutToken(next);
+            }
+            else
+            {
+                CheckForComment(next, TokenType.COMMA, TokenType.APOS);
+                next = lexer.GetToken();
+                while (next.Type == TokenType.NEWLINE)
+                    next = lexer.GetToken();             /* Parse excess newlines */
+                lexer.PutToken(next);
+                ParseOctaveChange();
+            }
         }
 
         private void ParseCallback()
@@ -732,6 +772,13 @@ namespace compiler
                     case "E": return new Token(returnTokenString, TokenType.NOTE);
                     case "F": return new Token(returnTokenString, TokenType.NOTE);
                     case "G": return new Token(returnTokenString, TokenType.NOTE);
+                    case "A$": return new Token(returnTokenString, TokenType.NOTE);
+                    case "B$": return new Token(returnTokenString, TokenType.NOTE);
+                    case "C$": return new Token(returnTokenString, TokenType.NOTE);
+                    case "D$": return new Token(returnTokenString, TokenType.NOTE);
+                    case "E$": return new Token(returnTokenString, TokenType.NOTE);
+                    case "F$": return new Token(returnTokenString, TokenType.NOTE);
+                    case "G$": return new Token(returnTokenString, TokenType.NOTE);
                     case "A#": return new Token(returnTokenString, TokenType.NOTE);
                     case "B#": return new Token(returnTokenString, TokenType.NOTE);
                     case "C#": return new Token(returnTokenString, TokenType.NOTE);

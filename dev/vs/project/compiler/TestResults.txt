@@ -162,7 +162,7 @@ Verify that next token has content "A#" => PASSES
 Verify that this token has a type of NOTE => PASSES
 Verify that next token has content "." => PASSES
 Verify that this token has a type of DOT => PASSES
-Verify that next token has content "D" => PASSES
+Verify that next token has content "D$" => PASSES
 Verify that this token has a type of NOTE => PASSES
 Verify that next token has content "," => PASSES
 Verify that this token has a type of COMMA => PASSES
@@ -337,15 +337,26 @@ Verify that the Reset method has restored the program => PASSES
 Expect function does not throw syntax error when next token was as expected => PASSES
 Expect function does not throw syntax error when next token was as expected(even though comment was present) => PASSES
 Expect function threw syntax error when token was incorrect => PASSES
-Testing Example 3: Parser threw a syntax error when no syntax error was expected:
-	SYNTAX ERROR: expected: BREAK; received: UNKNOWN => FAILURE: "True" is not "False"
+Verify correct syntax error thrown => PASSES
+Syntax error correctly not thrown => PASSES
+Syntax error correctly not thrown => PASSES
+Testing Empty program: Verify that the correct syntax error was thrown => PASSES
+Testing Completely invalid program: Verify that the correct syntax error was thrown => PASSES
+Testing Example 1: Parser correctly threw no syntax error => PASSES
+Testing Example 2: Parser correctly threw no syntax error => PASSES
+Testing Example 3: Parser correctly threw no syntax error => PASSES
+Testing Chords: Parser correctly threw no syntax error => PASSES
+Testing Destructive Test 1: Parser correctly threw no syntax error => PASSES
+Testing Destructive Test 2: Verify that the correct syntax error was thrown => PASSES
+Testing Destructive Test 3: Verify that the correct syntax error was thrown => PASSES
+Testing Destructive Test 4: Verify that the correct syntax error was thrown => PASSES
 
 OVERALL CASE RESULTS:
-Total Comparisons: 6
-Total Failures: 1
-Test Result: FAIL
+Total Comparisons: 18
+Total Failures: 0
+Test Result: PASS
 
 OVERALL TEST SET:
 Total Tests: 5
-Total Failures: 1
-Results: TEST FAILED
+Total Failures: 0
+Results: TEST PASSED

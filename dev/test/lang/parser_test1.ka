@@ -1,0 +1,37 @@
+accompany [accompaniment_file] name $acc
+
+accompany [ =>this is a cool file<= benisawesome ] name _coolFile_
+---
+title: =>this is where the title goes<= $acc
+author: "author"
+key: Amaj
+time: common
+tempo: 2 = 72
+octave: _coolFile_
+---
+
+---
+& no patterns above
+
+
+=>beginning here<=
+E,'',','',..........
+    &starting note
+
+
+
+repeat(           7                )  {
+
+  A.A.A.A.A....A,'','... ^ 8 & this is one section
+  Bb.C*.Gbb.F.F.F#.C#...E,,,.
+  ! key: Cm !
+  B.B.B.B.B...
+  ! => here we go <= time: 3 !
+  Cb...
+    Bb...
+     Ab... & this will get 'em!
+  ! tempo: 8 = 266 ! & a really fast tempo
+  G#...             A#...       E*...   Bbb.     ^ 100
+
+}
+---
