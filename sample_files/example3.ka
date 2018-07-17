@@ -6,8 +6,8 @@ time: common
 tempo: 4 = 144
 octave: 4
 ---
-! tempo: 8 !
 pattern [chorus2]:
+! tempo: 8 !
 ! time: 8 !
 E.B,.D,.E.A..G..F.G.D..B.A.G.F.
 pattern [chorus_end]:
