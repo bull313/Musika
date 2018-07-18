@@ -25,7 +25,7 @@
         <!-- Menu Bar -->
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
-                <Separator />
+                <MenuItem Header="New" x:Name="File_New" Click="File_New_Click" />
                 <MenuItem Header="Exit" x:Name="File_Exit" Click="File_Exit_Click" />
             </MenuItem>
         </Menu>
@@ -33,7 +33,7 @@
 
         <!-- Text Editor -->
         <ScrollViewer DockPanel.Dock="Bottom">
-            <RichTextBox AcceptsReturn="True" AcceptsTab="True" x:Name="Editor">
+            <RichTextBox AcceptsReturn="True" AcceptsTab="True" x:Name="Editor" KeyDown="Editor_KeyDown">
                 <RichTextBox.Resources>
                     <Style TargetType="{x:Type Paragraph}">
                         <Setter Property="Margin" Value="0" />
