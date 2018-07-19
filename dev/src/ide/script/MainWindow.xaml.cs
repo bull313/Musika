@@ -9,49 +9,245 @@ using System.Windows.Media;
 
 namespace ide
 {
+    /* Style class to style special words/chars */
+    internal class Style
+    {
+        private Dictionary<DependencyProperty, object> styleDict;
+
+        internal Style()
+        {
+            styleDict = new Dictionary<DependencyProperty, object>();
+        }
+
+        internal void AddColor(Color c)
+        {
+            AddStyle(TextElement.ForegroundProperty, new SolidColorBrush(c));
+        }
+
+        internal void AddWeight(FontWeight f)
+        {
+            AddStyle(TextElement.FontWeightProperty, f);
+        }
+
+        internal void AddStyle(DependencyProperty dp, object val)
+        {
+            styleDict.Add(dp, val);
+        }
+
+        internal Dictionary<DependencyProperty, object> GetDict()
+        {
+            return styleDict;
+        }
+    }
+
     public partial class MainWindow : Window
     {
-        private static Color DEFAULT_COLOR = Colors.Black; /* Set the default text color to black */
-        private static Color TIER_1_KEYWORD_COLOR = Colors.Red;
+        private static Dictionary<string, Style> wordStyleDict;
+        private List<Tag> colorTagList = new List<Tag>();
 
-        private Paragraph body;
-        private Dictionary<string, Color> syntaxHighlightDict;
+        private static string program;
+
+        new private struct Tag
+        {
+            internal TextPointer Start, End;
+            internal string Word;
+            internal Style Style;
+        }
+
+        static MainWindow()
+        {
+            /* Create Styles */
+            Style tier1 = new Style();
+            tier1.AddColor(Colors.Red);
+            tier1.AddWeight(FontWeights.Bold);
+
+            Style tier2 = new Style();
+            tier2.AddColor(Colors.OrangeRed);
+
+            Style tier3 = new Style();
+            tier3.AddColor(Colors.Green);
+
+            Style breakStyle = new Style();
+            breakStyle.AddColor(Colors.Olive);
+            breakStyle.AddWeight(FontWeights.Bold);
+
+            Style signStyle = new Style();
+            signStyle.AddColor(Colors.SandyBrown);
+
+            Style noteStyle = new Style();
+            noteStyle.AddColor(Colors.CadetBlue);
+
+            wordStyleDict = new Dictionary<string, Style>();
+
+            /* Tier 1 Keywords */
+            wordStyleDict.Add("accompany",    tier1);
+            wordStyleDict.Add("name",         tier1);
+            wordStyleDict.Add("author",       tier1);
+            wordStyleDict.Add("coauthors",    tier1);
+            wordStyleDict.Add("title",        tier1);
+            wordStyleDict.Add("key",          tier1);
+            wordStyleDict.Add("time",         tier1);
+            wordStyleDict.Add("tempo",        tier1);
+            wordStyleDict.Add("octave",       tier1);
+            wordStyleDict.Add("pattern",      tier1);
+            wordStyleDict.Add("chord",        tier1);
+            wordStyleDict.Add("is",           tier1);
+
+            /* Tier 2 Keywords */
+            wordStyleDict.Add("common", tier2);
+            wordStyleDict.Add("cut", tier2);
+
+            /* Tier 2 Keywords */
+            wordStyleDict.Add("repeat", tier3);
+            wordStyleDict.Add("layer", tier3);
+
+            /* The break token */
+            wordStyleDict.Add("---", breakStyle);
+
+            /* Key signatures */
+            wordStyleDict.Add("Cmaj",   signStyle);
+            wordStyleDict.Add("Gmaj",   signStyle);
+            wordStyleDict.Add("Dmaj",   signStyle);
+            wordStyleDict.Add("Amaj",   signStyle);
+            wordStyleDict.Add("Emaj",   signStyle);
+            wordStyleDict.Add("Bmaj",   signStyle);
+            wordStyleDict.Add("F#maj",  signStyle);
+            wordStyleDict.Add("C#maj",  signStyle);
+            wordStyleDict.Add("Fmaj",   signStyle);
+            wordStyleDict.Add("Bbmaj",  signStyle);
+            wordStyleDict.Add("Ebmaj",  signStyle);
+            wordStyleDict.Add("Abmaj",  signStyle);
+            wordStyleDict.Add("Cm",     signStyle);
+            wordStyleDict.Add("Gm",     signStyle);
+            wordStyleDict.Add("Dm",     signStyle);
+            wordStyleDict.Add("Am",     signStyle);
+            wordStyleDict.Add("Em",     signStyle);
+            wordStyleDict.Add("Bm",     signStyle);
+            wordStyleDict.Add("F#m",    signStyle);
+            wordStyleDict.Add("C#m",    signStyle);
+            wordStyleDict.Add("Fm",     signStyle);
+            wordStyleDict.Add("Bbm",    signStyle);
+            wordStyleDict.Add("Ebm",    signStyle);
+            wordStyleDict.Add("Abm",    signStyle);
+
+            /* Notes */
+            wordStyleDict.Add("A", noteStyle);
+            wordStyleDict.Add("B", noteStyle);
+            wordStyleDict.Add("C", noteStyle);
+            wordStyleDict.Add("D", noteStyle);
+            wordStyleDict.Add("E", noteStyle);
+            wordStyleDict.Add("F", noteStyle);
+            wordStyleDict.Add("G", noteStyle);
+            wordStyleDict.Add("A#", noteStyle);
+            wordStyleDict.Add("B#", noteStyle);
+            wordStyleDict.Add("C#", noteStyle);
+            wordStyleDict.Add("D#", noteStyle);
+            wordStyleDict.Add("E#", noteStyle);
+            wordStyleDict.Add("F#", noteStyle);
+            wordStyleDict.Add("G#", noteStyle);
+            wordStyleDict.Add("Ab", noteStyle);
+            wordStyleDict.Add("Bb", noteStyle);
+            wordStyleDict.Add("Cb", noteStyle);
+            wordStyleDict.Add("Db", noteStyle);
+            wordStyleDict.Add("Eb", noteStyle);
+            wordStyleDict.Add("Fb", noteStyle);
+            wordStyleDict.Add("Gb", noteStyle);
+            wordStyleDict.Add("A$", noteStyle);
+            wordStyleDict.Add("B$", noteStyle);
+            wordStyleDict.Add("C$", noteStyle);
+            wordStyleDict.Add("D$", noteStyle);
+            wordStyleDict.Add("E$", noteStyle);
+            wordStyleDict.Add("F$", noteStyle);
+            wordStyleDict.Add("G$", noteStyle);
+            wordStyleDict.Add("A*", noteStyle);
+            wordStyleDict.Add("B*", noteStyle);
+            wordStyleDict.Add("C*", noteStyle);
+            wordStyleDict.Add("D*", noteStyle);
+            wordStyleDict.Add("E*", noteStyle);
+            wordStyleDict.Add("F*", noteStyle);
+            wordStyleDict.Add("G*", noteStyle);
+            wordStyleDict.Add("Abb", noteStyle);
+            wordStyleDict.Add("Bbb", noteStyle);
+            wordStyleDict.Add("Cbb", noteStyle);
+            wordStyleDict.Add("Dbb", noteStyle);
+            wordStyleDict.Add("Ebb", noteStyle);
+            wordStyleDict.Add("Fbb", noteStyle);
+            wordStyleDict.Add("Gbb", noteStyle);
+        }
 
         public MainWindow()
         {
             InitializeComponent();
-            ResetEditor();
-
-            /* Populate Text Highlight Dictionary */
-            syntaxHighlightDict = new Dictionary<string, Color>();
-            syntaxHighlightDict.Add("accompany",    TIER_1_KEYWORD_COLOR);
-            syntaxHighlightDict.Add("name",         TIER_1_KEYWORD_COLOR);
-            syntaxHighlightDict.Add("author",       TIER_1_KEYWORD_COLOR);
-            syntaxHighlightDict.Add("coauthors",    TIER_1_KEYWORD_COLOR);
-            syntaxHighlightDict.Add("title",        TIER_1_KEYWORD_COLOR);
-            syntaxHighlightDict.Add("key",          TIER_1_KEYWORD_COLOR);
-            syntaxHighlightDict.Add("time",         TIER_1_KEYWORD_COLOR);
-            syntaxHighlightDict.Add("tempo",        TIER_1_KEYWORD_COLOR);
-            syntaxHighlightDict.Add("octave",       TIER_1_KEYWORD_COLOR);
-            syntaxHighlightDict.Add("pattern",      TIER_1_KEYWORD_COLOR);
-            syntaxHighlightDict.Add("chord",        TIER_1_KEYWORD_COLOR);
-            syntaxHighlightDict.Add("is",           TIER_1_KEYWORD_COLOR);
         }
 
         /*
          *  ---------------- HELPER FUNCTIONS ----------------
         */
 
-        private string GetText()
+        private string ContainsKey(string word)
         {
-            return new TextRange(Editor.Document.ContentStart, Editor.Document.ContentEnd).Text;
+            if (word.Length > 0 && !char.IsLetterOrDigit(word[word.Length - 1]) && word[word.Length - 1] != '"')
+            {
+                if (wordStyleDict.ContainsKey(word.Substring(0, word.Length - 1)))
+                    return word.Substring(0, word.Length - 1);
+                else
+                    return null;
+            }
+            else
+            {
+                if (wordStyleDict.ContainsKey(word))
+                    return word;
+                else return null;
+            }
         }
 
-        private void ResetEditor() /* Make a blank new file */
+        private void CheckWordsInRun(Run r)
         {
-            Editor.Document.Blocks.Clear();
-            body = new Paragraph(); /* Insert a parent paragraph into the document */
-            Editor.Document.Blocks.Add(body);
+            int startIndex = 0, endIndex = 0;
+            string keyResult;
+
+            /* Find special words */
+            for (int i = 0; i < program.Length; ++i)
+            {
+                if (char.IsWhiteSpace(program[i]))
+                {
+                    if (i > 0 && !(char.IsWhiteSpace(program[i - 1])))
+                    {
+                        endIndex = i - 1;
+                        string word = program.Substring(startIndex, endIndex - startIndex + 1);
+
+                        keyResult = ContainsKey(word);
+                        if (keyResult != null)
+                        {
+                            Tag t = new Tag();
+                            t.Start = r.ContentStart.GetPositionAtOffset(startIndex, LogicalDirection.Forward);
+                            if (keyResult == word)
+                                t.End = r.ContentStart.GetPositionAtOffset(endIndex + 1, LogicalDirection.Backward);
+                            else
+                                t.End = r.ContentStart.GetPositionAtOffset(endIndex, LogicalDirection.Backward);
+                            t.Word = word;
+                            t.Style = wordStyleDict[keyResult];
+                            colorTagList.Add(t);
+                        }
+                    }
+                    startIndex = i + 1;
+                }
+            }
+
+            string lastWord = program.Substring(startIndex, program.Length - startIndex);
+            keyResult = ContainsKey(lastWord);
+            if (keyResult != null)
+            {
+                Tag t = new Tag();
+                t.Start = r.ContentStart.GetPositionAtOffset(startIndex, LogicalDirection.Forward);
+                if (keyResult == lastWord)
+                    t.End = r.ContentStart.GetPositionAtOffset(endIndex + 1, LogicalDirection.Backward);
+                else
+                    t.End = r.ContentStart.GetPositionAtOffset(endIndex, LogicalDirection.Backward);
+                t.Word = lastWord;
+                t.Style = wordStyleDict[keyResult];
+                colorTagList.Add(t);
+            }
         }
 
         /*
@@ -65,7 +261,41 @@ namespace ide
 
         private void Editor_TextChanged(object sender, TextChangedEventArgs e)
         {
+            if (Editor.Document == null) return; /* Don't do anything if the document is not set up yet */
 
+            Editor.TextChanged -= Editor_TextChanged; /* Temporarily disable TextChanged event handler */
+            colorTagList.Clear();
+
+            TextRange docRange = new TextRange(Editor.Document.ContentStart, Editor.Document.ContentEnd);
+            docRange.ClearAllProperties(); /* Remove all formatting properties (to be readded) */
+
+            /* Find keywords in program */
+            TextPointer nav = Editor.Document.ContentStart;
+            while (nav.CompareTo(Editor.Document.ContentEnd) < 0)
+            {
+                TextPointerContext ctxt = nav.GetPointerContext(LogicalDirection.Backward);
+                if (ctxt == TextPointerContext.ElementStart && nav.Parent is Run)
+                {
+                    program = ((Run)nav.Parent).Text;
+                    if (program != "") /* Only check words if program is not empty */
+                        CheckWordsInRun((Run)nav.Parent);
+                }
+                nav = nav.GetNextContextPosition(LogicalDirection.Forward);
+            }
+
+            /* Highlight keywords in program */
+            for (int i = 0; i < colorTagList.Count; ++i)
+            {
+                try
+                {
+                    TextRange range = new TextRange(colorTagList[i].Start, colorTagList[i].End);
+                    foreach (KeyValuePair<DependencyProperty, object> style in colorTagList[i].Style.GetDict())
+                        range.ApplyPropertyValue(style.Key, style.Value);
+                }
+                catch { }
+            }
+
+            Editor.TextChanged += Editor_TextChanged; /* Re-enable TextChanged event handler */
         }
 
         /*
@@ -85,7 +315,7 @@ namespace ide
 
         private void File_New_Click(object sender, RoutedEventArgs e)
         {
-            ResetEditor();
+            Editor.Document.Blocks.Clear();
         }
 
         /*
