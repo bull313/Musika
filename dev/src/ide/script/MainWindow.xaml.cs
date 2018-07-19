@@ -131,48 +131,48 @@ namespace ide
             wordStyleDict.Add("Abm",    signStyle);
 
             /* Notes */
-            wordStyleDict.Add("A", noteStyle);
-            wordStyleDict.Add("B", noteStyle);
-            wordStyleDict.Add("C", noteStyle);
-            wordStyleDict.Add("D", noteStyle);
-            wordStyleDict.Add("E", noteStyle);
-            wordStyleDict.Add("F", noteStyle);
-            wordStyleDict.Add("G", noteStyle);
-            wordStyleDict.Add("A#", noteStyle);
-            wordStyleDict.Add("B#", noteStyle);
-            wordStyleDict.Add("C#", noteStyle);
-            wordStyleDict.Add("D#", noteStyle);
-            wordStyleDict.Add("E#", noteStyle);
-            wordStyleDict.Add("F#", noteStyle);
-            wordStyleDict.Add("G#", noteStyle);
-            wordStyleDict.Add("Ab", noteStyle);
-            wordStyleDict.Add("Bb", noteStyle);
-            wordStyleDict.Add("Cb", noteStyle);
-            wordStyleDict.Add("Db", noteStyle);
-            wordStyleDict.Add("Eb", noteStyle);
-            wordStyleDict.Add("Fb", noteStyle);
-            wordStyleDict.Add("Gb", noteStyle);
-            wordStyleDict.Add("A$", noteStyle);
-            wordStyleDict.Add("B$", noteStyle);
-            wordStyleDict.Add("C$", noteStyle);
-            wordStyleDict.Add("D$", noteStyle);
-            wordStyleDict.Add("E$", noteStyle);
-            wordStyleDict.Add("F$", noteStyle);
-            wordStyleDict.Add("G$", noteStyle);
-            wordStyleDict.Add("A*", noteStyle);
-            wordStyleDict.Add("B*", noteStyle);
-            wordStyleDict.Add("C*", noteStyle);
-            wordStyleDict.Add("D*", noteStyle);
-            wordStyleDict.Add("E*", noteStyle);
-            wordStyleDict.Add("F*", noteStyle);
-            wordStyleDict.Add("G*", noteStyle);
-            wordStyleDict.Add("Abb", noteStyle);
-            wordStyleDict.Add("Bbb", noteStyle);
-            wordStyleDict.Add("Cbb", noteStyle);
-            wordStyleDict.Add("Dbb", noteStyle);
-            wordStyleDict.Add("Ebb", noteStyle);
-            wordStyleDict.Add("Fbb", noteStyle);
-            wordStyleDict.Add("Gbb", noteStyle);
+            wordStyleDict.Add("A",      noteStyle);
+            wordStyleDict.Add("B",      noteStyle);
+            wordStyleDict.Add("C",      noteStyle);
+            wordStyleDict.Add("D",      noteStyle);
+            wordStyleDict.Add("E",      noteStyle);
+            wordStyleDict.Add("F",      noteStyle);
+            wordStyleDict.Add("G",      noteStyle);
+            wordStyleDict.Add("A#",     noteStyle);
+            wordStyleDict.Add("B#",     noteStyle);
+            wordStyleDict.Add("C#",     noteStyle);
+            wordStyleDict.Add("D#",     noteStyle);
+            wordStyleDict.Add("E#",     noteStyle);
+            wordStyleDict.Add("F#",     noteStyle);
+            wordStyleDict.Add("G#",     noteStyle);
+            wordStyleDict.Add("Ab",     noteStyle);
+            wordStyleDict.Add("Bb",     noteStyle);
+            wordStyleDict.Add("Cb",     noteStyle);
+            wordStyleDict.Add("Db",     noteStyle);
+            wordStyleDict.Add("Eb",     noteStyle);
+            wordStyleDict.Add("Fb",     noteStyle);
+            wordStyleDict.Add("Gb",     noteStyle);
+            wordStyleDict.Add("A$",     noteStyle);
+            wordStyleDict.Add("B$",     noteStyle);
+            wordStyleDict.Add("C$",     noteStyle);
+            wordStyleDict.Add("D$",     noteStyle);
+            wordStyleDict.Add("E$",     noteStyle);
+            wordStyleDict.Add("F$",     noteStyle);
+            wordStyleDict.Add("G$",     noteStyle);
+            wordStyleDict.Add("A*",     noteStyle);
+            wordStyleDict.Add("B*",     noteStyle);
+            wordStyleDict.Add("C*",     noteStyle);
+            wordStyleDict.Add("D*",     noteStyle);
+            wordStyleDict.Add("E*",     noteStyle);
+            wordStyleDict.Add("F*",     noteStyle);
+            wordStyleDict.Add("G*",     noteStyle);
+            wordStyleDict.Add("Abb",    noteStyle);
+            wordStyleDict.Add("Bbb",    noteStyle);
+            wordStyleDict.Add("Cbb",    noteStyle);
+            wordStyleDict.Add("Dbb",    noteStyle);
+            wordStyleDict.Add("Ebb",    noteStyle);
+            wordStyleDict.Add("Fbb",    noteStyle);
+            wordStyleDict.Add("Gbb",    noteStyle);
         }
 
         public MainWindow()
@@ -186,19 +186,14 @@ namespace ide
 
         private string ContainsKey(string word)
         {
-            if (word.Length > 0 && !char.IsLetterOrDigit(word[word.Length - 1]) && word[word.Length - 1] != '"')
-            {
-                if (wordStyleDict.ContainsKey(word.Substring(0, word.Length - 1)))
-                    return word.Substring(0, word.Length - 1);
-                else
-                    return null;
-            }
-            else
+            while (word != "")
             {
                 if (wordStyleDict.ContainsKey(word))
                     return word;
-                else return null;
+                else
+                    word = word.Substring(0, word.Length - 1);
             }
+            return null;
         }
 
         private void CheckWordsInRun(Run r)
@@ -224,7 +219,7 @@ namespace ide
                             if (keyResult == word)
                                 t.End = r.ContentStart.GetPositionAtOffset(endIndex + 1, LogicalDirection.Backward);
                             else
-                                t.End = r.ContentStart.GetPositionAtOffset(endIndex, LogicalDirection.Backward);
+                                t.End = r.ContentStart.GetPositionAtOffset(endIndex + 1 - (word.Length - keyResult.Length), LogicalDirection.Backward);
                             t.Word = word;
                             t.Style = wordStyleDict[keyResult];
                             colorTagList.Add(t);
@@ -243,7 +238,7 @@ namespace ide
                 if (keyResult == lastWord)
                     t.End = r.ContentStart.GetPositionAtOffset(endIndex + 1, LogicalDirection.Backward);
                 else
-                    t.End = r.ContentStart.GetPositionAtOffset(endIndex, LogicalDirection.Backward);
+                    t.End = r.ContentStart.GetPositionAtOffset(endIndex + 1 - (lastWord.Length - keyResult.Length), LogicalDirection.Backward);
                 t.Word = lastWord;
                 t.Style = wordStyleDict[keyResult];
                 colorTagList.Add(t);
