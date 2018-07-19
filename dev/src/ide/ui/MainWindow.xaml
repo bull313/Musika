@@ -33,7 +33,7 @@
 
         <!-- Text Editor -->
         <ScrollViewer DockPanel.Dock="Bottom">
-            <RichTextBox AcceptsReturn="True" AcceptsTab="True" x:Name="Editor" KeyDown="Editor_KeyDown">
+            <RichTextBox AcceptsReturn="True" AcceptsTab="True" x:Name="Editor" TextChanged="Editor_TextChanged" >
                 <RichTextBox.Resources>
                     <Style TargetType="{x:Type Paragraph}">
                         <Setter Property="Margin" Value="0" />
