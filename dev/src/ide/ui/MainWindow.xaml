@@ -6,8 +6,10 @@
         xmlns:local="clr-namespace:ide"
         mc:Ignorable="d"
         Title="Musika IDE" Height="500" Width="750">
+
     <!-- Window (General) Style -->
     <Window.Resources>
+
         <Style TargetType="Menu">
             <Setter Property="FontSize" Value="16" />
         </Style>
@@ -16,6 +18,7 @@
             <Setter Property="FontSize" Value="24" />
             <Setter Property="FontFamily" Value="Consolas" />
         </Style>
+
     </Window.Resources>
     <!-- ================ -->
 
@@ -25,24 +28,31 @@
         <!-- Menu Bar -->
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
+
                 <MenuItem Header="New" x:Name="File_New" Click="File_New_Click" />
                 <MenuItem Header="Exit" x:Name="File_Exit" Click="File_Exit_Click" />
+
             </MenuItem>
         </Menu>
         <!-- ================ -->
 
-        <!-- Text Editor -->
+        <!-- Text Editor with Scroll Viewer -->
         <ScrollViewer DockPanel.Dock="Bottom">
+
             <RichTextBox AcceptsReturn="True" AcceptsTab="True" x:Name="Editor" TextChanged="Editor_TextChanged" >
                 <RichTextBox.Resources>
+
                     <Style TargetType="{x:Type Paragraph}">
-                        <Setter Property="Margin" Value="0" />
+                        <Setter Property="Margin" Value="0" /> <!-- Make the text box take up the window (minus the menu bar) -->
                     </Style>
+
                 </RichTextBox.Resources>
             </RichTextBox>
+
         </ScrollViewer>
         <!-- ================ -->
 
     </DockPanel>
     <!-- ================ -->
+
 </Window>

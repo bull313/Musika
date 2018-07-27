@@ -9,7 +9,7 @@ using System.Windows.Media;
 
 namespace ide
 {
-    /* Style class to style special words/chars */
+    /* STYLE CLASS TO STYLE SPECIAL WORDS/CHARS */
     internal class Style
     {
         private Dictionary<DependencyProperty, object> styleDict;
@@ -39,47 +39,52 @@ namespace ide
             return styleDict;
         }
     }
+    /* / STYLE CLASS TO STYLE SPECIAL WORDS/CHARS */
 
+    /* MAIN CLASS */
     public partial class MainWindow : Window
     {
-        private static Dictionary<string, Style> wordStyleDict;
-        private List<Tag> colorTagList = new List<Tag>();
+        private static Dictionary<string, Style> wordStyleDict; /* Determines which words are styled and how they are styled */
+        private List<StyleText> keywordBuffer = new List<StyleText>(); /* Used to keep track of the keywords in in the text box */
 
-        private static string program;
+        private static string currentText; /* Buffer to store Run text that will be checked for keywords */
 
-        new private struct Tag
+        /* Style text struct that includes its location, content, and style */
+        new private struct StyleText
         {
             internal TextPointer Start, End;
             internal string Word;
             internal Style Style;
         }
+        /* / Style text struct that includes its location, content, and style */
 
         static MainWindow()
         {
             /* Create Styles */
-            Style tier1 = new Style();
+            Style tier1 = new Style(); /* Tier-1 keywords */
             tier1.AddColor(Colors.Red);
             tier1.AddWeight(FontWeights.Bold);
 
-            Style tier2 = new Style();
+            Style tier2 = new Style(); /* Tier-2 keywords */
             tier2.AddColor(Colors.OrangeRed);
 
-            Style tier3 = new Style();
+            Style tier3 = new Style(); /* Tier-3 keywords */
             tier3.AddColor(Colors.Green);
 
-            Style breakStyle = new Style();
+            Style breakStyle = new Style(); /* Break token (---) */
             breakStyle.AddColor(Colors.Olive);
             breakStyle.AddWeight(FontWeights.Bold);
 
-            Style signStyle = new Style();
+            Style signStyle = new Style(); /* Key signature keywords */
             signStyle.AddColor(Colors.SandyBrown);
 
-            Style noteStyle = new Style();
+            Style noteStyle = new Style(); /* Note keywords */
             noteStyle.AddColor(Colors.CadetBlue);
+            /* / Create Styles */
 
             wordStyleDict = new Dictionary<string, Style>();
 
-            /* Tier 1 Keywords */
+            /* Add Tier 1 Keywords to Dictionary */
             wordStyleDict.Add("accompany",    tier1);
             wordStyleDict.Add("name",         tier1);
             wordStyleDict.Add("author",       tier1);
@@ -93,18 +98,18 @@ namespace ide
             wordStyleDict.Add("chord",        tier1);
             wordStyleDict.Add("is",           tier1);
 
-            /* Tier 2 Keywords */
+            /* Add Tier 2 Keywords to Dictionary */
             wordStyleDict.Add("common", tier2);
             wordStyleDict.Add("cut", tier2);
 
-            /* Tier 2 Keywords */
+            /* Add Tier 3 Keywords to Dictionary */
             wordStyleDict.Add("repeat", tier3);
             wordStyleDict.Add("layer", tier3);
 
-            /* The break token */
+            /* The break token to Dictionary */
             wordStyleDict.Add("---", breakStyle);
 
-            /* Key signatures */
+            /* Add Key signatures to Dictionary */
             wordStyleDict.Add("Cmaj",   signStyle);
             wordStyleDict.Add("Gmaj",   signStyle);
             wordStyleDict.Add("Dmaj",   signStyle);
@@ -130,7 +135,7 @@ namespace ide
             wordStyleDict.Add("Ebm",    signStyle);
             wordStyleDict.Add("Abm",    signStyle);
 
-            /* Notes */
+            /* Add Notes to Dictionary */
             wordStyleDict.Add("A",      noteStyle);
             wordStyleDict.Add("B",      noteStyle);
             wordStyleDict.Add("C",      noteStyle);
@@ -184,7 +189,7 @@ namespace ide
          *  ---------------- HELPER FUNCTIONS ----------------
         */
 
-        private string ContainsKey(string word)
+        private string HasStyle(string word) /* Checks if a word is marked to be styled in the dictionary */
         {
             while (word != "")
             {
@@ -196,52 +201,56 @@ namespace ide
             return null;
         }
 
-        private void CheckWordsInRun(Run r)
+        private void CheckWordsInRun(Run r) /* Scans a run for keywords and stores the keywords with their information in the buffer */
         {
             int startIndex = 0, endIndex = 0;
-            string keyResult;
+            string HasStyleReturn;
 
             /* Find special words */
-            for (int i = 0; i < program.Length; ++i)
+            for (int i = 0; i < currentText.Length; ++i)
             {
-                if (char.IsWhiteSpace(program[i]))
+                if (char.IsWhiteSpace(currentText[i]))
                 {
-                    if (i > 0 && !(char.IsWhiteSpace(program[i - 1])))
+                    if (i > 0 && !(char.IsWhiteSpace(currentText[i - 1]))) /* Check to see if we're at the end of a word
+                                                                            (because we're on whitespace and the character before is not whitespace) */
                     {
                         endIndex = i - 1;
-                        string word = program.Substring(startIndex, endIndex - startIndex + 1);
+                        string word = currentText.Substring(startIndex, endIndex - startIndex + 1);
 
-                        keyResult = ContainsKey(word);
-                        if (keyResult != null)
+                        HasStyleReturn = HasStyle(word);
+                        if (HasStyleReturn != null) /* If the word is marked to be styled */
                         {
-                            Tag t = new Tag();
-                            t.Start = r.ContentStart.GetPositionAtOffset(startIndex, LogicalDirection.Forward);
-                            if (keyResult == word)
-                                t.End = r.ContentStart.GetPositionAtOffset(endIndex + 1, LogicalDirection.Backward);
+                            StyleText styleText = new StyleText();
+                            styleText.Start = r.ContentStart.GetPositionAtOffset(startIndex, LogicalDirection.Forward); /* Get starting position in textbox */
+
+                            if (HasStyleReturn == word) /* Get ending position in textbox */
+                                styleText.End = r.ContentStart.GetPositionAtOffset(endIndex + 1, LogicalDirection.Backward);
                             else
-                                t.End = r.ContentStart.GetPositionAtOffset(endIndex + 1 - (word.Length - keyResult.Length), LogicalDirection.Backward);
-                            t.Word = word;
-                            t.Style = wordStyleDict[keyResult];
-                            colorTagList.Add(t);
+                                styleText.End = r.ContentStart.GetPositionAtOffset(endIndex + 1 - (word.Length - HasStyleReturn.Length), LogicalDirection.Backward);
+
+                            styleText.Word = word;
+                            styleText.Style = wordStyleDict[HasStyleReturn]; /* Store the word itself and the styler instance (lookup from dictionary) */
+
+                            keywordBuffer.Add(styleText); /* Add the new StyleText instance containing the word's position, content, and style to the buffer */
                         }
                     }
                     startIndex = i + 1;
                 }
             }
 
-            string lastWord = program.Substring(startIndex, program.Length - startIndex);
-            keyResult = ContainsKey(lastWord);
-            if (keyResult != null)
+            string lastWord = currentText.Substring(startIndex, currentText.Length - startIndex); /* The previous loop doesn't deal with the last word */
+            HasStyleReturn = HasStyle(lastWord); /* Process is the same as above */
+            if (HasStyleReturn != null)
             {
-                Tag t = new Tag();
-                t.Start = r.ContentStart.GetPositionAtOffset(startIndex, LogicalDirection.Forward);
-                if (keyResult == lastWord)
-                    t.End = r.ContentStart.GetPositionAtOffset(endIndex + 1, LogicalDirection.Backward);
+                StyleText styleText = new StyleText();
+                styleText.Start = r.ContentStart.GetPositionAtOffset(startIndex, LogicalDirection.Forward);
+                if (HasStyleReturn == lastWord)
+                    styleText.End = r.ContentStart.GetPositionAtOffset(endIndex + 1, LogicalDirection.Backward);
                 else
-                    t.End = r.ContentStart.GetPositionAtOffset(endIndex + 1 - (lastWord.Length - keyResult.Length), LogicalDirection.Backward);
-                t.Word = lastWord;
-                t.Style = wordStyleDict[keyResult];
-                colorTagList.Add(t);
+                    styleText.End = r.ContentStart.GetPositionAtOffset(endIndex + 1 - (lastWord.Length - HasStyleReturn.Length), LogicalDirection.Backward);
+                styleText.Word = lastWord;
+                styleText.Style = wordStyleDict[HasStyleReturn];
+                keywordBuffer.Add(styleText);
             }
         }
 
@@ -259,7 +268,7 @@ namespace ide
             if (Editor.Document == null) return; /* Don't do anything if the document is not set up yet */
 
             Editor.TextChanged -= Editor_TextChanged; /* Temporarily disable TextChanged event handler */
-            colorTagList.Clear();
+            keywordBuffer.Clear();
 
             TextRange docRange = new TextRange(Editor.Document.ContentStart, Editor.Document.ContentEnd);
             docRange.ClearAllProperties(); /* Remove all formatting properties (to be readded) */
@@ -271,24 +280,30 @@ namespace ide
                 TextPointerContext ctxt = nav.GetPointerContext(LogicalDirection.Backward);
                 if (ctxt == TextPointerContext.ElementStart && nav.Parent is Run)
                 {
-                    program = ((Run)nav.Parent).Text;
-                    if (program != "") /* Only check words if program is not empty */
+                    currentText = ((Run)nav.Parent).Text;
+                    if (currentText != "") /* Only check words if the Run is not empty */
                         CheckWordsInRun((Run)nav.Parent);
                 }
                 nav = nav.GetNextContextPosition(LogicalDirection.Forward);
             }
+            /* / Find keywords in program */
 
             /* Highlight keywords in program */
-            for (int i = 0; i < colorTagList.Count; ++i)
+            for (int i = 0; i < keywordBuffer.Count; ++i)
             {
                 try
                 {
-                    TextRange range = new TextRange(colorTagList[i].Start, colorTagList[i].End);
-                    foreach (KeyValuePair<DependencyProperty, object> style in colorTagList[i].Style.GetDict())
-                        range.ApplyPropertyValue(style.Key, style.Value);
+                    TextRange range = new TextRange(keywordBuffer[i].Start, keywordBuffer[i].End); /* Find the keyword using the instance's location data */
+                    foreach (KeyValuePair<DependencyProperty, object> style in keywordBuffer[i].Style.GetDict())
+                        range.ApplyPropertyValue(style.Key, style.Value); /* Apply every style property from the Style data */
                 }
-                catch { }
+                catch
+                {
+                    MessageBox.Show("There was a problem with the editor's color highlighting feature\nSorry for the inconvenience....");
+                    System.Environment.Exit(1);
+                }
             }
+            /* / Highlight keywords in program */
 
             Editor.TextChanged += Editor_TextChanged; /* Re-enable TextChanged event handler */
         }
@@ -317,4 +332,5 @@ namespace ide
          *  ---------------- / MENU BAR CLICK HANDLERS ----------------
         */
     }
+    /* / MAIN CLASS */
 }
