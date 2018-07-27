@@ -120,10 +120,6 @@ Verify that this token has a type of NUMBER => PASSES
 Verify that next token has content "
 " => PASSES
 Verify that this token has a type of NEWLINE => PASSES
-Verify that next token has content "=>" => PASSES
-Verify that this token has a type of RARROWLARGE => PASSES
-Verify that next token has content "<=" => PASSES
-Verify that this token has a type of LARROWLARGE => PASSES
 Verify that next token has content "
 ---
 " => PASSES
@@ -195,8 +191,9 @@ Verify that next token has content "
 ---
 " => PASSES
 Verify that this token has a type of BREAK => PASSES
-Verify that next token has content "&" => PASSES
-Verify that this token has a type of AMPERSAND => PASSES
+Verify that next token has content "
+" => PASSES
+Verify that this token has a type of NEWLINE => PASSES
 Verify that next token has content "
 " => PASSES
 Verify that this token has a type of NEWLINE => PASSES
@@ -316,7 +313,7 @@ Verify that this token has a type of EOF => PASSES
 Verify that the tokens received by PeekToken() are the same (i.e. PeekToken does not remove the token from the buffer => PASSES
 
 OVERALL CASE RESULTS:
-Total Comparisons: 251
+Total Comparisons: 247
 Total Failures: 0
 Test Result: PASS
 
@@ -337,9 +334,6 @@ Verify that the Reset method has restored the program => PASSES
 Expect function does not throw syntax error when next token was as expected => PASSES
 Expect function does not throw syntax error when next token was as expected(even though comment was present) => PASSES
 Expect function threw syntax error when token was incorrect => PASSES
-Verify correct syntax error thrown => PASSES
-Syntax error correctly not thrown => PASSES
-Syntax error correctly not thrown => PASSES
 Testing Empty program: Verify that the correct syntax error was thrown => PASSES
 Testing Completely invalid program: Verify that the correct syntax error was thrown => PASSES
 Testing Example 1: Parser correctly threw no syntax error => PASSES
@@ -352,7 +346,7 @@ Testing Destructive Test 3: Verify that the correct syntax error was thrown => P
 Testing Destructive Test 4: Verify that the correct syntax error was thrown => PASSES
 
 OVERALL CASE RESULTS:
-Total Comparisons: 18
+Total Comparisons: 15
 Total Failures: 0
 Test Result: PASS
 

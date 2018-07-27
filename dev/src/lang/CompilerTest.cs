@@ -95,45 +95,6 @@ namespace compiler
                 }
             }
 
-            private void TestCheckForComment()
-            {
-                /* NOTE: This test has a dependency on the correct functioning of ParseComment */
-
-                Parser p = new Parser("");
-                Token next = new Token("}", TokenType.RBRACE);
-                try
-                {
-                    parser.CheckForComment(next, TokenType.LBRACE); /* dummy token type param */
-                    VerifyEqual(true, false, "Syntax error not thrown when it was supposed to");
-                }
-                catch (SyntaxError s)
-                {
-                    VerifyEqual(s.Message, "SYNTAX ERROR: expected: LBRACE; received: RBRACE", "Verify correct syntax error thrown");
-                }
-
-                parser = new Parser("&this is a comment\n");
-                try
-                {
-                    parser.CheckForComment(parser.lexer.GetToken(), TokenType.RBRACKET, TokenType.LBRACKET); /* dummy token type params */
-                    VerifyEqual(true, true, "Syntax error correctly not thrown");
-                }
-                catch (SyntaxError)
-                {
-                    VerifyEqual(true, false, "Syntax error incorrectly thrown");
-                }
-
-                parser = new Parser("=>This is another comment<=");
-                try
-                {
-                    parser.CheckForComment(parser.lexer.GetToken(), TokenType.RBRACKET, TokenType.LBRACKET); /* dummy token type params */
-                    VerifyEqual(true, true, "Syntax error correctly not thrown");
-                }
-                catch (SyntaxError)
-                {
-                    VerifyEqual(true, false, "Syntax error incorrectly thrown");
-                }
-            }
-
             private void TestParse(string name, string program, string errorString)
             {
                 parser = new Parser(program);
@@ -176,11 +137,10 @@ namespace compiler
             {
                 TestReset();
                 TestExpect();
-                TestCheckForComment();
 
                 /* Base Test Cases */
-                TestParse("Empty program", "", "SYNTAX ERROR: expected: ACCOMPANY or TITLE; received: EOF");
-                TestParse("Completely invalid program", "ben is awesome!", "SYNTAX ERROR: expected: ACCOMPANY or TITLE; received: ID");
+                TestParse("Empty program", "", "SYNTAX ERROR: expected: TITLE; received: EOF");
+                TestParse("Completely invalid program", "ben is awesome!", "SYNTAX ERROR: expected: TITLE; received: ID");
                 TestParse("Example 1", GetSampleFile("example1.ka"), "");
                 TestParse("Example 2", GetSampleFile("example2.ka"), "");
                 TestParse("Example 3", GetSampleFile("example3.ka"), "");
@@ -261,7 +221,7 @@ namespace compiler
             {
                 TestCreateErrorString__1(TokenType.NEWLINE, TokenType.ACCOMPANY);
                 TestCreateErrorString__2(TokenType.KEY, TokenType.BANG, TokenType.LPAREN);
-                TestCreateErrorString__3(TokenType.RPAREN, TokenType.TIME, TokenType.RBRACE, TokenType.AMPERSAND);
+                TestCreateErrorString__3(TokenType.RPAREN, TokenType.TIME, TokenType.RBRACE, TokenType.EQUAL);
                 TestCreateErrorString__6(TokenType.SEMICOLON, TokenType.DOT, TokenType.OCTAVE, TokenType.COMMA,
                                                                         TokenType.EQUAL, TokenType.GREATER, TokenType.SLASH);
             }
@@ -329,8 +289,6 @@ namespace compiler
                 VerifyNextToken(":", TokenType.COLON);
                 VerifyNextToken("5", TokenType.NUMBER);
                 VerifyNextToken("\n", TokenType.NEWLINE);
-                VerifyNextToken("=>", TokenType.RARROWLARGE);
-                VerifyNextToken("<=", TokenType.LARROWLARGE);
                 VerifyNextToken("\n---\n", TokenType.BREAK);
                 VerifyNextToken("pattern", TokenType.PATTERN);
                 VerifyNextToken("[", TokenType.LBRACKET);
@@ -363,7 +321,7 @@ namespace compiler
                 VerifyNextToken("E", TokenType.NOTE);
                 VerifyNextToken("'", TokenType.APOS);
                 VerifyNextToken("\n---\n", TokenType.BREAK);
-                VerifyNextToken("&", TokenType.AMPERSAND);
+                VerifyNextToken("\n", TokenType.NEWLINE);
                 VerifyNextToken("\n", TokenType.NEWLINE);
                 VerifyNextToken("!", TokenType.BANG);
                 VerifyNextToken("time", TokenType.TIME);
