@@ -94,7 +94,7 @@ function addLineBreaks() {
 function markTokens() {
   /* Local Variables */
   const TOKEN_CLASSNAME = "token";
-  const LETTERS_ONLY = /^[A-Za-z_]{2,}$/; /* Made of only letters and has a length of at least 2 characters */
+  const LETTERS_OR_ASTERISK_ONLY = /^[A-Za-z_]{2,}\*?$/; /* Made of only letters and has a length of at least 2 characters */
   const WORD_DELIM = " ";
   var wordNode;
   var spanNode;
@@ -119,9 +119,9 @@ function markTokens() {
       wordNode = document.createTextNode(wordList[j] + WORD_DELIM);
 
       /* If word is a token, surround with element, else create text node. Then append to definition */
-      if (wordList[j] == wordList[j].toUpperCase() && LETTERS_ONLY.exec(wordList[j])) { /* Check if word is all caps      */
-        spanNode = document.createElement(SPAN_TAG);                                    /* and is only made of letters of */
-        spanNode.classList.add(TOKEN_CLASSNAME);                                        /* at least two caracters         */
+      if (wordList[j] == wordList[j].toUpperCase() && LETTERS_OR_ASTERISK_ONLY.exec(wordList[j])) { /* Check if word is all caps      */
+        spanNode = document.createElement(SPAN_TAG);                                                /* and is only made of letters of */
+        spanNode.classList.add(TOKEN_CLASSNAME);                                                    /* at least two caracters         */
         spanNode.appendChild(wordNode);
         defList[i].appendChild(spanNode);
       } else {

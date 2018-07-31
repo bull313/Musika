@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -13,68 +13,68 @@
   <section>
     <h2>Grammar</h2>
     <dl>
-      <dt>score</dt>          <dd>accompaniment BREAK sheet</dd>
-                              <dd>sheet</dd>
-      <dt>sheet</dt>          <dd>info BREAK patterns BREAK music BREAK</dd>
-      <dt>accompaniment</dt>  <dd>ACCOMPANY L_BRACKET ID R_BRACKET NAME ID</dd>
-      <dt>info</dt>           <dd>title author_define music_info</dd>
-                              <dd>title music_info</dd>
-      <dt>music_info</dt>     <dd>key time tempo octave</dd>
-      <dt>patterns</dt>       <dd>pc_definition patterns</dd>
-                              <dd>pc_definition</dd>
-      <dt>music</dt>          <dd>music_element music</dd>
-                              <dd>music_element</dd>
-      <dt>title</dt>          <dd>TITLE COLON STRING NEWLINE</dd>
-                              <dd>TITLE COLON ID NEWLINE</dd>
-      <dt>author_define</dt>  <dd>author coauthors</dd>
-                              <dd>coauthors author</dd>
-                              <dd>author</dd>
-      <dt>author</dt>         <dd>AUTHOR COLON STRING NEWLINE</dd>
-                              <dd>AUTHOR COLON ID NEWLINE</dd>
-      <dt>coauthors</dt>      <dd>COAUTHORS COLON STRING NEWLINE</dd>
-                              <dd>AUTHOR COLON ID NEWLINE</dd>
-      <dt>key</dt>            <dd>KEY COLON STRING NEWLINE</dd>
-                              <dd>KEY COLON ID NEWLINE</dd>
-      <dt>time</dt>           <dd>TIME COLON (KeyWord2) NEWLINE</dd>
-                              <dd>TIME COLON ID NEWLINE</dd>
-                              <dd>TIME COLON NUMBER SLASH NUMBER NEWLINE</dd>
-                              <dd>TIME COLON NUMBER NEWLINE</dd>
-      <dt>tempo</dt>          <dd>TEMPO COLON NUMBER EQUAL NUMBER NEWLINE</dd>
-							  <dd>TEMPO COLON NUMBER</dd>
-                              <dd>TEMPO COLON ID NEWLINE</dd>
-      <dt>octave</dt>         <dd>OCTAVE COLON NUMBER NEWLINE</dd>
-                              <dd>OCTAVE COLON ID NEWLINE</dd>
-      <dt>pc_definition</dt>  <dd>PATTERN L_BRACKET ID R_BRACKET COLON NEWLINE music</dd>
-                              <dd>CHORD ID IS chord_type</dd>
-      <dt>chord_type</dt>     <dd>NOTE </dd>
-                              <dd>NOTE octave_change</dd>
-                              <dd>NOTE POUND chord_type</dd>
-                              <dd>NOTE octave_change POUND chord_type</dd>
-      <dt>music_element</dt>  <dd>function</dd>
-                              <dd>riff</dd>
-      <dt>function</dt>       <dd>repeat</dd>
-                              <dd>layer</dd>
-      <dt>repeat</dt>         <dd>REPEAT L_PAREN NUMBER R_PAREN L_BRACE music R_BRACE</dd>
-      <dt>layer</dt>          <dd>LAYER L_PAREN ID R_PAREN</dd>
-      <dt>riff</dt>           <dd>riff_element riff</dd>
-                              <dd>riff_element</dd>
-      <dt>riff_element</dt>   <dd>NOTE dot_set</dd>
-                              <dd>NOTE octave_change dot_set</dd>
-                              <dd>callback</dd>
-                              <dd>callback dot_set</dd>
-                              <dd>ASTERISK NUMBER</dd>
-                              <dd>BANG key \ NEWLINE BANG</dd>
-                              <dd>BANG time \ NEWLINE BANG</dd>
-                              <dd>BANG tempo \ NEWLINE BANG</dd>
-                              <dd>BANG octave \ NEWLINE BANG</dd>
-      <dt>dot_set</dt>        <dd>DOT dot_set</dd>
-                              <dd>DOT</dd>
-      <dt>octave_change</dt>  <dd>COMMA</dd>
-                              <dd>APOS</dd>
-      <dt>callback</dt>       <dd>ID</dd>
-                              <dd>ID GREATER ID</dd>
-      <dt>s_comment</dt>      <dd>AMPERSAND (*)* \ NEWLINE // can come after any token</dd>
-      <dt>m_comment</dt>      <dd>L_ARROW_LARGE (*)* R_ARROW_LARGE // can come after any token</dd>
+      <dt>score</dt>                <dd>accompaniment BREAK NEWLINE* sheet</dd>
+                                    <dd>sheet</dd>
+      <dt>accompaniment</dt>        <dd>accompany_statement NEWLINE* accompaniment</dd>
+                                    <dd>accompany_statement</dd>
+      <dt>accompany_statement</dt>  <dd>ACCOMPANY L_BRACKET ID R_BRACKET NAME ID</dd>
+      <dt>sheet</dt>                <dd>info NEWLINE* BREAK NEWLINE* patterns NEWLINE* BREAK NEWLINE* music NEWLINE* BREAK NEWLINE*</dd>
+      <dt>info</dt>                 <dd>title NEWLINE* author_define NEWLINE* music_info</dd>
+                                    <dd>title NEWLINE* music_info</dd>
+      <dt>music_info</dt>           <dd>key NEWLINE* time NEWLINE* tempo NEWLINE* octave</dd>
+      <dt>patterns</dt>             <dd>pc_definition NEWLINE* patterns</dd>
+                                    <dd>pc_definition NEWLINE*</dd>
+      <dt>music</dt>                <dd>music_element NEWLINE* music</dd>
+                                    <dd>music_element</dd>
+      <dt>title</dt>                <dd>TITLE COLON STRING NEWLINE</dd>
+                                    <dd>TITLE COLON ID NEWLINE</dd>
+      <dt>author_define</dt>        <dd>author NEWLINE* coauthors</dd>
+                                    <dd>coauthors NEWLINE* author</dd>
+                                    <dd>author</dd>
+      <dt>author</dt>               <dd>AUTHOR COLON STRING NEWLINE</dd>
+                                    <dd>AUTHOR COLON ID NEWLINE</dd>
+      <dt>coauthors</dt>            <dd>COAUTHORS COLON STRING NEWLINE</dd>
+                                    <dd>AUTHOR COLON ID NEWLINE</dd>
+      <dt>key</dt>                  <dd>KEY COLON STRING NEWLINE</dd>
+                                    <dd>KEY COLON ID NEWLINE</dd>
+      <dt>time</dt>                 <dd>TIME COLON (KeyWord2) NEWLINE</dd>
+                                    <dd>TIME COLON ID NEWLINE</dd>
+                                    <dd>TIME COLON NUMBER SLASH NUMBER NEWLINE</dd>
+                                    <dd>TIME COLON NUMBER NEWLINE</dd>
+      <dt>tempo</dt>                <dd>TEMPO COLON NUMBER EQUAL NUMBER NEWLINE</dd>
+							        <dd>TEMPO COLON NUMBER</dd>
+                                    <dd>TEMPO COLON ID NEWLINE</dd>
+      <dt>octave</dt>               <dd>OCTAVE COLON NUMBER NEWLINE</dd>
+                                    <dd>OCTAVE COLON ID NEWLINE</dd>
+      <dt>pc_definition</dt>        <dd>PATTERN L_BRACKET ID R_BRACKET COLON NEWLINE NEWLINE* music</dd>
+                                    <dd>CHORD ID IS chord_type</dd>
+      <dt>chord_type</dt>           <dd>NOTE</dd>
+                                    <dd>NOTE octave_change</dd>
+                                    <dd>NOTE SEMICOLON chord_type</dd>
+                                    <dd>NOTE octave_change SEMICOLON chord_type</dd>
+      <dt>music_element</dt>        <dd>function</dd>
+                                    <dd>riff</dd>
+      <dt>function</dt>             <dd>repeat</dd>
+                                    <dd>layer</dd>
+      <dt>repeat</dt>               <dd>REPEAT L_PAREN NUMBER R_PAREN L_BRACE music R_BRACE</dd>
+      <dt>layer</dt>                <dd>LAYER L_PAREN ID R_PAREN</dd>
+      <dt>riff</dt>                 <dd>riff_element NEWLINE* riff</dd>
+                                    <dd>riff_element NEWLINE*</dd>
+      <dt>riff_element</dt>         <dd>NOTE dot_set</dd>
+                                    <dd>NOTE octave_change dot_set</dd>
+                                    <dd>callback</dd>
+                                    <dd>callback dot_set</dd>
+                                    <dd>CARROT NUMBER</dd>
+                                    <dd>BANG key \ NEWLINE BANG</dd>
+                                    <dd>BANG time \ NEWLINE BANG</dd>
+                                    <dd>BANG tempo \ NEWLINE BANG</dd>
+                                    <dd>BANG octave \ NEWLINE BANG</dd>
+      <dt>dot_set</dt>              <dd>DOT dot_set</dd>
+                                    <dd>DOT</dd>
+      <dt>octave_change</dt>        <dd>COMMA</dd>
+                                    <dd>APOS</dd>
+      <dt>callback</dt>             <dd>ID</dd>
+                                    <dd>ID GREATER ID</dd>
     </dl>
     <h2>Key Words</h2>
     <ul>
@@ -116,15 +116,22 @@
         <h3>Compound</h3>
         <dl>
           <dt class="token">BREAK</dt>          <dd>NEWLINE --- NEWLINE</dd>
-          <dt class="token">ID</dt>             <dd>ID_CHAR ID</dd>
+          <dt class="token">ID</dt>             <dd>INIT_ID_CHAR ID_BODY</dd>
+          <dt class="token">INIT_ID_CHAR</dt>   <dd>LETTER</dd>
+                                                <dd>UNDERSCORE</dd>
+                                                <dd>DOLLAR_SIGN</dd>
+          <dt class="token">ID_BODY</dt>        <dd>ID_CHAR ID_BODY</dd>
                                                 <dd>ID_CHAR</dd>
+                                                <dd>EPSILON</dd>
+          <dt class="token">ID_CHAR</dt>        <dd>NUMBER</dd>
+                                                <dd>LETTER</dd>
+                                                <dd>UNDERSCORE</dd>
+                                                <dd>DOLLAR_SIGN</dd>
           <dt class="token">ALNUM</dt>          <dd>LETTER</dd>
                                                 <dd>NUMBER</dd>
           <dt class="token">SIGN</dt>           <dd>Gmaj | Dmaj | Amaj | Emaj | Bmaj | F#maj | C#maj | Fmaj | Bbmaj | Ebmaj | Abmaj | Cm | Gm | Dm | Am | Em | Bm | F#m | C#m | Fm | Bbm | Ebm | Abm</dd>
           <dt class="token">NOTE</dt>           <dd>A | B | C | D | E | F | G | A# | B# | C# | D# | E# | F# | G# | Ab | Bb | Cb | Db | Eb | Fb | Gb | A* | B* | C* | D* | E* | F* | G* | Abb | Bbb | Cbb | Dbb | Ebb | Fbb | Gbb | PIPE</dd>
-          <dt class="token">STRING</dt>         <dd>QUOTE [ (Basic Lexicons) \ QUOTE ]* QUOTE</dd>
-          <dt class="token">L_ARROW</dt>        <dd>-&gt;</dd>
-          <dt class="token">R_ARROW</dt>        <dd>&lt;-</dd>
+          <dt class="token">STRING</dt>         <dd>QUOTE (Anything except NEWLINE and QUOTE)* QUOTE</dd>
           <dt class="token">L_ARROW_LARGE</dt>  <dd>=&lt;</dd>
           <dt class="token">R_ARROW_LARGE</dt>  <dd>&gt;=</dd>
           <dt class="token">NUMBER</dt>         <dd>DIGIT NUMBER</dd>
@@ -134,31 +141,29 @@
       <li>
         <h3>Basic</h3>
         <dl>
-          <dt class="token">NEWLINE</dt>	    <dd>\n</dd>
+          <dt class="token">NEWLINE</dt>	  <dd>\n</dd>
           <dt class="token">L_BRACKET</dt>	  <dd>[</dd>
           <dt class="token">R_BRACKET</dt>	  <dd>]</dd>
           <dt class="token">LETTER</dt>	      <dd>a | b | c | ... | x | y | z | A | B | C | ... | X | Y | Z</dd>
           <dt class="token">DIGIT</dt>	      <dd>0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9</dd>
           <dt class="token">UNDERSCORE</dt>	  <dd>_</dd>
           <dt class="token">DOLLAR_SIGN</dt>  <dd>$</dd>
-          <dt class="token">BANG</dt>	        <dd>!</dd>
-          <dt class="token">POUND</dt>	      <dd>#</dd>
-          <dt class="token">QUOTE</dt>	      <dd>&quot;</dd>
-          <dt class="token">L_PAREN</dt>	    <dd>(</dd>
-          <dt class="token">R_PAREN</dt>	    <dd>)</dd>
-          <dt class="token">L_BRACE</dt>	    <dd>{</dd>
-          <dt class="token">R_BRACE</dt>	    <dd>}</dd>
+          <dt class="token">BANG</dt>	      <dd>!</dd>
+          <dt class="token">L_PAREN</dt>	  <dd>(</dd>
+          <dt class="token">R_PAREN</dt>	  <dd>)</dd>
+          <dt class="token">L_BRACE</dt>	  <dd>{</dd>
+          <dt class="token">R_BRACE</dt>	  <dd>}</dd>
           <dt class="token">AMPERSAND</dt>	  <dd>&</dd>
-          <dt class="token">ASTERISK</dt>	    <dd>*</dd>
+          <dt class="token">COLON</dt>	      <dd>:</dd>
           <dt class="token">SEMICOLON</dt>	  <dd>;</dd>
-          <dt class="token">DOT</dt>	        <dd>.</dd>
-          <dt class="token">APOS</dt>	        <dd>'</dd>
+          <dt class="token">DOT</dt>	      <dd>.</dd>
+          <dt class="token">APOS</dt>	      <dd>'</dd>
           <dt class="token">COMMA</dt>	      <dd>,</dd>
           <dt class="token">EQUAL</dt>	      <dd>=</dd>
-          <dt class="token">GREATER</dt>	    <dd>></dd>
-          <dt class="token">LESS</dt>	        <dd><</dd>
-          <dt class="token">PIPE</dt>	        <dd>|</dd>
+          <dt class="token">GREATER</dt>	  <dd>></dd>
+          <dt class="token">PIPE</dt>	      <dd>|</dd>
           <dt class="token">SLASH</dt>        <dd>/</dd>
+          <dt class="token">CARROT</dt>       <dd>^</dd>
         </dl>
       </li>
     </ul>
