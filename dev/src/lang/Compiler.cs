@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace compiler
 {
+    /* Parses a Musika program to check for correct syntax and synthesize the intermediate representation */
     partial class Parser
     {
         private string program;
@@ -29,7 +30,7 @@ namespace compiler
                 throw new SyntaxError(next.Type, etype);
         }
 
-        private void AcceptNewlines()
+        private void AcceptNewlines() /* Consumes NEWLINE*: consumes 0 or more newlines */
         {
             Token next = lexer.GetToken();
             while (next.Type == TokenType.NEWLINE)
@@ -39,37 +40,26 @@ namespace compiler
 
         public void ParseProgram(bool reset = true) /* This would be considered a score from the grammar */
         {
+            /* score -> NEWLINE* accompaniment BREAK NEWLINE* sheet NEWLINE*  | NEWLINE* sheet NEWLINE* */
             if (reset)
                 Reset(); /* Restart parsing from the beginning of the file */
+
+            AcceptNewlines();
 
             Token next = lexer.PeekToken();
             if (next.Type == TokenType.ACCOMPANY) /* Parse an accompaniment section iff there is one */
             {
                 ParseAccompaniment();
                 Expect(TokenType.BREAK);
+                AcceptNewlines();
             }
 
-            AcceptNewlines();
-
             ParseSheet();
-        }
 
-        private void ParseSheet()
-        {
-            ParseInfo();
-            Expect(TokenType.BREAK);
-            AcceptNewlines();
-
-            ParsePatterns();
-            Expect(TokenType.BREAK);
-            AcceptNewlines();
-
-            ParseMusic();
-            Expect(TokenType.BREAK);
             AcceptNewlines();
         }
 
-        private void ParseAccompaniment()
+        private void ParseAccompaniment() /* accompaniment -> accompany_statement NEWLINE* accompaniment | accompany_statement */
         {
             ParseAccompanyStatement();
             AcceptNewlines();
@@ -80,7 +70,7 @@ namespace compiler
                 ParseAccompaniment();
         }
 
-        private void ParseAccompanyStatement()
+        private void ParseAccompanyStatement() /* accompany_statement -> ACCOMPANY L_BRACKET ID R_BRACKET NAME ID */
         {
             Expect(TokenType.ACCOMPANY);
             Expect(TokenType.LBRACKET);
@@ -90,7 +80,25 @@ namespace compiler
             Expect(TokenType.ID);
         }
 
-        private void ParseInfo()
+        private void ParseSheet() /* sheet -> info NEWLINE* BREAK NEWLINE* patterns NEWLINE* BREAK NEWLINE* music NEWLINE* BREAK NEWLINE* */
+        {
+            ParseInfo();
+            AcceptNewlines();
+            Expect(TokenType.BREAK);
+            AcceptNewlines();
+
+            ParsePatterns();
+            AcceptNewlines();
+            Expect(TokenType.BREAK);
+            AcceptNewlines();
+
+            ParseMusic();
+            AcceptNewlines();
+            Expect(TokenType.BREAK);
+            AcceptNewlines();
+        }
+
+        private void ParseInfo() /* info -> title NEWLINE* author_define NEWLINE* music_info | title NEWLINE* music_info */
         {
             ParseTitle();
             AcceptNewlines();
@@ -103,10 +111,9 @@ namespace compiler
             }
 
             ParseMusicInfo();
-            AcceptNewlines();
         }
 
-        private void ParseMusicInfo()
+        private void ParseMusicInfo() /* music_info -> key NEWLINE* time NEWLINE* tempo NEWLINE* octave */
         {
             ParseKey(true);
             AcceptNewlines();
@@ -121,39 +128,39 @@ namespace compiler
             AcceptNewlines();
         }
 
-        private void ParsePatterns()
+        private void ParsePatterns() /* patterns -> pc_definition NEWLINE* patterns | pc_definition NEWLINE* | EPSILON */
         {
-            TokenType[] acceptedTypes = { TokenType.PATTERN, TokenType.CHORD };
+            HashSet<TokenType> pcDefFirstSet = new HashSet<TokenType>() { TokenType.PATTERN, TokenType.CHORD };
 
             Token next = lexer.PeekToken();
-            if (acceptedTypes.Contains((TokenType)next.Type))
+            if (pcDefFirstSet.Contains(next.Type))
             {
                 ParsePcDefinition();
                 AcceptNewlines();
-            }
 
-            next = lexer.PeekToken();
-            if (acceptedTypes.Contains((TokenType) next.Type))
-                ParsePatterns();
+                next = lexer.PeekToken();
+                if (pcDefFirstSet.Contains(next.Type))
+                    ParsePatterns();
+            }
         }
 
-        private void ParseMusic()
+        private void ParseMusic() /* music -> music_element NEWLINE* music | music_element | EPSILON */
         {
-            TokenType[] acceptedTypes = { TokenType.REPEAT, TokenType.LAYER, TokenType.NOTE, TokenType.ID, TokenType.CARROT, TokenType.BANG };
+            HashSet<TokenType> musicFirstSet = new HashSet<TokenType>() { TokenType.REPEAT, TokenType.LAYER, TokenType.NOTE, TokenType.ID, TokenType.CARROT, TokenType.BANG };
 
             Token next = lexer.PeekToken();
-            if (acceptedTypes.Contains((TokenType) next.Type))
+            if (musicFirstSet.Contains(next.Type))
             {
                 ParseMusicElement();
                 AcceptNewlines();
-            }
 
-            next = lexer.PeekToken();
-            if (acceptedTypes.Contains((TokenType) next.Type))
-                ParseMusic();
+                next = lexer.PeekToken();
+                if (musicFirstSet.Contains(next.Type))
+                    ParseMusic();
+            }
         }
 
-        private void ParseTitle()
+        private void ParseTitle() /* title -> TITLE COLON STRING NEWLINE | TITLE COLON ID NEWLINE */
         {
             Expect(TokenType.TITLE);
             Expect(TokenType.COLON);
@@ -165,13 +172,14 @@ namespace compiler
             else throw new SyntaxError(next.Type, TokenType.STRING, TokenType.ID);
         }
 
-        private void ParseAuthorDefine()
+        private void ParseAuthorDefine() /* author_define -> author NEWLINE* coauthors | coauthors NEWLINE* author | author */
         {
             Token next = lexer.PeekToken();
             if (next.Type == TokenType.AUTHOR)
             {
                 ParseAuthor();
                 AcceptNewlines();
+
                 next = lexer.PeekToken();
                 if (next.Type == TokenType.COAUTHORS)
                     ParseCoauthors();
@@ -184,7 +192,7 @@ namespace compiler
             }
         }
 
-        private void ParseAuthor()
+        private void ParseAuthor() /* author -> AUTHOR COLON STRING NEWLINE | AUTHOR COLON ID NEWLINE */
         {
             Expect(TokenType.AUTHOR);
             Expect(TokenType.COLON);
@@ -196,7 +204,7 @@ namespace compiler
             else throw new SyntaxError(next.Type, TokenType.STRING, TokenType.ID);
         }
 
-        private void ParseCoauthors()
+        private void ParseCoauthors() /* coauthors -> COAUTHORS COLON STRING NEWLINE | AUTHOR COLON ID NEWLINE */
         {
             Expect(TokenType.COAUTHORS);
             Expect(TokenType.COLON);
@@ -208,7 +216,7 @@ namespace compiler
             else throw new SyntaxError(next.Type, TokenType.STRING, TokenType.ID);
         }
 
-        private void ParseKey(bool endWithNewline)
+        private void ParseKey(bool endWithNewline) /* key -> KEY COLON SIGN NEWLINE | KEY COLON ID NEWLINE */
         {
             Expect(TokenType.KEY);
             Expect(TokenType.COLON);
@@ -223,13 +231,13 @@ namespace compiler
             else throw new SyntaxError(next.Type, TokenType.SIGN, TokenType.ID);
         }
 
-        private void ParseTime(bool endWithNewline)
+        private void ParseTime(bool endWithNewline) /* time -> TIME COLON (KeyWord2) NEWLINE | TIME COLON ID NEWLINE | TIME COLON NUMBER SLASH NUMBER NEWLINE | TIME COLON NUMBER NEWLINE */
         {
             Expect(TokenType.TIME);
             Expect(TokenType.COLON);
 
             Token next = lexer.GetToken();
-            if (next.Type == TokenType.COMMON || next.Type == TokenType.CUT || next.Type == TokenType.ID)
+            if (TokenTypeFactory.Tier2Keywords.Contains(next.Type) || next.Type == TokenType.ID)
             {
                 if (endWithNewline)
                     Expect(TokenType.NEWLINE);
@@ -249,7 +257,7 @@ namespace compiler
             else throw new SyntaxError(next.Type, TokenType.NUMBER, TokenType.COMMON, TokenType.CUT, TokenType.ID);
         }
 
-        private void ParseTempo(bool endWithNewline)
+        private void ParseTempo(bool endWithNewline) /* tempo -> TEMPO COLON NUMBER EQUAL NUMBER NEWLINE  | TEMPO COLON NUMBER  | TEMPO COLON ID NEWLINE */
         {
             Expect(TokenType.TEMPO);
             Expect(TokenType.COLON);
@@ -258,6 +266,7 @@ namespace compiler
             if (next.Type == TokenType.NUMBER)
             {
                 next = lexer.GetToken();
+
                 if (next.Type == TokenType.EQUAL) /* NUMBER EQUAL NUMBER */
                     Expect(TokenType.NUMBER);
                 else
@@ -275,7 +284,7 @@ namespace compiler
             else throw new SyntaxError(next.Type, TokenType.NUMBER, TokenType.ID);
         }
 
-        private void ParseOctave()
+        private void ParseOctave() /* octave -> OCTAVE COLON NUMBER NEWLINE | OCTAVE COLON ID NEWLINE */
         {
             Expect(TokenType.OCTAVE);
             Expect(TokenType.COLON);
@@ -285,7 +294,7 @@ namespace compiler
                 throw new SyntaxError(next.Type, TokenType.NUMBER, TokenType.ID);
         }
 
-        private void ParsePcDefinition()
+        private void ParsePcDefinition() /* pc_definition -> PATTERN L_BRACKET ID R_BRACKET COLON NEWLINE NEWLINE* music | CHORD ID IS chord_type */
         {
             Token next = lexer.GetToken();
 
@@ -309,12 +318,12 @@ namespace compiler
             else throw new SyntaxError(next.Type, TokenType.PATTERN, TokenType.CHORD);
         }
 
-        private void ParseChordType()
+        private void ParseChordType() /* chord_type -> NOTE | NOTE octave_change | NOTE SEMICOLON chord_type | NOTE octave_change SEMICOLON chord_type */
         {
             Expect(TokenType.NOTE);
 
             Token next = lexer.GetToken();
-            if (next.Type == TokenType.COMMA || next.Type == TokenType.APOS)
+            if (next.Type == TokenType.COMMA || next.Type == TokenType.APOS) /* First set of octave_change */
             {
                 lexer.PutToken(next);
                 ParseOctaveChange();
@@ -325,23 +334,27 @@ namespace compiler
                 else
                     lexer.PutToken(next);
             }
+
             else if (next.Type == TokenType.SEMICOLON)
                 ParseChordType();
+
             else
                 lexer.PutToken(next);
         }
 
-        private void ParseMusicElement()
+        private void ParseMusicElement() /* music_element -> function | riff */
         {
             Token next = lexer.PeekToken();
             if (next.Type == TokenType.REPEAT || next.Type == TokenType.LAYER)
                 ParseFunction();
-            else if (next.Type == TokenType.NOTE || next.Type == TokenType.ID || next.Type == TokenType.CARROT || next.Type == TokenType.BANG)
+
+            else if (next.Type == TokenType.NOTE || next.Type == TokenType.ID || next.Type == TokenType.CARROT || next.Type == TokenType.BANG) /* First set of riff */
                 ParseRiff();
-            else throw new SyntaxError(next.Type, TokenType.REPEAT, TokenType.LAYER, TokenType.NOTE);
+
+            else throw new SyntaxError(next.Type, TokenType.REPEAT, TokenType.LAYER, TokenType.NOTE, TokenType.ID, TokenType.CARROT, TokenType.BANG);
         }
 
-        private void ParseFunction()
+        private void ParseFunction() /* function -> repeat | layer */
         {
             Token next = lexer.PeekToken();
 
@@ -354,7 +367,7 @@ namespace compiler
             else throw new SyntaxError(next.Type, TokenType.REPEAT, TokenType.LAYER);
         }
 
-        private void ParseRepeat()
+        private void ParseRepeat() /* repeat -> REPEAT L_PAREN NUMBER R_PAREN L_BRACE music R_BRACE */
         {
             Expect(TokenType.REPEAT);
             Expect(TokenType.LPAREN);
@@ -366,10 +379,12 @@ namespace compiler
 
             ParseMusic();
 
+            AcceptNewlines();
+
             Expect(TokenType.RBRACE);
         }
 
-        private void ParseLayer()
+        private void ParseLayer() /* layer -> LAYER L_PAREN callback R_PAREN */
         {
             Expect(TokenType.LAYER);
             Expect(TokenType.LPAREN);
@@ -377,19 +392,20 @@ namespace compiler
             Expect(TokenType.RPAREN);
         }
 
-        private void ParseRiff()
+        private void ParseRiff() /* riff -> riff_element NEWLINE* riff  | riff_element NEWLINE* */
         {
-            TokenType[] acceptedTypes = { TokenType.NOTE, TokenType.ID, TokenType.CARROT, TokenType.BANG };
+            HashSet<TokenType> riffElementFirstSet = new HashSet<TokenType>() { TokenType.NOTE, TokenType.ID, TokenType.CARROT, TokenType.BANG };
 
             ParseRiffElement();
             AcceptNewlines();
 
             Token next = lexer.PeekToken();
-            if (acceptedTypes.Contains((TokenType)next.Type)) /* Check for first set of riff */
+            if (riffElementFirstSet.Contains(next.Type))
                 ParseRiff();
         }
 
-        private void ParseRiffElement()
+        private void ParseRiffElement() /* riff_element -> NOTE dot_set | NOTE octave_change dot_set | callback | callback dot_set
+                                           | CARROT NUMBER | BANG key \ NEWLINE BANG | BANG time \ NEWLINE BANG */
         {
             Token next = lexer.GetToken();
             if (next.Type == TokenType.NOTE)
@@ -451,7 +467,7 @@ namespace compiler
             else throw new SyntaxError(next.Type, TokenType.NOTE, TokenType.ID, TokenType.CARROT, TokenType.BANG);
         }
 
-        private void ParseDotSet()
+        private void ParseDotSet() /* dot_set -> DOT dot_set | DOT */
         {
             Expect(TokenType.DOT);
             Token next = lexer.PeekToken();
@@ -459,7 +475,7 @@ namespace compiler
                 ParseDotSet();
         }
 
-        private void ParseOctaveChange()
+        private void ParseOctaveChange() /* octave_change -> ( COMMA | APOS )* */
         {
             Token next = lexer.GetToken();
             if (next.Type == TokenType.COMMA || next.Type == TokenType.APOS)
@@ -471,7 +487,7 @@ namespace compiler
             else throw new SyntaxError(next.Type, TokenType.COMMA, TokenType.APOS);
         }
 
-        private void ParseCallback()
+        private void ParseCallback() /* callback -> ID | ID GREATER ID */
         {
             Expect(TokenType.ID);
             Token next = lexer.GetToken();
@@ -482,6 +498,7 @@ namespace compiler
         }
     }
 
+    /* Exception subclass that is thrown when a syntax error is made in the parser */
     partial class SyntaxError : Exception
     {
         public SyntaxError(TokenType actual, params TokenType[] expected) : base(CreateErrorString(actual, expected)) { }
@@ -637,7 +654,7 @@ namespace compiler
                 }
             }
 
-            /* ID, keyword, sign, or note */
+            /* ID, keyword, SIGN, or NOTE */
             else if (char.IsLetter(nextChar) || nextChar == '_' || nextChar == '$')
             {
                 returnTokenString += nextChar;
@@ -859,6 +876,39 @@ namespace compiler
             this.Content = content;
             this.Type = type;
         }
+    }
+
+    /* Collection of TokenType category sets */
+    class TokenTypeFactory
+    {
+        public static readonly HashSet<TokenType> BasicLexicons = new HashSet<TokenType>()
+        {
+          TokenType.NEWLINE,   TokenType.LBRACKET, TokenType.RBRACKET, TokenType.BANG,  TokenType.LPAREN,
+          TokenType.RPAREN,    TokenType.LBRACE,   TokenType.RBRACE,   TokenType.DOT,   TokenType.APOS,
+          TokenType.COMMA,     TokenType.EQUAL,    TokenType.GREATER,  TokenType.SLASH, TokenType.COLON,
+          TokenType.SEMICOLON, TokenType.CARROT
+        };
+
+        public static readonly HashSet<TokenType> CompoundLexicons = new HashSet<TokenType>()
+        {
+           TokenType.BREAK, TokenType.ID, TokenType.SIGN, TokenType.NOTE, TokenType.STRING, TokenType.NUMBER
+        };
+
+        public static readonly HashSet<TokenType> Tier1Keywords = new HashSet<TokenType>()
+        {
+           TokenType.ACCOMPANY, TokenType.NAME,  TokenType.AUTHOR, TokenType.COAUTHORS, TokenType.TITLE, TokenType.KEY,
+           TokenType.TIME,      TokenType.TEMPO, TokenType.OCTAVE, TokenType.PATTERN,   TokenType.CHORD, TokenType.IS
+        };
+
+        public static readonly HashSet<TokenType> Tier2Keywords = new HashSet<TokenType>()
+        {
+           TokenType.COMMON, TokenType.CUT
+        };
+
+        public static readonly HashSet<TokenType> Tier3Keywords = new HashSet<TokenType>()
+        {
+           TokenType.REPEAT, TokenType.LAYER
+        };
     }
 
     /* All the possible token types */
