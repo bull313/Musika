@@ -13,8 +13,8 @@
   <section>
     <h2>Grammar</h2>
     <dl>
-      <dt>score</dt>                <dd>accompaniment BREAK NEWLINE* sheet</dd>
-                                    <dd>sheet</dd>
+      <dt>score</dt>                <dd>NEWLINE* accompaniment BREAK NEWLINE* sheet</dd>
+                                    <dd>NEWLINE* sheet NEWLINE*</dd>
       <dt>accompaniment</dt>        <dd>accompany_statement NEWLINE* accompaniment</dd>
                                     <dd>accompany_statement</dd>
       <dt>accompany_statement</dt>  <dd>ACCOMPANY L_BRACKET ID R_BRACKET NAME ID</dd>
