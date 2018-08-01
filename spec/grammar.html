@@ -24,8 +24,10 @@
       <dt>music_info</dt>           <dd>key NEWLINE* time NEWLINE* tempo NEWLINE* octave</dd>
       <dt>patterns</dt>             <dd>pc_definition NEWLINE* patterns</dd>
                                     <dd>pc_definition NEWLINE*</dd>
+                                    <dd>EPSILON</dd>
       <dt>music</dt>                <dd>music_element NEWLINE* music</dd>
                                     <dd>music_element</dd>
+                                    <dd>EPSILON</dd>
       <dt>title</dt>                <dd>TITLE COLON STRING NEWLINE</dd>
                                     <dd>TITLE COLON ID NEWLINE</dd>
       <dt>author_define</dt>        <dd>author NEWLINE* coauthors</dd>
@@ -57,7 +59,7 @@
       <dt>function</dt>             <dd>repeat</dd>
                                     <dd>layer</dd>
       <dt>repeat</dt>               <dd>REPEAT L_PAREN NUMBER R_PAREN L_BRACE music R_BRACE</dd>
-      <dt>layer</dt>                <dd>LAYER L_PAREN ID R_PAREN</dd>
+      <dt>layer</dt>                <dd>LAYER L_PAREN callback R_PAREN</dd>
       <dt>riff</dt>                 <dd>riff_element NEWLINE* riff</dd>
                                     <dd>riff_element NEWLINE*</dd>
       <dt>riff_element</dt>         <dd>NOTE dot_set</dd>
@@ -71,15 +73,16 @@
                                     <dd>BANG octave \ NEWLINE BANG</dd>
       <dt>dot_set</dt>              <dd>DOT dot_set</dd>
                                     <dd>DOT</dd>
-      <dt>octave_change</dt>        <dd>COMMA</dd>
-                                    <dd>APOS</dd>
+      <dt>octave_change</dt>        <dd>( COMMA <!-- ( COMMA | APOS )* --></dd>
+                                    <dd>APOS )*</dd>
       <dt>callback</dt>             <dd>ID</dd>
                                     <dd>ID GREATER ID</dd>
     </dl>
-    <h2>Key Words</h2>
+    <h2>Tokens</h2>
+    <h3>Key Words</h3>
     <ul>
       <li>
-        <h3>Tier 1</h3>
+        <h4>Tier 1</h4>
         <dl>
           <dt class="token">ACCOMPANY</dt> <dd>accompany</dd>
           <dt class="token">NAME</dt>      <dd>name</dd>
@@ -96,24 +99,51 @@
         </dl>
       </li>
       <li>
-        <h3>Tier 2</h3>
+        <h4>Tier 2</h4>
         <dl>
           <dt class="token">COMMON</dt> <dd>common</dd>
           <dt class="token">CUT</dt>    <dd>cut</dd>
         </dl>
       </li>
       <li>
-        <h3>Tier 3</h3>
+        <h4>Tier 3</h4>
         <dl>
           <dt class="token">REPEAT</dt> <dd>repeat</dd>
           <dt class="token">LAYER</dt>  <dd>layer</dd>
         </dl>
       </li>
     </ul>
-    <h2>Lexicons</h2>
+    <h3>Lexicons</h3>
     <ul>
       <li>
-        <h3>Compound</h3>
+        <h4>Basic</h4>
+        <dl>
+          <dt class="token">NEWLINE</dt>	  <dd>\n</dd>
+          <dt class="token">L_BRACKET</dt>	  <dd>[</dd>
+          <dt class="token">R_BRACKET</dt>	  <dd>]</dd>
+          <dt class="token">LETTER</dt>	      <dd>a | b | c | ... | x | y | z | A | B | C | ... | X | Y | Z</dd>
+          <dt class="token">DIGIT</dt>	      <dd>0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9</dd>
+          <dt class="token">UNDERSCORE</dt>	  <dd>_</dd>
+          <dt class="token">DOLLAR_SIGN</dt>  <dd>$</dd>
+          <dt class="token">BANG</dt>	      <dd>!</dd>
+          <dt class="token">L_PAREN</dt>	  <dd>(</dd>
+          <dt class="token">R_PAREN</dt>	  <dd>)</dd>
+          <dt class="token">L_BRACE</dt>	  <dd>{</dd>
+          <dt class="token">R_BRACE</dt>	  <dd>}</dd>
+          <dt class="token">COLON</dt>	      <dd>:</dd>
+          <dt class="token">SEMICOLON</dt>	  <dd>;</dd>
+          <dt class="token">DOT</dt>	      <dd>.</dd>
+          <dt class="token">APOS</dt>	      <dd>'</dd>
+          <dt class="token">COMMA</dt>	      <dd>,</dd>
+          <dt class="token">EQUAL</dt>	      <dd>=</dd>
+          <dt class="token">GREATER</dt>	  <dd>></dd>
+          <dt class="token">PIPE</dt>	      <dd>|</dd>
+          <dt class="token">SLASH</dt>        <dd>/</dd>
+          <dt class="token">CARROT</dt>       <dd>^</dd>
+        </dl>
+      </li>
+      <li>
+        <h4>Compound</h4>
         <dl>
           <dt class="token">BREAK</dt>          <dd>NEWLINE --- NEWLINE</dd>
           <dt class="token">ID</dt>             <dd>INIT_ID_CHAR ID_BODY</dd>
@@ -129,48 +159,26 @@
                                                 <dd>DOLLAR_SIGN</dd>
           <dt class="token">ALNUM</dt>          <dd>LETTER</dd>
                                                 <dd>NUMBER</dd>
-          <dt class="token">SIGN</dt>           <dd>Gmaj | Dmaj | Amaj | Emaj | Bmaj | F#maj | C#maj | Fmaj | Bbmaj | Ebmaj | Abmaj | Cm | Gm | Dm | Am | Em | Bm | F#m | C#m | Fm | Bbm | Ebm | Abm</dd>
-          <dt class="token">NOTE</dt>           <dd>A | B | C | D | E | F | G | A# | B# | C# | D# | E# | F# | G# | Ab | Bb | Cb | Db | Eb | Fb | Gb | A* | B* | C* | D* | E* | F* | G* | Abb | Bbb | Cbb | Dbb | Ebb | Fbb | Gbb | PIPE</dd>
+          <dt class="token">SIGN</dt>           <dd>Cmaj | Gmaj | Dmaj | Amaj | Emaj | Bmaj | F#maj | C#maj | Fmaj | Bbmaj | Ebmaj | Abmaj | Cm | Gm | Dm | Am | Em | Bm | F#m | C#m | Fm | Bbm | Ebm | Abm</dd>
+          <dt class="token">NOTE</dt>           <dd>
+                                                      A | B | C | D | E | F | G
+                                                    | A$ | B$ | C$ | D$ | E$ | F$ | G$          <!-- natural notes -->
+                                                    | A# | B# | C# | D# | E# | F# | G#          <!-- sharp notes -->
+                                                    | Ab | Bb | Cb | Db | Eb | Fb | Gb          <!-- flat notes -->
+                                                    | A* | B* | C* | D* | E* | F* | G*          <!-- double sharp notes -->
+                                                    | Abb | Bbb | Cbb | Dbb | Ebb | Fbb | Gbb   <!-- double flat notes -->
+                                                    | PIPE
+                                                </dd>
           <dt class="token">STRING</dt>         <dd>QUOTE (Anything except NEWLINE and QUOTE)* QUOTE</dd>
-          <dt class="token">L_ARROW_LARGE</dt>  <dd>=&lt;</dd>
-          <dt class="token">R_ARROW_LARGE</dt>  <dd>&gt;=</dd>
           <dt class="token">NUMBER</dt>         <dd>DIGIT NUMBER</dd>
                                                 <dd>DIGIT</dd>
-        </dl>
-      </li>
-      <li>
-        <h3>Basic</h3>
-        <dl>
-          <dt class="token">NEWLINE</dt>	  <dd>\n</dd>
-          <dt class="token">L_BRACKET</dt>	  <dd>[</dd>
-          <dt class="token">R_BRACKET</dt>	  <dd>]</dd>
-          <dt class="token">LETTER</dt>	      <dd>a | b | c | ... | x | y | z | A | B | C | ... | X | Y | Z</dd>
-          <dt class="token">DIGIT</dt>	      <dd>0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9</dd>
-          <dt class="token">UNDERSCORE</dt>	  <dd>_</dd>
-          <dt class="token">DOLLAR_SIGN</dt>  <dd>$</dd>
-          <dt class="token">BANG</dt>	      <dd>!</dd>
-          <dt class="token">L_PAREN</dt>	  <dd>(</dd>
-          <dt class="token">R_PAREN</dt>	  <dd>)</dd>
-          <dt class="token">L_BRACE</dt>	  <dd>{</dd>
-          <dt class="token">R_BRACE</dt>	  <dd>}</dd>
-          <dt class="token">AMPERSAND</dt>	  <dd>&</dd>
-          <dt class="token">COLON</dt>	      <dd>:</dd>
-          <dt class="token">SEMICOLON</dt>	  <dd>;</dd>
-          <dt class="token">DOT</dt>	      <dd>.</dd>
-          <dt class="token">APOS</dt>	      <dd>'</dd>
-          <dt class="token">COMMA</dt>	      <dd>,</dd>
-          <dt class="token">EQUAL</dt>	      <dd>=</dd>
-          <dt class="token">GREATER</dt>	  <dd>></dd>
-          <dt class="token">PIPE</dt>	      <dd>|</dd>
-          <dt class="token">SLASH</dt>        <dd>/</dd>
-          <dt class="token">CARROT</dt>       <dd>^</dd>
         </dl>
       </li>
     </ul>
     <h2>Comments (Ignored By Lexer)</h2>
       <dl>
-          <dt>Single-line comment</dt>         <dd> &amp;(content)NEWLINE</dd>
-          <dt>Multi-line comment</dt>    <dd>=&gt;(content NEWLINE*) &lt;=</dd>
+          <dt>Single-line comment</dt> <dd> &amp;(content)NEWLINE</dd>
+          <dt>Multi-line comment</dt>  <dd>=&gt;(content NEWLINE*) &lt;=</dd>
       </dl>
   </section>
 </body>
