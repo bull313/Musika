@@ -44,13 +44,13 @@ namespace ide
     /* MAIN CLASS */
     public partial class MainWindow : Window
     {
-        private static Dictionary<string, Style> wordStyleDict; /* Determines which words are styled and how they are styled */
+        private Dictionary<string, Style> wordStyleDict; /* Determines which words are styled and how they are styled */
         private List<StyleText> keywordBuffer = new List<StyleText>(); /* Used to keep track of the keywords in in the text box */
 
         private static string currentText; /* Buffer to store Run text that will be checked for keywords */
 
         /* Style text struct that includes its location, content, and style */
-        new private struct StyleText
+        private struct StyleText
         {
             internal TextPointer Start, End;
             internal string Word;
@@ -58,8 +58,10 @@ namespace ide
         }
         /* / Style text struct that includes its location, content, and style */
 
-        static MainWindow()
+        public MainWindow()
         {
+            InitializeComponent();
+
             /* Create Styles */
             Style tier1 = new Style(); /* Tier-1 keywords */
             tier1.AddColor(Colors.Red);
@@ -180,11 +182,6 @@ namespace ide
             wordStyleDict.Add("Gbb",    noteStyle);
         }
 
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
-
         /*
          *  ---------------- HELPER FUNCTIONS ----------------
         */
@@ -268,7 +265,8 @@ namespace ide
             if (Editor.Document == null) return; /* Don't do anything if the document is not set up yet */
 
             Editor.TextChanged -= Editor_TextChanged; /* Temporarily disable TextChanged event handler */
-            keywordBuffer.Clear();
+
+            keywordBuffer.Clear(); /* Clear the buffer that holds the words to be styled */
 
             TextRange docRange = new TextRange(Editor.Document.ContentStart, Editor.Document.ContentEnd);
             docRange.ClearAllProperties(); /* Remove all formatting properties (to be readded) */
@@ -293,7 +291,7 @@ namespace ide
             {
                 try
                 {
-                    TextRange range = new TextRange(keywordBuffer[i].Start, keywordBuffer[i].End); /* Find the keyword using the instance's location data */
+                    TextRange range = new TextRange(keywordBuffer[i].Start, keywordBuffer[i].End); /* Find the desired keyword in the text box using the current word's location data */
                     foreach (KeyValuePair<DependencyProperty, object> style in keywordBuffer[i].Style.GetDict())
                         range.ApplyPropertyValue(style.Key, style.Value); /* Apply every style property from the Style data */
                 }
