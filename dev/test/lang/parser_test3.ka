@@ -1,0 +1,34 @@
+title: this_is_the_title
+coauthors: "i is kewl"
+author: "auth"
+key: Ebm & the key signature goes here
+
+time: 6 / 8
+tempo: -2
+octave: =>awww yeah<= 10
+---
+=>
+    here comes the patterns<= chord one is A;B;C;D;E;F;G
+---
+
+one............ & one long chord
+repeat(8) {
+    =>
+        Going up a scale 8 times
+    <=
+    E....
+    F....
+    G....
+    A....
+    B....
+    |....
+    D....
+    E'....
+    F$'.... .... & 8 beats
+}
+
+D,,,. & finish on a low note XD
+
+A;E'...
+
+---

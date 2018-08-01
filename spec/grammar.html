@@ -35,7 +35,7 @@
                                     <dd>AUTHOR COLON ID NEWLINE</dd>
       <dt>coauthors</dt>            <dd>COAUTHORS COLON STRING NEWLINE</dd>
                                     <dd>AUTHOR COLON ID NEWLINE</dd>
-      <dt>key</dt>                  <dd>KEY COLON STRING NEWLINE</dd>
+      <dt>key</dt>                  <dd>KEY COLON SIGN NEWLINE</dd>
                                     <dd>KEY COLON ID NEWLINE</dd>
       <dt>time</dt>                 <dd>TIME COLON (KeyWord2) NEWLINE</dd>
                                     <dd>TIME COLON ID NEWLINE</dd>
@@ -167,6 +167,11 @@
         </dl>
       </li>
     </ul>
+    <h2>Comments (Ignored By Lexer)</h2>
+      <dl>
+          <dt>Single-line comment</dt>         <dd> &amp;(content)NEWLINE</dd>
+          <dt>Multi-line comment</dt>    <dd>=&gt;(content NEWLINE*) &lt;=</dd>
+      </dl>
   </section>
 </body>
 </html>
