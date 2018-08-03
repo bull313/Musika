@@ -29,16 +29,19 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
 
-                <MenuItem Header="New" x:Name="File_New" Click="File_New_Click" />
-                <MenuItem Header="Exit" x:Name="File_Exit" Click="File_Exit_Click" />
+                <MenuItem Header="New"      x:Name="File_New"       Click="File_New_Click"      />
+                <MenuItem Header="Save"     x:Name="File_Save"      Click="File_Save_Click"     />
+                <MenuItem Header="Save As"  x:Name="File_SaveAs"    Click="File_SaveAs_Click"   />
+                <MenuItem Header="Exit"     x:Name="File_Exit"      Click="File_Exit_Click"     />
 
             </MenuItem>
         </Menu>
         <!-- ================ -->
 
-        <!-- Text Editor with Scroll Viewer -->
+        <!-- Scroll Viewer for Text Editor -->
         <ScrollViewer DockPanel.Dock="Bottom">
 
+            <!-- Text Editor -->
             <RichTextBox AcceptsReturn="True" AcceptsTab="True" x:Name="Editor" TextChanged="Editor_TextChanged" >
                 <RichTextBox.Resources>
 
