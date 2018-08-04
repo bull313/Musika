@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace compiler
@@ -13,7 +14,7 @@ namespace compiler
             Test[] testList =
             {
                 new Token.Test__Token(), new InputBuffer.Test__InputBuffer(), new LexicalAnalyzer.Test__LexicalAnalyzer(),
-                new SyntaxError.Test__SyntaxError(), new Parser.Test__Parser()
+                new SyntaxError.Test__SyntaxError(), new Parser.Test__Parser(), new NoteSheet.Test__NoteSheet()
             }; /* ADD INSTANCES OF NEW TEST CASES HERE */
 
             foreach (Test test in testList)
@@ -38,6 +39,543 @@ namespace compiler
 
     /* ---------------- TESTS ---------------- */
 
+    partial class NoteSheet
+    {
+        internal class Test__NoteSheet : Test
+        {
+            public Test__NoteSheet()
+            {
+                testName = "Note Sheet";
+            }
+
+            private string GetFile(string filename)
+            {
+                return System.IO.File.ReadAllText("../../../../../test/lang/" + filename); /* Get test file text from the test directory */
+            }
+
+            public string GetDirectory()
+            {
+                return "../../../../../test/lang/";
+            }
+
+            private void TestGetFrequency()
+            {
+                VerifyEqual(new NoteSheet().GetFrequency("A",   4), 440.0f,     "Verify A4 returns correct frequency");
+                VerifyEqual(new NoteSheet().GetFrequency("C",   0), 16.35f,     "Verify C0 returns correct frequency");
+                VerifyEqual(new NoteSheet().GetFrequency("A$",  2), 110f,       "Verify A2 returns correct frequency");
+                VerifyEqual(new NoteSheet().GetFrequency("F#",  3), 185f,       "Verify F#3 returns correct frequency");
+                VerifyEqual(new NoteSheet().GetFrequency("Bb",  1), 58.27f,     "Verify Bb1 returns correct frequency");
+                VerifyEqual(new NoteSheet().GetFrequency("E*",  6), 1479.98f,   "Verify E*6 returns correct frequency");
+                VerifyEqual(new NoteSheet().GetFrequency("Dbb", 5), 523.25f,    "Verify Dbb5 returns correct frequency");
+                VerifyEqual(new NoteSheet().GetFrequency("|",   1), 0.0f,       "Verify rest does not produce frequency");
+            }
+
+            private void TestFiles()
+            {
+                bool expectedContextError = false; /* Ensures that a context error is thrown only when expected */
+
+                try
+                {
+                    /* C Major Scale */
+                    string cMajorScaleFile = GetFile("note_sheet_test1.ka");
+                    Parser p = new Parser(cMajorScaleFile, GetDirectory(), "note_sheet_test1.ka");
+                    NoteSheet n = p.ParseScore();
+
+                    /* Verify Information */
+                    VerifyEqual(n.Title, "Test", "Test title was set properly");
+                    VerifyEqual(n.Author, "The Tester", "Test author was set properly");
+                    VerifyEqual(n.Coauthors, null, "Verify coauthors were not set");
+                    VerifyEqual(n.key, 0, "Verify C major scale set as key");
+                    VerifyEqual(n.time.baseNote, 4, "Verify quarter note base rhythm");
+                    VerifyEqual(n.time.beatsPerMeasure, 4, "Verify bpm set properly");
+                    VerifyEqual(n.tempo, 1f, "Verify tempo set properly");
+                    VerifyEqual(n.octave, 4, "Verify octave set properly");
+
+                    /* Verify Notes */
+                    if (VerifyEqual(n.Sheet.Count, 8, "Verify the number of notes is correct"))
+                    {
+                        Note[] correctNotes = {
+                                                  new Note { note = "C", frequency = 261.63f, length = 4f },
+                                                  new Note { note = "D", frequency = 293.66f, length = 3f },
+                                                  new Note { note = "E", frequency = 329.63f, length = 2f },
+                                                  new Note { note = "F", frequency = 349.23f, length = 1f },
+                                                  new Note { note = "G", frequency = 392.00f, length = 2f },
+                                                  new Note { note = "A", frequency = 440.00f, length = 3f },
+                                                  new Note { note = "B", frequency = 493.88f, length = 4f },
+                                                  new Note { note = "C", frequency = 523.25f, length = 5f },
+                                              };
+
+                        for (int i = 0; i < correctNotes.Length; ++i)
+                        {
+                            VerifyEqual(n.Sheet[i][0].note, correctNotes[i].note, "Verify note #" + i + " has the correct note name");
+                            VerifyEqual(n.Sheet[i][0].frequency, correctNotes[i].frequency, "Verify note #" + i + " has the correct note frequency");
+                            VerifyEqual(n.Sheet[i][0].length, correctNotes[i].length, "Verify note #" + i + " has the correct note length");
+                        }
+                    }
+
+                    /* More Complex notes and Keys */
+                    string test2File = GetFile("note_sheet_test2.ka");
+                    p = new Parser(test2File, GetDirectory(), "note_sheet_test2.ka");
+                    n = p.ParseScore();
+
+                    string[] expectedCoauthors = { "Jason Ceasarman", "Pablo Pizzoro" };
+
+                    VerifyEqual(n.Title, "More Robust Note Sheet Test", "Test title was set properly");
+                    VerifyEqual(n.Author, "Ben", "Test author was set properly");
+                    for (int i = 0; i < expectedCoauthors.Length; ++i)
+                        VerifyEqual(n.Coauthors[i], expectedCoauthors[i], "Verify coauthor " + expectedCoauthors[i] + " was set properly");
+                    VerifyEqual(n.key, -4, "Verify E minor scale set as key");
+                    VerifyEqual(n.time.baseNote, 4, "Verify quarter note base rhythm");
+                    VerifyEqual(n.time.beatsPerMeasure, 4, "Verify bpm set properly");
+                    VerifyEqual(Math.Round(n.tempo, 5), 0.33708, "Verify tempo set properly"); /* Round to 5 decimal places */
+                    VerifyEqual(n.octave, 5, "Verify octave set properly");
+
+                    if (VerifyEqual(n.Sheet.Count, 35, "Verify the number of notes is correct"))
+                    {
+                        Note[] correctNotes = {
+                                                  new Note { note = "A",  frequency = 830.61f,  length = 0.33708f / 2f },
+                                                  new Note { note = "G",  frequency = 783.99f,  length = 0.33708f / 2f },
+                                                  new Note { note = "F",  frequency = 698.46f,  length = 0.33708f / 2f },
+                                                  new Note { note = "B",  frequency = 932.33f,  length = 0.33708f      },
+                                                  new Note { note = "A",  frequency = 830.61f,  length = 0.33708f / 2f },
+                                                  new Note { note = "G",  frequency = 783.99f,  length = 0.33708f / 2f },
+                                                  new Note { note = "A",  frequency = 830.61f,  length = 0.33708f      },
+                                                  new Note { note = "G",  frequency = 783.99f,  length = 0.33708f / 2f },
+                                                  new Note { note = "F",  frequency = 698.46f,  length = 0.33708f / 2f },
+                                                  new Note { note = "B",  frequency = 932.33f,  length = 0.33708f      },
+                                                  new Note { note = "A",  frequency = 830.61f,  length = 0.33708f / 2f },
+                                                  new Note { note = "G",  frequency = 783.99f,  length = 0.33708f      },
+                                                  new Note { note = "F",  frequency = 698.46f,  length = 0.33708f / 2f },
+                                                  new Note { note = "A",  frequency = 830.61f,  length = 0.33708f / 2f },
+                                                  new Note { note = "G",  frequency = 783.99f,  length = 0.33708f / 2f },
+                                                  new Note { note = "F",  frequency = 698.46f,  length = 0.33708f / 2f },
+                                                  new Note { note = "G",  frequency = 783.99f,  length = 0.33708f / 2f },
+                                                  new Note { note = "E$", frequency = 659.25f,  length = 0.33708f / 2f },
+                                                  new Note { note = "G",  frequency = 783.99f,  length = 0.33708f / 2f },
+                                                  new Note { note = "B",  frequency = 932.33f,  length = 0.33708f / 2f },
+                                                  new Note { note = "C",  frequency = 1046.50f, length = 1.34831f      },
+                                                  new Note { note = "E",  frequency = 164.81f,  length = 0.14423f      },
+                                                  new Note { note = "F",  frequency = 185.00f,  length = 0.14423f      },
+                                                  new Note { note = "G",  frequency = 196.00f,  length = 0.14423f      },
+                                                  new Note { note = "A",  frequency = 220.00f,  length = 0.14423f * 2f },
+                                                  new Note { note = "G",  frequency = 196.00f,  length = 0.14423f      },
+                                                  new Note { note = "F",  frequency = 185.00f,  length = 0.14423f      },
+                                                  new Note { note = "G",  frequency = 196.00f,  length = 0.14423f      },
+                                                  new Note { note = "F",  frequency = 185.00f,  length = 0.14423f      },
+                                                  new Note { note = "G",  frequency = 196.00f,  length = 0.14423f      },
+                                                  new Note { note = "F",  frequency = 185.00f,  length = 0.14423f      },
+                                                  new Note { note = "D",  frequency = 146.83f,  length = 0.14423f      },
+                                                  new Note { note = "E",  frequency = 659.25f,  length = 0.14423f * 2f },
+                                                  new Note { note = "E",  frequency = 41.20f,   length = 0.14423f * 2f },
+                                                  new Note { note = "E",  frequency = 164.81f,  length = 1.15385f      }
+                                              };
+
+                        for (int i = 0; i < correctNotes.Length; ++i)
+                        {
+                            VerifyEqual(n.Sheet[i][0].note, correctNotes[i].note, "Verify note #" + i + " has the correct note name");
+                            VerifyEqual(n.Sheet[i][0].frequency, correctNotes[i].frequency, "Verify note #" + i + " has the correct note frequency");
+                            VerifyEqual((float) Math.Round(n.Sheet[i][0].length, 5), correctNotes[i].length, "Verify note #" + i + " has the correct note length");
+                        }
+                    }
+
+                    /* Testing IDs, patterns, and chords */
+                    string testFile3 = GetFile("note_sheet_test3.ka");
+                    p = new Parser(testFile3, GetDirectory(), "note_sheet_test3.ka");
+                    n = p.ParseScore();
+
+                    /* Verify Information */
+                    VerifyEqual(n.Title, "New Title", "Test title was set properly");
+                    VerifyEqual(n.Author, "Auth", "Test author was set properly");
+                    VerifyEqual(n.Coauthors, null, "Verify coauthors were not set");
+                    VerifyEqual(n.key, 4, "Verify E major scale set as key");
+                    VerifyEqual(n.time.baseNote, 2, "Verify half note base rhythm");
+                    VerifyEqual(n.time.beatsPerMeasure, 2, "Verify bpm set properly");
+                    VerifyEqual(n.tempo, 2f, "Verify tempo set properly");
+                    VerifyEqual(n.octave, 2, "Verify octave set properly");
+
+                    /* Verify Notes */
+                    if (VerifyEqual(n.Sheet.Count, 10, "Verify the number of notes is correct"))
+                    {
+                        Note[] correctNotes = {
+                                                  new Note { note = "E", frequency = 82.41f, length =  8f },
+                                                  new Note { note = "E", frequency = 82.41f, length =  2f },
+                                                  new Note { note = "F", frequency = 92.50f, length =  2f },
+                                                  new Note { note = "G", frequency = 103.83f, length = 2f },
+                                                  new Note { note = "A", frequency = 110.00f, length = 2f },
+                                                  new Note { note = "B", frequency = 123.47f, length = 2f },
+                                                  new Note { note = "C", frequency = 138.59f, length = 2f },
+                                                  new Note { note = "D", frequency = 155.56f, length = 2f },
+                                                  new Note { note = "E", frequency = 164.81f, length = 2f },
+                                                  new Note { note = "E", frequency = 82.41f, length =  8f },
+                                              };
+
+                        for (int i = 0; i < correctNotes.Length; ++i)
+                        {
+                            VerifyEqual(n.Sheet[i][0].note, correctNotes[i].note, "Verify note #" + i + " has the correct note name");
+                            VerifyEqual(n.Sheet[i][0].frequency, correctNotes[i].frequency, "Verify note #" + i + " has the correct note frequency");
+                            VerifyEqual(n.Sheet[i][0].length, correctNotes[i].length, "Verify note #" + i + " has the correct note length");
+
+                            if (n.Sheet[i].Count > 1)
+                            {
+                                VerifyEqual(n.Sheet[i][1].note, "B", "Verify name of second note in chord");
+                                VerifyEqual(n.Sheet[i][1].frequency, 123.47f, "Verify name of second note in chord");
+                                VerifyEqual(n.Sheet[i][1].length, 8f, "Verify name of second note in chord");
+
+                                VerifyEqual(n.Sheet[i][2].note, "E", "Verify name of third note in chord");
+                                VerifyEqual(n.Sheet[i][2].frequency, 164.81f, "Verify name of third note in chord");
+                                VerifyEqual(n.Sheet[i][2].length, 8f, "Verify name of third note in chord");
+                            }
+                        }
+                    }
+
+                    /* Testing repeat function and shorthand */
+                    string testFile4 = GetFile("note_sheet_test4.ka");
+                    p = new Parser(testFile4, GetDirectory(), "note_sheet_test4.ka");
+                    n = p.ParseScore();
+
+                    string[] coauthors = { "Lzzy Hale" };
+
+                    /* Verify Information */
+                    VerifyEqual(n.Title, "This Is Test #4", "Test title was set properly");
+                    VerifyEqual(n.Author, "Benjamin", "Test author was set properly");
+                    for (int i = 0; i < coauthors.Length; ++i)
+                        VerifyEqual(n.Coauthors[i], coauthors[i], "Verify coauthor was set");
+                    VerifyEqual(n.key, 0, "Verify A minor scale set as key");
+                    VerifyEqual(n.time.baseNote, 4, "Verify half note base rhythm");
+                    VerifyEqual(n.time.beatsPerMeasure, 4, "Verify bpm set properly");
+                    VerifyEqual((float) Math.Round(n.tempo, 5), 0.66667f, "Verify tempo set properly");
+                    VerifyEqual(n.octave, 5, "Verify octave set properly");
+
+                    /* Verify Notes */
+                    Note[] patternNotes = {
+                                            new Note { note = "A", frequency = 880.00f,  length =  0.66667f },
+                                            new Note { note = "A", frequency = 880.00f,  length =  0.33333f },
+                                            new Note { note = "G", frequency = 783.99f,  length =  0.33333f },
+                                            new Note { note = "A", frequency = 880.00f,  length =  0.66667f },
+                                            new Note { note = "A", frequency = 880.00f,  length =  0.33333f },
+                                            new Note { note = "G", frequency = 783.99f,  length =  0.33333f },
+                                            new Note { note = "A", frequency = 880.00f,  length =  0.33333f },
+                                            new Note { note = "G", frequency = 783.99f,  length =  0.33333f },
+                                            new Note { note = "A", frequency = 880.00f,  length =  0.33333f },
+                                            new Note { note = "G", frequency = 783.99f,  length =  0.33333f },
+                                            new Note { note = "A", frequency = 880.00f,  length =  0.66667f },
+                                            new Note { note = "A", frequency = 880.00f,  length =  0.33333f },
+                                            new Note { note = "G", frequency = 783.99f,  length =  0.33333f },
+                                            new Note { note = "A", frequency = 880.00f,  length =  0.33333f },
+                                            new Note { note = "G", frequency = 783.99f,  length =  0.33333f },
+                                            new Note { note = "A", frequency = 880.00f,  length =  0.33333f },
+                                            new Note { note = "G", frequency = 783.99f,  length =  0.33333f },
+                                            new Note { note = "A", frequency = 880.00f,  length =  0.66667f },
+                                            new Note { note = "G", frequency = 783.99f,  length =  0.66667f },
+                                            new Note { note = "G", frequency = 783.99f,  length =  0.16667f },
+                                            new Note { note = "A", frequency = 880.00f,  length =  0.33333f },
+                                            new Note { note = "G", frequency = 783.99f,  length =  0.33333f },
+                                            new Note { note = "A", frequency = 880.00f,  length =  0.33333f },
+                                            new Note { note = "C", frequency = 1046.50f, length =  0.16667f },
+                                            new Note { note = "D", frequency = 1174.66f, length =  0.83333f },
+                                            new Note { note = "C", frequency = 1046.50f, length =  0.66667f },
+                                            new Note { note = "E", frequency = 1318.51f, length =  0.33333f },
+                                            new Note { note = "B", frequency = 987.77f,  length =  0.33333f },
+                                            new Note { note = "B", frequency = 987.77f,  length =  0.33333f },
+                                            new Note { note = "C", frequency = 1046.50f, length =  0.33333f },
+                                            new Note { note = "B", frequency = 987.77f,  length =  0.66667f },
+                                            new Note { note = "A", frequency = 880.00f,  length =  0.66667f },
+                                            new Note { note = "A", frequency = 880.00f,  length =  0.33333f },
+                                            new Note { note = "G", frequency = 783.99f,  length =  0.33333f },
+                                            new Note { note = "A", frequency = 880.00f,  length =  0.33333f },
+                                            new Note { note = "C", frequency = 1046.50f, length =  0.16667f },
+                                            new Note { note = "D", frequency = 1174.66f, length =  0.83333f },
+                                            new Note { note = "C", frequency = 1046.50f, length =  0.66667f },
+                                            new Note { note = "E", frequency = 1318.51f, length =  0.33333f },
+                                            new Note { note = "B", frequency = 987.77f,  length =  0.33333f },
+                                            new Note { note = "B", frequency = 987.77f,  length =  0.33333f },
+                                            new Note { note = "C", frequency = 1046.50f, length =  0.33333f },
+                                            new Note { note = "B", frequency = 987.77f,  length =  0.66667f },
+                                            new Note { note = "A", frequency = 880.00f,  length =  0.66667f },
+                                            new Note { note = "E", frequency = 1318.51f, length =  0.66667f },
+                                            new Note { note = "B", frequency = 987.77f,  length =  0.33333f },
+                                            new Note { note = "B", frequency = 987.77f,  length =  0.16667f },
+                                            new Note { note = "B", frequency = 987.77f,  length =  0.5f },
+                                            new Note { note = "C", frequency = 1046.50f, length =  1f },
+                                        };
+
+                    Note chordBase = new Note { note = "A", frequency = 880.00f, length = 2.66667f };
+
+                    Note fSharp = new Note { note = "F#", frequency = 739.99f, length = 2.66667f };
+
+                    NoteSet correctNotesList = new NoteSet();
+                    correctNotesList.AddRange(patternNotes);
+                    for (int i = 0; i < 4; ++i)
+                        correctNotesList.Add(chordBase);
+                    for (int i = 0; i < 4; ++i)
+                    {
+                        correctNotesList.AddRange(patternNotes);
+                        correctNotesList.Add(fSharp);
+                    }
+
+                    if (VerifyEqual(n.Sheet.Count, correctNotesList.Count, "Verify the number of notes is correct"))
+                    {
+                        for (int i = 0; i < correctNotesList.Count; ++i)
+                        {
+                            VerifyEqual(n.Sheet[i][0].note, correctNotesList[i].note, "Verify note #" + i + " has the correct note name");
+                            VerifyEqual(n.Sheet[i][0].frequency, correctNotesList[i].frequency, "Verify note #" + i + " has the correct note frequency");
+                            VerifyEqual((float) Math.Round(n.Sheet[i][0].length, 5), correctNotesList[i].length, "Verify note #" + i + " has the correct note length");
+
+                            if (n.Sheet[i].Count > 1)
+                            {
+                                VerifyEqual(n.Sheet[i][1].note, "E", "Verify name of second note in chord");
+                                VerifyEqual(n.Sheet[i][1].frequency, 1318.51f, "Verify name of second note in chord");
+                                VerifyEqual((float) Math.Round(n.Sheet[i][1].length, 5), 2.66667f, "Verify name of second note in chord");
+
+                                VerifyEqual(n.Sheet[i][2].note, "A", "Verify name of third note in chord");
+                                VerifyEqual(n.Sheet[i][2].frequency, 1760.00f, "Verify name of third note in chord");
+                                VerifyEqual((float) Math.Round(n.Sheet[i][2].length, 5), 2.66667f, "Verify name of third note in chord");
+                            }
+                        }
+                    }
+
+                    /* Testing layer ability */
+                    string testFile5 = GetFile("note_sheet_test5.ka");
+                    p = new Parser(testFile5, GetDirectory(), "note_sheet_test5.ka");
+                    n = p.ParseScore();
+
+                    /* Verify Information */
+                    VerifyEqual(n.Title, "The Layer Test", "Test title was set properly");
+                    VerifyEqual(n.Author, "Ben", "Test author was set properly");
+                    VerifyEqual(n.Coauthors, null, "Verify coauthors were not set");
+                    VerifyEqual(n.key, 2, "Verify D major scale set as key");
+                    VerifyEqual(n.time.baseNote, 4, "Verify half note base rhythm");
+                    VerifyEqual(n.time.beatsPerMeasure, 4, "Verify bpm set properly");
+                    VerifyEqual((float) Math.Round(n.tempo, 5), 1f, "Verify tempo set properly");
+                    VerifyEqual(n.octave, 4, "Verify octave set properly");
+
+                    /* Verify Notes */
+                    Note[] harmonyNotes = {
+                                              new Note { note = "D", frequency = 293.66f, length = 1f },
+                                              new Note { note = "E", frequency = 329.63f, length = 1f },
+                                              new Note { note = "F", frequency = 369.99f, length = 1f },
+                                              new Note { note = "G", frequency = 392.00f, length = 1f },
+                                              new Note { note = "A", frequency = 440.00f, length = 1f },
+                                              new Note { note = "B", frequency = 493.88f, length = 1f },
+                                              new Note { note = "C", frequency = 554.37f, length = 1f },
+                                              new Note { note = "D", frequency = 587.33f, length = 1f },
+                                              new Note { note = "C", frequency = 554.37f, length = 1f },
+                                              new Note { note = "B", frequency = 493.88f, length = 1f },
+                                              new Note { note = "A", frequency = 440.00f, length = 1f },
+                                              new Note { note = "G", frequency = 392.00f, length = 1f },
+                                              new Note { note = "F", frequency = 369.99f, length = 1f },
+                                              new Note { note = "E", frequency = 329.63f, length = 1f },
+                                              new Note { note = "D", frequency = 293.66f, length = 4f }
+                                          };
+
+                    Note[] finishHNotes = {
+                                                new Note { note = "F", frequency = 369.99f,  length = 2f },
+                                                new Note { note = "F", frequency = 739.99f,  length = 2f },
+                                                new Note { note = "F", frequency = 1479.98f, length = 2f },
+                                                new Note { note = "F", frequency = 92.50f,   length = 2f },
+                                          };
+
+                    Note[] correctNotes5 = {
+                                                new Note { note = "D", frequency = 293.66f, length = 1f },
+                                                new Note { note = "E", frequency = 329.63f, length = 1f },
+                                                new Note { note = "F", frequency = 369.99f, length = 1f },
+                                                new Note { note = "G", frequency = 392.00f, length = 1f },
+                                                new Note { note = "A", frequency = 440.00f, length = 1f },
+                                                new Note { note = "B", frequency = 493.88f, length = 1f },
+                                                new Note { note = "C", frequency = 554.37f, length = 1f },
+                                                new Note { note = "D", frequency = 587.33f, length = 1f },
+                                                new Note { note = "C", frequency = 554.37f, length = 1f },
+                                                new Note { note = "B", frequency = 493.88f, length = 1f },
+                                                new Note { note = "A", frequency = 440.00f, length = 1f },
+                                                new Note { note = "G", frequency = 392.00f, length = 1f },
+                                                new Note { note = "F", frequency = 369.99f, length = 1f },
+                                                new Note { note = "E", frequency = 329.63f, length = 1f },
+                                                new Note { note = "D", frequency = 293.66f, length = 6f },
+
+                                                new Note { note = "D", frequency = 293.66f,  length = 2f },
+                                                new Note { note = "D", frequency = 587.33f,  length = 2f },
+                                                new Note { note = "D", frequency = 1174.66f, length = 2f },
+                                                new Note { note = "D", frequency = 73.42f,   length = 2f },
+                                                new Note { note = "|", frequency = 0f,       length = 4f },
+
+                                                new Note { note = "D", frequency = 293.66f,  length = 2f },
+                                                new Note { note = "D", frequency = 587.33f,  length = 2f },
+                                                new Note { note = "D", frequency = 1174.66f, length = 2f },
+                                                new Note { note = "D", frequency = 73.42f,   length = 2f },
+                                                new Note { note = "|", frequency = 0f,       length = 4f },
+
+                                                new Note { note = "D", frequency = 293.66f,  length = 2f },
+                                                new Note { note = "D", frequency = 587.33f,  length = 2f },
+                                                new Note { note = "D", frequency = 1174.66f, length = 2f },
+                                                new Note { note = "D", frequency = 73.42f,   length = 2f },
+                                                new Note { note = "|", frequency = 0f,       length = 4f },
+
+                                                new Note { note = "D", frequency = 293.66f,  length = 2f },
+                                                new Note { note = "D", frequency = 587.33f,  length = 2f },
+                                                new Note { note = "D", frequency = 1174.66f, length = 2f },
+                                                new Note { note = "D", frequency = 73.42f,   length = 2f },
+                                                new Note { note = "|", frequency = 0f,       length = 4f }
+                                             };
+
+                    if (VerifyEqual(n.Sheet.Count, correctNotes5.Length, "Verify the number of notes is correct"))
+                    {
+                        for (int i = 0; i < correctNotes5.Length; ++i)
+                        {
+                            VerifyEqual(n.Sheet[i][0].note, correctNotes5[i].note, "Verify note #" + i + " has the correct note name");
+                            VerifyEqual(n.Sheet[i][0].frequency, correctNotes5[i].frequency, "Verify note #" + i + " has the correct note frequency");
+                            VerifyEqual(n.Sheet[i][0].length, correctNotes5[i].length, "Verify note #" + i + " has the correct note length");
+                        }
+                    }
+
+                    if (VerifyEqual(n.Layers.ContainsKey(2), true, "Verify a layer exists at position 2"))
+                    {
+                        for (int i = 0; i < harmonyNotes.Length; ++i)
+                        {
+                            VerifyEqual(n.Layers[2][0][i][0].note, harmonyNotes[i].note, "Verify note #" + i + " has the correct note name");
+                            VerifyEqual(n.Layers[2][0][i][0].frequency, harmonyNotes[i].frequency, "Verify note #" + i + " has the correct note frequency");
+                            VerifyEqual(n.Layers[2][0][i][0].length, harmonyNotes[i].length, "Verify note #" + i + " has the correct note length");
+                        }
+
+                        int[] finishPatternPositions = { 15, 20, 25, 30 };
+                        foreach (int position in finishPatternPositions)
+                        {
+                            if (VerifyEqual(n.Layers.ContainsKey(position), true, "Verify layer exists at position " + position))
+                            {
+                                for (int i = 0; i < finishHNotes.Length; ++i)
+                                {
+                                    VerifyEqual(n.Layers[position][0][i][0].note, finishHNotes[i].note, "Verify note #" + i + " has the correct note name");
+                                    VerifyEqual(n.Layers[position][0][i][0].frequency, finishHNotes[i].frequency, "Verify note #" + i + " has the correct note frequency");
+                                    VerifyEqual(n.Layers[position][0][i][0].length, finishHNotes[i].length, "Verify note #" + i + " has the correct note length");
+                                }
+                            }
+                        }
+                    }
+
+                    /* Another layer test */
+                    string test6File = GetFile("note_sheet_test6.ka");
+                    p = new Parser(test6File, GetDirectory(), "note_sheet_test6.ka");
+                    n = p.ParseScore();
+
+                    /* Verify Information */
+                    VerifyEqual(n.Title, "Test #6 and #7", "Test title was set properly");
+                    VerifyEqual(n.Author, "Ben", "Test author was set properly");
+                    VerifyEqual(n.Coauthors, null, "Verify coauthors were not set");
+                    VerifyEqual(n.key, -6, "Verify Eb minor scale set as key");
+                    VerifyEqual(n.time.baseNote, 4, "Verify quarter note base rhythm");
+                    VerifyEqual(n.time.beatsPerMeasure, 4, "Verify bpm set properly");
+                    VerifyEqual(n.tempo, 1f, "Verify tempo set properly");
+                    VerifyEqual(n.octave, 7, "Verify octave set properly");
+
+                    /* Verify Notes */
+                    Note[] majorScale = {
+                                            new Note { note = "G", frequency = 369.99f, length = 1f },
+                                            new Note { note = "A", frequency = 415.30f, length = 1f },
+                                            new Note { note = "B", frequency = 466.16f, length = 1f },
+                                            new Note { note = "C", frequency = 493.88f, length = 1f },
+                                            new Note { note = "D", frequency = 554.37f, length = 1f },
+                                            new Note { note = "E", frequency = 622.25f, length = 1f },
+                                            new Note { note = "F", frequency = 698.46f, length = 1f },
+                                            new Note { note = "G", frequency = 739.99f, length = 1f },
+                                        };
+
+                    Note[] minorScale = {
+                                            new Note { note = "E", frequency = 311.13f, length = 1f },
+                                            new Note { note = "F", frequency = 349.23f, length = 1f },
+                                            new Note { note = "G", frequency = 369.99f, length = 1f },
+                                            new Note { note = "A", frequency = 415.30f, length = 1f },
+                                            new Note { note = "B", frequency = 466.16f, length = 1f },
+                                            new Note { note = "C", frequency = 493.88f, length = 1f },
+                                            new Note { note = "D", frequency = 554.37f, length = 1f },
+                                            new Note { note = "E", frequency = 622.25f, length = 1f },
+                                        };
+
+                    if (VerifyEqual(n.Sheet.Count, minorScale.Length, "Verify the number of notes is correct"))
+                    {
+                        for (int i = 0; i < minorScale.Length; ++i)
+                        {
+                            VerifyEqual(n.Sheet[i][0].note, minorScale[i].note, "Verify note #" + i + " has the correct note name");
+                            VerifyEqual(n.Sheet[i][0].frequency, minorScale[i].frequency, "Verify note #" + i + " has the correct note frequency");
+                            VerifyEqual(n.Sheet[i][0].length, minorScale[i].length, "Verify note #" + i + " has the correct note length");
+                        }
+
+                        for (int i = 0; i < majorScale.Length; ++i)
+                        {
+                            VerifyEqual(n.Layers[0][0][i][0].note, majorScale[i].note, "Verify note #" + i + " has the correct note name");
+                            VerifyEqual(n.Layers[0][0][i][0].frequency, majorScale[i].frequency, "Verify note #" + i + " has the correct note frequency");
+                            VerifyEqual(n.Layers[0][0][i][0].length, majorScale[i].length, "Verify note #" + i + " has the correct note length");
+                        }
+                    }
+
+                    /* Test accompaniments */
+                    string test7File = GetFile("note_sheet_test7.ka");
+                    p = new Parser(test7File, GetDirectory(), "note_sheet_test7.ka");
+                    n = p.ParseScore();
+
+                    /* Verify Information */
+                    VerifyEqual(n.Title, "Test #6 and #7", "Test title was set properly");
+                    VerifyEqual(n.Author, "Ben", "Test author was set properly");
+                    VerifyEqual(n.Coauthors, null, "Verify coauthors were not set");
+                    VerifyEqual(n.key, 0, "Verify A minor scale set as key");
+                    VerifyEqual(n.time.baseNote, 2, "Verify quarter note base rhythm");
+                    VerifyEqual(n.time.beatsPerMeasure, 2, "Verify bpm set properly");
+                    VerifyEqual(n.tempo, 2f, "Verify tempo set properly");
+                    VerifyEqual(n.octave, 4, "Verify octave set properly");
+
+                    /* Verify Notes */
+                    NoteSet correctNoteList = new NoteSet();
+                    correctNoteList.Add(new Note { note = "E", frequency = 155.56f, length = 4f });
+                    correctNoteList.AddRange(majorScale);
+                    correctNoteList.AddRange(majorScale);
+                    correctNoteList.AddRange(minorScale);
+                    correctNoteList.Add(new Note { note = "E", frequency = 155.56f, length = 15f });
+
+                    Note[] wholeNote = { new Note { note = "E", frequency = 155.56f, length = 15f } };
+
+                    if (VerifyEqual(n.Sheet.Count, correctNoteList.Count, "Verify the number of notes is correct"))
+                    {
+                        for (int i = 0; i < correctNoteList.Count; ++i)
+                        {
+                            VerifyEqual(n.Sheet[i][0].note, correctNoteList[i].note, "Verify note #" + i + " has the correct note name");
+                            VerifyEqual(n.Sheet[i][0].frequency, correctNoteList[i].frequency, "Verify note #" + i + " has the correct note frequency");
+                            VerifyEqual(n.Sheet[i][0].length, correctNoteList[i].length, "Verify note #" + i + " has the correct note length");
+                        }
+
+                        int[] finishPatternPositions = { 1, 9 };
+                        foreach (int position in finishPatternPositions)
+                        {
+                            if (VerifyEqual(n.Layers.ContainsKey(position), true, "Verify layer exists at position " + position))
+                            {
+                                for (int i = 0; i < wholeNote.Length; ++i)
+                                {
+                                    VerifyEqual(n.Layers[position][0][i][0].note, wholeNote[i].note, "Verify note #" + i + " has the correct note name");
+                                    VerifyEqual(n.Layers[position][0][i][0].frequency, wholeNote[i].frequency, "Verify note #" + i + " has the correct note frequency");
+                                    VerifyEqual(n.Layers[position][0][i][0].length, wholeNote[i].length, "Verify note #" + i + " has the correct note length");
+                                }
+                            }
+                        }
+                    }
+
+                    /* Test cross accompaniments 1 */
+                    expectedContextError = true;
+                    string test8File = GetFile("note_sheet_test8.ka");
+                    p = new Parser(test8File, GetDirectory(), "note_sheet_test8.ka");
+                    n = p.ParseScore();
+                }
+                catch (Exception e)
+                {
+                    VerifyEqual(expectedContextError, true, "Verify that a context error was expected");
+                    VerifyEqual(e.Message, "CONTEXT ERROR: " + ContextError.CROSS_REFERENCE_ERROR, "Verify that the correct context error message was thrown");
+                }
+            }
+
+            public override void RunTests()
+            {
+                TestGetFrequency();
+                TestFiles();
+            }
+        }
+    }
+
     partial class Parser
     {
         internal class Test__Parser : Test
@@ -52,7 +590,8 @@ namespace compiler
             private void TestReset()
             {
                 string program = "ben is awesome!";
-                parser = new Parser(program);
+                parser = new Parser(program, "", ""); /* filename and filepath are empty because they will be ignored */
+                parser.IgnoreContext();
                 parser.lexer.GetToken();
                 VerifyEqualObj(parser.lexer.PeekToken().Content, "is", "Verify that the program has successfully removed the first token");
                 parser.Reset();
@@ -62,7 +601,8 @@ namespace compiler
             private void TestExpect()
             {
                 string program = "accompany =>test comment<= } (";
-                parser = new Parser(program);
+                parser = new Parser(program, "", ""); /* filename and filepath are empty because they will be ignored */
+                parser.IgnoreContext();
                 try
                 {
                     parser.Expect(TokenType.ACCOMPANY);
@@ -97,10 +637,11 @@ namespace compiler
 
             private void TestParse(string name, string program, string errorString)
             {
-                parser = new Parser(program);
+                parser = new Parser(program, "", ""); /* filename and filepath are empty because they will be ignored */
+                parser.IgnoreContext();
                 try
                 {
-                    parser.ParseProgram();
+                    parser.ParseScore();
                     if (errorString != "")
                         VerifyEqual(true, false, "Testing " + name + ": Parser threw no syntax error when syntax error was expected");
                     else
@@ -113,12 +654,6 @@ namespace compiler
                     else
                         VerifyEqual(errorString, s.Message, "Testing " + name + ": Verify that the correct syntax error was thrown");
                 }
-            }
-
-            private string GetTestFile(string filename)
-            {
-                return System.IO.File.ReadAllText("../../../../../test/lang/parser/" + filename);
-                                                                /* Get test file text from the test directory */
             }
 
             private string GetSampleFile(string filename)
@@ -141,21 +676,31 @@ namespace compiler
                 /* Base Test Cases */
                 TestParse("Empty program", "", "SYNTAX ERROR: expected: TITLE; received: EOF");
                 TestParse("Completely invalid program", "ben is awesome!", "SYNTAX ERROR: expected: TITLE; received: ID");
-                TestParse("Example 1", GetSampleFile("example1.ka"), "");
-                TestParse("Example 2", GetSampleFile("example2.ka"), "");
-                TestParse("Example 3", GetSampleFile("example3.ka"), "");
-                TestParse("Chords", GetSampleFile("chords.ka"), "");
+                TestParse("Example 1",          GetSampleFile("example1.ka"), "");
+                TestParse("Example 2",          GetSampleFile("example2.ka"), "");
+                TestParse("Example 3",          GetSampleFile("example3.ka"), "");
+                TestParse("Chords",             GetSampleFile("chords.ka"), "");
+                TestParse("Base Test 5",        GetParseFile("b_parse_test5.ka"), "");
+                TestParse("Note Sheet Test 1",  GetParseFile("note_sheet_test1.ka"), "");
+                TestParse("Note Sheet Test 2",  GetParseFile("note_sheet_test2.ka"), "");
+                TestParse("Note Sheet Test 3",  GetParseFile("note_sheet_test3.ka"), "");
+                TestParse("Note Sheet Test 4",  GetParseFile("note_sheet_test4.ka"), "");
+                TestParse("Note Sheet Test 5",  GetParseFile("note_sheet_test5.ka"), "");
+                TestParse("Note Sheet Test 6", GetParseFile("note_sheet_test6.ka"), "");
+                TestParse("Note Sheet Test 7", GetParseFile("note_sheet_test7.ka"), "");
+                TestParse("Note Sheet Test 8", GetParseFile("note_sheet_test8.ka"), "");
+                TestParse("Note Sheet Test 9", GetParseFile("note_sheet_test9.ka"), "");
 
                 /* Destructive Testing */
-                TestParse("Destructive Test 1", GetParseFile("parser_test1.ka"), "");
-                TestParse("Destructive Test 2", GetParseFile("parser_test2.ka"), "SYNTAX ERROR: expected: BREAK; received: UNKNOWN");
-                TestParse("Destructive Test 3", GetParseFile("parser_test3.ka"), "SYNTAX ERROR: expected: DOT, COMMA, or APOS; received: SEMICOLON");
-                TestParse("Destructive Test 4", GetParseFile("parser_test4.ka"), "SYNTAX ERROR: expected: KEY, TIME, TEMPO, or OCTAVE; received: AUTHOR");
+                TestParse("Destructive Test 1", GetParseFile("d_parse_test1.ka"), "");
+                TestParse("Destructive Test 2", GetParseFile("d_parse_test2.ka"), "SYNTAX ERROR: expected: BREAK; received: UNKNOWN");
+                TestParse("Destructive Test 3", GetParseFile("d_parse_test3.ka"), "SYNTAX ERROR: expected: DOT; received: SEMICOLON");
+                TestParse("Destructive Test 4", GetParseFile("d_parse_test4.ka"), "SYNTAX ERROR: expected: AUTHOR or COAUTHORS; received: KEY");
             }
         }
     }
 
-    partial class SyntaxError : Exception
+    partial class SyntaxError
     {
         internal class Test__SyntaxError : Test
         {
@@ -349,7 +894,7 @@ namespace compiler
                 VerifyNextToken("A", TokenType.NOTE);
                 VerifyNextToken("^", TokenType.CARROT);
                 VerifyNextToken("4", TokenType.NUMBER);
-                VerifyNextToken("_", TokenType.NOTE);
+                VerifyNextToken("_", TokenType.ID);
                 VerifyNextToken("\n", TokenType.NEWLINE);
                 VerifyNextToken("}", TokenType.RBRACE);
                 VerifyNextToken("\n", TokenType.NEWLINE);

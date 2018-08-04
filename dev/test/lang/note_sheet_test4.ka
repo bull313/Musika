@@ -1,0 +1,44 @@
+title: "This Is Test #4"
+author: "Benjamin"
+coauthors: "Lzzy Hale"
+key: Am
+time: common
+tempo: 4 = 90
+octave: 5
+---
+pattern [i_am_the_fire]: & NOTES TOTAL: 49
+    ! time: 8 !
+    A.. A. G. A.. A.G.
+    A. G. A. G. A.. A.G.
+    A. G. A. G. A.. G..
+    ! time: 16 !
+    G.A.. G.. A.. C'. D'..... C'....
+    ! time: 8 !
+    E'. B. B. C'. B.. A..
+    ! time: 16 !
+    A.. G.. A.. C'. D'..... C'....
+    ! time: 8 !
+    E'. B. B. C'. B.. A..
+    ! time: 16 !
+    E'.... B.. B. B... C'......
+    & NOTE: consider cleaning this up by removing most of the time calls and adjusting the rhythm accordingly
+
+chord A_MINOR_CHORD is A;E';A'
+
+=>
+This is a note sheet test to
+test the repeat function and shorthand
+<=
+---
+i_am_the_fire
+! time: 1 !
+A_MINOR_CHORD. ^ 4
+! time: 4 !
+repeat(2) {
+    repeat(2) {
+        i_am_the_fire
+        ! time: 1 !
+        F#.
+    }
+}
+---

@@ -1,0 +1,23 @@
+title: "Test #6 and #7" & title will be used in test 7
+author: "Ben"
+key: Ebm
+time: common
+tempo: 4 = 60
+octave: 7
+=>
+	This could be used as another layer test.
+	It will also be referenced in test 7
+<=
+---
+pattern [major_scale]:
+	! octave: -3 !
+	G.A.B.C.D'.E'.F'.G'.
+pattern [minor_scale]:
+	! octave: -3 !
+	E.F.G.A.B.C.D'.E'.
+chord nota is E,,,,
+---
+! octave: -3 !
+layer(major_scale)
+minor_scale
+---

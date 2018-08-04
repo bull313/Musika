@@ -1,0 +1,24 @@
+title: "More Robust Note Sheet Test"
+author: "Ben"
+coauthors: "Jason Ceasarman, Pablo Pizzoro"
+key: Fm
+time: common
+tempo: 4 = 178
+octave: 5
+---
+& no patterns here...
+---
+! time: 8 !
+A.G.F.B..A.G.A..G.F.B..A.G..
+F.A.G.F.G.E$.G.B.
+! time: 4 !
+C'....
+! key: Em !
+! time: 8 !
+! octave: 3 !
+! tempo: 4 = 208 !
+E.F.G.A..G.F.G.
+F.G.F.D.E''..E,,..
+! time: 4 !
+E....
+---

@@ -1,0 +1,27 @@
+title: "The Layer Test"
+author: "Ben"
+key: Dmaj
+time: common
+tempo: 4 = 60
+octave: 4
+---
+pattern [harmony]:
+    D.E.F.G.A.B.C'.D'.C'.B.A.G.F.E.D....
+pattern [finish]:
+    D..D'..D''..D,,..
+pattern [finish_h]:
+    F..F'..F''..F,,..
+---
+& part 1
+D.E.
+layer(harmony)
+F.G.A.B.C'.D'.C'.B.A.G.F.E.D......
+
+& part 2
+repeat(4)
+{
+    layer(finish_h)
+    finish
+    |....
+}
+---

@@ -1,0 +1,24 @@
+title: "New Title"
+author: "Auth"
+key: Emaj
+time: cut
+tempo: 4 = 60
+octave: 2
+---
+pattern [scale]:
+    ! time: 4 !
+    E..F..G..A..B..C'..D'..E'..
+
+=> THIS PATTERN IS SOLEY FOR TESTING PURPOSES!!! <=
+
+pattern [test_pattern]:
+    E,,,, .
+
+=> THIS PATTERN IS SOLEY FOR TESTING PURPOSES!!! <=
+
+chord E_MAJOR_CHORD is E;B;E'
+---
+E_MAJOR_CHORD....
+scale
+E_MAJOR_CHORD....
+---

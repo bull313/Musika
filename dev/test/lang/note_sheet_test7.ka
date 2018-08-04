@@ -1,0 +1,36 @@
+accompany [note_sheet_test6] name test6
+accompany [note_sheet_test5] name ben
+accompany [note_sheet_test4] name asdf
+accompany [note_sheet_test3] name t3
+accompany [note_sheet_test1] name one
+---
+title : test6
+author: ben
+key   : asdf
+time  : t3
+tempo : test6
+octave: one
+=>
+This is the accompany test
+<=
+---
+pattern [whole_note]:
+	! key: test6 !
+	! time: test6 !
+	test6>nota...............
+---
+! key: test6 !
+! time: test6 !
+! tempo: -2 !
+! tempo: 2 !
+E,.... & starting note
+
+repeat(2) {
+	layer(whole_note)
+	test6>major_scale
+}
+
+test6
+
+whole_note
+---

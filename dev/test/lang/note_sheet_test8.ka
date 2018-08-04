@@ -1,0 +1,16 @@
+=> THIS TEST IS FOR CROSS ACCOMPANIMENTS <=
+
+accompany [note_sheet_test9] name t9
+---
+title: "Test 8 and 9"
+author: t9
+key: Cmaj
+time: t9
+tempo: 4 = 60
+octave: t9
+---
+pattern [eight_pattern]:
+    C.
+---
+t9>nine_pattern
+---

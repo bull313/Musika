@@ -1,0 +1,20 @@
+=> THIS TEST IS FOR CROSS ACCOMPANIMENTS <=
+
+accompany [note_sheet_test8] name t8
+accompany [note_sheet_test7] name t7
+---
+title: t8
+author: "Benjamin Ladick"
+key: t8
+time: common
+tempo: t8
+octave: 4
+---
+pattern [nine_pattern]:
+    eight_pattern
+    C'.
+---
+t8>eight_pattern
+nine_pattern
+---
+
