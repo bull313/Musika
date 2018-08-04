@@ -1,0 +1,24 @@
+accompany [me] name me
+---
+title: "Ben's awesome!"
+author: "Ben"
+key: Amaj 
+time: common 
+tempo: 4 = 144
+octave: 4
+=>
+This is a test piece and hopefully it will compile!!!
+<=
+---
+pattern [p1]:
+repeat(2) {
+A.... B.... C.... D.... E.... D.... C.... B.... Ab.... 
+}
+
+chord doom_cord is C$ ; F# 
+---
+repeat(4) {
+p1
+doom_chord....
+}
+---
