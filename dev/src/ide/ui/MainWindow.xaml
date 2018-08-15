@@ -30,6 +30,7 @@
             <MenuItem Header="File">
 
                 <MenuItem Header="New"      x:Name="File_New"       Click="File_New_Click"      />
+                <MenuItem Header="Open"     x:Name="File_Open"      Click="File_Open_Click"     />
                 <MenuItem Header="Save"     x:Name="File_Save"      Click="File_Save_Click"     />
                 <MenuItem Header="Save As"  x:Name="File_SaveAs"    Click="File_SaveAs_Click"   />
                 <MenuItem Header="Exit"     x:Name="File_Exit"      Click="File_Exit_Click"     />
@@ -38,7 +39,7 @@
         </Menu>
         <!-- ================ -->
 
-        <!-- Scroll Viewer for Text Editor -->
+        <!-- Text Editor with Scroll Viewer -->
         <ScrollViewer DockPanel.Dock="Bottom">
 
             <!-- Text Editor -->

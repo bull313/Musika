@@ -48,10 +48,16 @@ namespace ide
     /* MAIN CLASS */
     public partial class MainWindow : Window
     {
-        private Dictionary<string, Style> wordStyleDict; /* Determines which words are styled and how they are styled   */
-        private List<StyleText>           keywordBuffer; /* Used to keep track of the keywords in in the text box       */
-        private string                    savedFilename; /* Name of file we are writing to                              */
-        private string                    currentText;   /* Buffer to store Run text that will be checked for keywords  */
+        /* CONSTANTS */
+        public const string MUSIKA_FILE_FILTER = "Musika Files(*.ka)|*.ka|All(*.*)|*";
+        /*/CONSTANTS */
+
+        private Dictionary<string, Style> wordStyleDict;    /* Determines which words are styled and how they are styled    */
+        private List<StyleText>           keywordBuffer;    /* Used to keep track of the keywords in in the text box        */
+        private string                    currentDirectory; /* Keeps track of the directory of the current file             */
+        private string                    currentText;      /* Buffer to store Run text that will be checked for keywords   */
+                                                            /* (initialized to the bin directory                            */
+        private string                    savedFilename;     /* Name of file we are writing to                              */
 
         /* Style text struct that includes its location, content, and style */
         private struct StyleText
@@ -332,6 +338,44 @@ namespace ide
             {
                 savedFilename = dialog.FileName; /* Store the file name into a variable to save more quickly later */
                 File.WriteAllText(savedFilename, GetProgramText());
+            }
+        }
+
+        private void File_Open_Click(object sender, RoutedEventArgs e)
+        {
+            /* Local Variables */
+            OpenFileDialog ofDialog;
+            bool? validFileRequested;
+            string fileText;
+            string filename;
+            /* / Local Variables */
+
+            /* Open a Musika file */
+            ofDialog = new OpenFileDialog()
+            {
+                /* Set up the open file dialog */
+                InitialDirectory = currentDirectory,
+                Filter = MUSIKA_FILE_FILTER,
+                FilterIndex = 2,
+                RestoreDirectory = true
+            };
+
+            /* If a valid file was requested to open, store the filename */
+            validFileRequested = ofDialog.ShowDialog();
+            filename = (validFileRequested == true) ? ofDialog.FileName : null;
+
+            /* If filename specified, open the file */
+            if (filename != null)
+            {
+                /* Get the text from the file */
+                fileText = File.ReadAllText(filename);
+
+                /* Clear the text box and repopulate it with the new text */
+                File_New_Click(sender, e); /* Use "New" command to clear */
+                Editor.Document.Blocks.Add(new Paragraph(new Run(fileText)));
+
+                /* Set the new directory to the directory of the opened file */
+                currentDirectory = Path.GetDirectoryName(filename);
             }
         }
 
