@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -11,16 +13,31 @@ namespace compiler
     /* Serializes and deserializes note sheets to allow storage and access in persistent memory */
     partial class Serializer
     {
-        public static void Serialize(NoteSheet instance, string filename, string filepath) /* Takes a NoteSheet instance, file name, and file path and uses them to */
+        private static readonly string SERIALIZE_EXT = ".mkc"; /* File extension of serialized NoteSheet objects */
+
+        public static void Serialize(NoteSheet instance, string filepath, string filename) /* Takes a NoteSheet instance, file name, and file path and uses them to */
                                                                                            /* serialize the instance and store it at the path with the name         */
         {
-            // TODO implement
+            IFormatter formatter = new BinaryFormatter();
+            Stream stream = new FileStream(filepath + filename + SERIALIZE_EXT, FileMode.Create, FileAccess.Write, FileShare.None);
+            formatter.Serialize(stream, instance);
+            stream.Close();
         }
 
-        public static void Deserialize(string filename, string filepath)    /* Takes a file name and file path, deserializes the file at that path, and returns the */
-                                                                            /* NoteSheet instance                                                                   */
+        public static NoteSheet Deserialize(string filepath, string filename)   /* Takes a file name and file path, deserializes the file at that path, and returns the */
+                                                                                /* NoteSheet instance                                                                   */
         {
-            // TODO implement
+            try
+            {
+                IFormatter formatter = new BinaryFormatter();
+                Stream stream = new FileStream(filepath + filename + SERIALIZE_EXT, FileMode.Open, FileAccess.Read, FileShare.Read);
+                NoteSheet instance = (NoteSheet)formatter.Deserialize(stream);
+                return instance;
+            }
+            catch (FileNotFoundException)
+            {
+                return null;
+            }
         }
     }
 
@@ -30,7 +47,7 @@ namespace compiler
     {
         /* CONSTANTS */
 
-        private static readonly string NOTE_FREQUENCY_FILE = "../../../../../src/lang/data/note_frequency.xml"; /* Note frequency XML chart address */
+        private static readonly string NOTE_FREQUENCY_FILE  = "../../../../../src/lang/data/note_frequency.xml";    /* Note frequency XML chart address */
 
         public static readonly Dictionary<TokenType, TimeSignature> TimeSignatureDict = new Dictionary<TokenType,TimeSignature>() /* Common time signatures (with keywords associated */
         {

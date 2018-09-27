@@ -14,7 +14,7 @@ namespace compiler
             Test[] testList =
             {
                 new Token.Test__Token(), new InputBuffer.Test__InputBuffer(), new LexicalAnalyzer.Test__LexicalAnalyzer(),
-                new SyntaxError.Test__SyntaxError(), new Parser.Test__Parser(), new NoteSheet.Test__NoteSheet(), new Serializer__TestSerializer()
+                new SyntaxError.Test__SyntaxError(), new Parser.Test__Parser(), new NoteSheet.Test__NoteSheet(), new Serializer.Test__Serializer()
             }; /* ADD INSTANCES OF NEW TEST CASES HERE */
 
             foreach (Test test in testList)
@@ -48,9 +48,44 @@ namespace compiler
                 testName = "Serializer";
             }
 
+            private string GetFile(string filename)
+            {
+                return System.IO.File.ReadAllText("../../../../../test/lang/" + filename); /* Get test file text from the test directory */
+            }
+
+            public string GetDirectory()
+            {
+                return "../../../../../test/lang/";
+            }
+
             public override void RunTests()
             {
-                
+                string filename = "note_sheet_test10";
+                string filepath = GetDirectory();
+                string testProgram = GetFile(filename + ".ka");
+                Parser parser = new Parser(testProgram, filepath, filename);
+
+                NoteSheet toSerialize = parser.ParseScore();
+                Serializer.Serialize(toSerialize, filepath, filename);
+
+                VerifyEqual(File.Exists(filepath + filename + ".mkc"), true, "Test that the serialized file exists");
+
+                NoteSheet toDeserialize = Serializer.Deserialize(filepath, filename);
+
+                if (toDeserialize != null)
+                {
+                    VerifyEqual(toSerialize.Title, toDeserialize.Title, "Verify the object has been successfully deserialized and that its data is the same");
+                    VerifyEqual(toSerialize.Author, toDeserialize.Author, "Verify the object has been successfully deserialized and that its data is the same");
+                    VerifyEqual(toSerialize.key, toDeserialize.key, "Verify the object has been successfully deserialized and that its data is the same");
+                    VerifyEqual(toSerialize.time.baseNote, toDeserialize.time.baseNote, "Verify the object has been successfully deserialized and that its data is the same");
+                    VerifyEqual(toSerialize.time.beatsPerMeasure, toDeserialize.time.beatsPerMeasure, "Verify the object has been successfully deserialized and that its data is the same");
+                    VerifyEqual(toSerialize.tempo, toDeserialize.tempo, "Verify the object has been successfully deserialized and that its data is the same");
+                    VerifyEqual(toSerialize.octave, toDeserialize.octave, "Verify the object has been successfully deserialized and that its data is the same");
+                }
+                else
+                {
+                    VerifyEqual(true, false, "toDeserialize() returned null");
+                }
             }
         }
     }

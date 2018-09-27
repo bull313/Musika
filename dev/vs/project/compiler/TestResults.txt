@@ -1733,7 +1733,22 @@ Total Comparisons: 1365
 Total Failures: 0
 Test Result: PASS
 
+BEGIN SERIALIZER TEST:
+Test that the serialized file exists => PASSES
+Verify the object has been successfully deserialized and that its data is the same => PASSES
+Verify the object has been successfully deserialized and that its data is the same => PASSES
+Verify the object has been successfully deserialized and that its data is the same => PASSES
+Verify the object has been successfully deserialized and that its data is the same => PASSES
+Verify the object has been successfully deserialized and that its data is the same => PASSES
+Verify the object has been successfully deserialized and that its data is the same => PASSES
+Verify the object has been successfully deserialized and that its data is the same => PASSES
+
+OVERALL CASE RESULTS:
+Total Comparisons: 8
+Total Failures: 0
+Test Result: PASS
+
 OVERALL TEST SET:
-Total Tests: 6
+Total Tests: 7
 Total Failures: 0
 Results: TEST PASSED
