@@ -8,7 +8,24 @@ using System.Xml;
 
 namespace compiler
 {
+    /* Serializes and deserializes note sheets to allow storage and access in persistent memory */
+    partial class Serializer
+    {
+        public static void Serialize(NoteSheet instance, string filename, string filepath) /* Takes a NoteSheet instance, file name, and file path and uses them to */
+                                                                                           /* serialize the instance and store it at the path with the name         */
+        {
+            // TODO implement
+        }
+
+        public static void Deserialize(string filename, string filepath)    /* Takes a file name and file path, deserializes the file at that path, and returns the */
+                                                                            /* NoteSheet instance                                                                   */
+        {
+            // TODO implement
+        }
+    }
+
     /* Intermediate representation of a Musika file. Contains notes laid out in order */
+    [Serializable]
     partial class NoteSheet
     {
         /* CONSTANTS */
@@ -2168,12 +2185,18 @@ namespace compiler
         }
     }
 
+    [Serializable]
     class NoteSet           : List<Note>               { }
+
+    [Serializable]
     class Sheet             : List<NoteSet>            { }
+
     class SheetSet          : List<Sheet>              { }
+
     class PositionSheetMap  : List<PositionSheetPair>  { }
 
     /* Represents a musical note with its data */
+    [Serializable]
     internal struct Note
     {
         internal string note;
@@ -2182,6 +2205,7 @@ namespace compiler
     }
 
     /* Represents a time signature (a number for beats per measure and number for base beat rhythm) */
+    [Serializable]
     internal struct TimeSignature
     {
         internal int baseNote;

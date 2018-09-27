@@ -350,13 +350,14 @@ Testing Note Sheet Test 6: Parser correctly threw no syntax error => PASSES
 Testing Note Sheet Test 7: Parser correctly threw no syntax error => PASSES
 Testing Note Sheet Test 8: Parser correctly threw no syntax error => PASSES
 Testing Note Sheet Test 9: Parser correctly threw no syntax error => PASSES
+Testing Note Sheet Test 10: Parser correctly threw no syntax error => PASSES
 Testing Destructive Test 1: Parser correctly threw no syntax error => PASSES
 Testing Destructive Test 2: Verify that the correct syntax error was thrown => PASSES
 Testing Destructive Test 3: Verify that the correct syntax error was thrown => PASSES
 Testing Destructive Test 4: Verify that the correct syntax error was thrown => PASSES
 
 OVERALL CASE RESULTS:
-Total Comparisons: 25
+Total Comparisons: 26
 Total Failures: 0
 Test Result: PASS
 

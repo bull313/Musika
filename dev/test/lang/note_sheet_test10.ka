@@ -1,0 +1,25 @@
+accompany [note_sheet_test3] name acc
+---
+title: "NoteSheet Serialization Test"
+author: acc
+key: acc
+time: acc
+tempo: acc
+octave: acc
+---
+pattern [new_pattern]:
+    E..F..G....
+
+pattern [scale]:
+    G..F..E....
+
+chord c is E;G;B
+chord c2 is B;D;F
+---
+A. B. C. & starting music
+new_pattern
+scale
+acc>scale
+c.
+c2.
+---

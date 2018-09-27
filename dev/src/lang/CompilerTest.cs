@@ -14,7 +14,7 @@ namespace compiler
             Test[] testList =
             {
                 new Token.Test__Token(), new InputBuffer.Test__InputBuffer(), new LexicalAnalyzer.Test__LexicalAnalyzer(),
-                new SyntaxError.Test__SyntaxError(), new Parser.Test__Parser(), new NoteSheet.Test__NoteSheet()
+                new SyntaxError.Test__SyntaxError(), new Parser.Test__Parser(), new NoteSheet.Test__NoteSheet(), new Serializer__TestSerializer()
             }; /* ADD INSTANCES OF NEW TEST CASES HERE */
 
             foreach (Test test in testList)
@@ -38,6 +38,22 @@ namespace compiler
     }
 
     /* ---------------- TESTS ---------------- */
+
+    partial class Serializer
+    {
+        internal class Test__Serializer : Test
+        {
+            public Test__Serializer()
+            {
+                testName = "Serializer";
+            }
+
+            public override void RunTests()
+            {
+                
+            }
+        }
+    }
 
     partial class NoteSheet
     {
@@ -690,6 +706,7 @@ namespace compiler
                 TestParse("Note Sheet Test 7", GetParseFile("note_sheet_test7.ka"), "");
                 TestParse("Note Sheet Test 8", GetParseFile("note_sheet_test8.ka"), "");
                 TestParse("Note Sheet Test 9", GetParseFile("note_sheet_test9.ka"), "");
+                TestParse("Note Sheet Test 10", GetParseFile("note_sheet_test10.ka"), "");
 
                 /* Destructive Testing */
                 TestParse("Destructive Test 1", GetParseFile("d_parse_test1.ka"), "");
