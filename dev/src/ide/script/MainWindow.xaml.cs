@@ -57,7 +57,7 @@ namespace ide
         private string                    currentDirectory; /* Keeps track of the directory of the current file             */
         private string                    currentText;      /* Buffer to store Run text that will be checked for keywords   */
                                                             /* (initialized to the bin directory                            */
-        private string                    savedFilename;     /* Name of file we are writing to                              */
+        private string                    savedFilename;    /* Name of file we are writing to                              */
 
         /* Style text struct that includes its location, content, and style */
         private struct StyleText
@@ -364,7 +364,7 @@ namespace ide
             validFileRequested = ofDialog.ShowDialog();
             filename = (validFileRequested == true) ? ofDialog.FileName : null;
 
-            /* If filename specified, open the file */
+            /* If a filename was stored, open the file */
             if (filename != null)
             {
                 /* Get the text from the file */
