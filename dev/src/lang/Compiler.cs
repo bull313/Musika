@@ -949,29 +949,55 @@ namespace compiler
                 Expect(TokenType.NEWLINE);
         }
 
-        private void ParseOctave() /* octave -> OCTAVE COLON NUMBER NEWLINE | OCTAVE COLON ID NEWLINE */
+        private void ParseOctave() /* octave -> OCTAVE COLON NUMBER NEWLINE | OCTAVE COLON PLUS NUMBER NEWLINE | OCTAVE COLON ID NEWLINE */
         {
             /* Local Variables */
-            NoteSheet referenceSheet;   /* Referenced accompaniment note sheet      */
-            Token     next;             /* Next token                               */
-            int       newOctave;        /* Numerical value of new main octave       */
-            string    idName;           /* Name of accompaniment reference          */
+            NoteSheet referenceSheet;   /* Referenced accompaniment note sheet                                           */
+            Token     next;             /* Next token                                                                    */
+            int       newOctave;        /* Numerical value of new main octave                                            */
+            string    idName;           /* Name of accompaniment reference                                               */
+            bool      increment;        /* Determines if octave number is a raw value or an increment (with a plus sign) */
             /* / Local Variables */
 
             /* Parse keyword tokens */
             Expect(TokenType.OCTAVE);
             Expect(TokenType.COLON);
 
-            /* Value is an integer */
+            /* Check the next token */
             next = lexer.GetToken();
-            if (next.Type == TokenType.NUMBER)
+
+            /* Value is a plus sign */
+            if (next.Type == TokenType.PLUS)
+            {
+                /* Check that the next value is a number */
+                next = lexer.GetToken();
+
+                if (next.Type == TokenType.NUMBER)
+                {
+                    /* Get the increment value */
+                    newOctave = int.Parse(next.Content);
+
+                    /* Increment current octave by new value */
+                    noteSheet.octave += newOctave;
+
+                    /* Throw an error if octave is below 0 */
+                    if (noteSheet.octave < 0 && !ignoreContext)
+                        throw new ContextError(ContextError.OCTAVE_ERROR);
+                }
+
+                else
+                    throw new SyntaxError(next.Type, TokenType.NUMBER);
+            }
+
+            /* Value is an integer */
+            else if (next.Type == TokenType.NUMBER)
             {
                 newOctave = int.Parse(next.Content);
 
                 if (newOctave >= 0) /* Value is positive, so set the octave to this value */
-                    noteSheet.octave = int.Parse(next.Content);
-                else if (newOctave < 0) /* Value is negative, so subtract the current octave by the specified value  */
-                    noteSheet.octave += int.Parse(next.Content);
+                    noteSheet.octave = newOctave;
+                else if (newOctave < 0) /* Value is negative or has a plus sign, so add the current octave by the specified value  */
+                    noteSheet.octave += newOctave;
 
                 if (noteSheet.octave < 0 && !ignoreContext)
                     throw new ContextError(ContextError.OCTAVE_ERROR);
@@ -1708,23 +1734,24 @@ namespace compiler
             switch (nextChar)
             {
                 /* Single-character tokens */
-                case '[' : return new Token(char.ToString(nextChar), TokenType.LBRACKET);
-                case ']' : return new Token(char.ToString(nextChar), TokenType.RBRACKET);
-                case '!' : return new Token(char.ToString(nextChar), TokenType.BANG);
-                case '(' : return new Token(char.ToString(nextChar), TokenType.LPAREN);
-                case ')' : return new Token(char.ToString(nextChar), TokenType.RPAREN);
-                case '{' : return new Token(char.ToString(nextChar), TokenType.LBRACE);
-                case '}' : return new Token(char.ToString(nextChar), TokenType.RBRACE);
-                case '.' : return new Token(char.ToString(nextChar), TokenType.DOT);
-                case '\'': return new Token(char.ToString(nextChar), TokenType.APOS);
-                case ',' : return new Token(char.ToString(nextChar), TokenType.COMMA);
-                case '>' : return new Token(char.ToString(nextChar), TokenType.GREATER);
-                case '|' : return new Token(char.ToString(nextChar), TokenType.NOTE);
-                case '/' : return new Token(char.ToString(nextChar), TokenType.SLASH);
-                case ':' : return new Token(char.ToString(nextChar), TokenType.COLON);
-                case ';' : return new Token(char.ToString(nextChar), TokenType.SEMICOLON);
-                case '^' : return new Token(char.ToString(nextChar), TokenType.CARROT);
-                case '\0': return new Token(char.ToString(nextChar), TokenType.EOF);
+                case '[' :  return new Token(char.ToString(nextChar), TokenType.LBRACKET);
+                case ']' :  return new Token(char.ToString(nextChar), TokenType.RBRACKET);
+                case '!' :  return new Token(char.ToString(nextChar), TokenType.BANG);
+                case '(' :  return new Token(char.ToString(nextChar), TokenType.LPAREN);
+                case ')' :  return new Token(char.ToString(nextChar), TokenType.RPAREN);
+                case '{' :  return new Token(char.ToString(nextChar), TokenType.LBRACE);
+                case '}' :  return new Token(char.ToString(nextChar), TokenType.RBRACE);
+                case '.' :  return new Token(char.ToString(nextChar), TokenType.DOT);
+                case '\'':  return new Token(char.ToString(nextChar), TokenType.APOS);
+                case ',' :  return new Token(char.ToString(nextChar), TokenType.COMMA);
+                case '>' :  return new Token(char.ToString(nextChar), TokenType.GREATER);
+                case '|' :  return new Token(char.ToString(nextChar), TokenType.NOTE);
+                case '/' :  return new Token(char.ToString(nextChar), TokenType.SLASH);
+                case ':' :  return new Token(char.ToString(nextChar), TokenType.COLON);
+                case ';' :  return new Token(char.ToString(nextChar), TokenType.SEMICOLON);
+                case '^' :  return new Token(char.ToString(nextChar), TokenType.CARROT);
+                case '+':   return new Token(char.ToString(nextChar), TokenType.PLUS);
+                case '\0':  return new Token(char.ToString(nextChar), TokenType.EOF);
             }
 
             string returnTokenString = "";
@@ -2182,7 +2209,7 @@ namespace compiler
     enum TokenType
     {
         /* Basic Lexicons */
-        NEWLINE, LBRACKET, RBRACKET, BANG, LPAREN, RPAREN, LBRACE, RBRACE, DOT, APOS, COMMA, EQUAL, GREATER, SLASH, COLON, SEMICOLON, CARROT,
+        NEWLINE, LBRACKET, RBRACKET, BANG, LPAREN, RPAREN, LBRACE, RBRACE, DOT, APOS, COMMA, EQUAL, GREATER, SLASH, COLON, SEMICOLON, CARROT, PLUS,
         /* Compound Lexicons */
         BREAK, ID, SIGN, NOTE, STRING, NUMBER,
         /* Tier 1 Keywords */

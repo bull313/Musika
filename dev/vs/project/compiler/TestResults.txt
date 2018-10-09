@@ -265,6 +265,8 @@ Verify that next token has content "
 Verify that this token has a type of NEWLINE => PASSES
 Verify that next token has content "%" => PASSES
 Verify that this token has a type of UNKNOWN => PASSES
+Verify that next token has content "+" => PASSES
+Verify that this token has a type of PLUS => PASSES
 Verify that next token has content "
 " => PASSES
 Verify that this token has a type of NEWLINE => PASSES
@@ -313,7 +315,7 @@ Verify that this token has a type of EOF => PASSES
 Verify that the tokens received by PeekToken() are the same (i.e. PeekToken does not remove the token from the buffer => PASSES
 
 OVERALL CASE RESULTS:
-Total Comparisons: 247
+Total Comparisons: 249
 Total Failures: 0
 Test Result: PASS
 
@@ -350,7 +352,7 @@ Testing Note Sheet Test 6: Parser correctly threw no syntax error => PASSES
 Testing Note Sheet Test 7: Parser correctly threw no syntax error => PASSES
 Testing Note Sheet Test 8: Parser correctly threw no syntax error => PASSES
 Testing Note Sheet Test 9: Parser correctly threw no syntax error => PASSES
-Testing Note Sheet Test 10: Parser correctly threw no syntax error => PASSES
+Testing Note Sheet Test 11: Parser correctly threw no syntax error => PASSES
 Testing Destructive Test 1: Parser correctly threw no syntax error => PASSES
 Testing Destructive Test 2: Verify that the correct syntax error was thrown => PASSES
 Testing Destructive Test 3: Verify that the correct syntax error was thrown => PASSES
@@ -1725,30 +1727,25 @@ Verify layer exists at position 9 => PASSES
 Verify note #0 has the correct note name => PASSES
 Verify note #0 has the correct note frequency => PASSES
 Verify note #0 has the correct note length => PASSES
-Verify that a context error was expected => PASSES
-Verify that the correct context error message was thrown => PASSES
+Verify note #0 has the correct note name => PASSES
+Verify note #0 has the correct note frequency => PASSES
+Verify note #0 has the correct note length => PASSES
+Verify note #1 has the correct note name => PASSES
+Verify note #1 has the correct note frequency => PASSES
+Verify note #1 has the correct note length => PASSES
+Verify note #2 has the correct note name => PASSES
+Verify note #2 has the correct note frequency => PASSES
+Verify note #2 has the correct note length => PASSES
+Verify note #3 has the correct note name => PASSES
+Verify note #3 has the correct note frequency => PASSES
+Verify note #3 has the correct note length => PASSES
 
 OVERALL CASE RESULTS:
-Total Comparisons: 1365
-Total Failures: 0
-Test Result: PASS
-
-BEGIN SERIALIZER TEST:
-Test that the serialized file exists => PASSES
-Verify the object has been successfully deserialized and that its data is the same => PASSES
-Verify the object has been successfully deserialized and that its data is the same => PASSES
-Verify the object has been successfully deserialized and that its data is the same => PASSES
-Verify the object has been successfully deserialized and that its data is the same => PASSES
-Verify the object has been successfully deserialized and that its data is the same => PASSES
-Verify the object has been successfully deserialized and that its data is the same => PASSES
-Verify the object has been successfully deserialized and that its data is the same => PASSES
-
-OVERALL CASE RESULTS:
-Total Comparisons: 8
+Total Comparisons: 1375
 Total Failures: 0
 Test Result: PASS
 
 OVERALL TEST SET:
-Total Tests: 7
+Total Tests: 6
 Total Failures: 0
 Results: TEST PASSED

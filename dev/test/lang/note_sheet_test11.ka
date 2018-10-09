@@ -1,0 +1,17 @@
+title: "a"
+author: "b"
+key: Cmaj
+time: common
+tempo: 4 = 60
+octave: 4
+---
+
+---
+A....
+! octave: +1 !
+A....
+! octave: -1 !
+A....
+! octave: 1 !
+A....
+---
