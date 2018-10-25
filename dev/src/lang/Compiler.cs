@@ -18,8 +18,11 @@ namespace compiler
         public static void Serialize(NoteSheet instance, string filepath, string filename) /* Takes a NoteSheet instance, file name, and file path and uses them to */
                                                                                            /* serialize the instance and store it at the path with the name         */
         {
+            /* Set up the formatter and stream object s */
             IFormatter formatter = new BinaryFormatter();
             Stream stream = new FileStream(filepath + filename + SERIALIZE_EXT, FileMode.Create, FileAccess.Write, FileShare.None);
+
+            /* Serialize the given obejct */
             formatter.Serialize(stream, instance);
             stream.Close();
         }
@@ -29,11 +32,16 @@ namespace compiler
         {
             try
             {
+                /* Set up the formatter and stream object */
                 IFormatter formatter = new BinaryFormatter();
                 Stream stream = new FileStream(filepath + filename + SERIALIZE_EXT, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+                /* Deserialize the object and return it */
                 NoteSheet instance = (NoteSheet)formatter.Deserialize(stream);
                 return instance;
             }
+
+            /* Return null if the given file was not found */
             catch (FileNotFoundException)
             {
                 return null;
@@ -87,7 +95,7 @@ namespace compiler
             string      name;               /* Formatted note name              */
             /* / Local Variables */
 
-            /* return 0 frequency for "rest" note */
+            /* Return 0 frequency for "rest" note */
             if (noteName == "|") returnValue = 0;
 
             else
