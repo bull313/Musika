@@ -6,7 +6,7 @@ namespace compiler
 {
     class CompilerTest
     {
-        static void Main(string[] args)
+        public static int RunUnitTests()
         {
             int tests = 0, testFailures = 0;
             string output = "";
@@ -33,7 +33,7 @@ namespace compiler
             System.IO.File.WriteAllText("../../TestResults.txt", output);
             Console.WriteLine(output);
 
-            System.Environment.Exit(testFailures);
+            return testFailures;
         }
     }
 
