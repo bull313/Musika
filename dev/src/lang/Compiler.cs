@@ -974,17 +974,18 @@ namespace compiler
 
                 if (next.Type == TokenType.NUMBER)
                 {
-                    /* Get the increment value */
+                    /* Get the number value */
                     newOctave = int.Parse(next.Content);
 
-                    /* Increment current octave by new value */
+                    /* Increment current octave by the specified value */
                     noteSheet.octave += newOctave;
 
-                    /* Throw an error if octave is below 0 */
+                    /* Throw an error if the new octave is below 0 */
                     if (noteSheet.octave < 0 && !ignoreContext)
                         throw new ContextError(ContextError.OCTAVE_ERROR);
                 }
 
+                /* Plus was followed by a non-number token: throw a syntax error */
                 else
                     throw new SyntaxError(next.Type, TokenType.NUMBER);
             }
