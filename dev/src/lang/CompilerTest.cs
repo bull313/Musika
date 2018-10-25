@@ -951,6 +951,7 @@ namespace compiler
                 VerifyNextToken("}", TokenType.RBRACE);
                 VerifyNextToken("\n", TokenType.NEWLINE);
                 VerifyNextToken("%", TokenType.UNKNOWN);
+                VerifyNextToken("+", TokenType.PLUS);
                 VerifyNextToken("\n", TokenType.NEWLINE);
                 VerifyNextToken("\0", TokenType.EOF);
 
