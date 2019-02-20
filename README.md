@@ -44,7 +44,7 @@ Also note that single-line comments are specified with an _&_ and multi-line com
  multi-line comment!
 <=
 
-& ... Code before multi-line comment ...
+& ... Code after multi-line comment ...
 </i>
 </pre>
 
