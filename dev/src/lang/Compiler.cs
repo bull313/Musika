@@ -2244,6 +2244,7 @@ namespace compiler
     [Serializable]
     class Sheet             : List<NoteSet>            { }
 
+    [Serializable]
     class SheetSet          : List<Sheet>              { }
 
     class PositionSheetMap  : List<PositionSheetPair>  { }
