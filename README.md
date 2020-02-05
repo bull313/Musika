@@ -603,7 +603,7 @@ c>E8.^4 c>B8.^4 c>C8.^4 c>D8.^4
 
 </pre>
 
-#### exapmle3.ka
+#### example3.ka
 
 <pre>
 <b>title</b>: "High Noon Chorus Patterns"
