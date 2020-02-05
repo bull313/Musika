@@ -327,3 +327,9 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+
+# Test Results File
+TestResults.txt
+
+# Compiled (Serialized) Musika Files
+*.mkc
