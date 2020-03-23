@@ -27,6 +27,8 @@
 
         <!-- Menu Bar -->
         <Menu DockPanel.Dock="Top">
+            
+            <!-- File -->
             <MenuItem Header="File">
 
                 <MenuItem Header="New"      x:Name="File_New"       Click="File_New_Click"      />
@@ -36,6 +38,14 @@
                 <MenuItem Header="Exit"     x:Name="File_Exit"      Click="File_Exit_Click"     />
 
             </MenuItem>
+
+            <!-- Debug -->
+            <MenuItem Header="Build">
+
+                <MenuItem Header="Build"    x:Name="Build_Build"    Click="Build_Build_Click"   />
+
+            </MenuItem>
+            
         </Menu>
         <!-- ================ -->
 

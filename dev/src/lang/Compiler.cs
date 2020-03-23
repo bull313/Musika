@@ -676,7 +676,7 @@ namespace compiler
     }
 
     /* Indicates that contextual error has been made */
-    partial class ContextError : Exception
+    public partial class ContextError : Exception
     {
         private const string BASE_STRING                = "CONTEXT ERROR: ";
 
@@ -1450,7 +1450,6 @@ namespace compiler
             Token     next;             /* Next token                                                                    */
             int       newOctave;        /* Numerical value of new main octave                                            */
             string    idName;           /* Name of accompaniment reference                                               */
-            bool      increment;        /* Determines if octave number is a raw value or an increment (with a plus sign) */
             /* / Local Variables */
 
             /* Parse keyword tokens */
@@ -2126,7 +2125,7 @@ namespace compiler
     }
 
     /* Exception subclass that is thrown when a syntax error is made in the parser */
-    partial class SyntaxError : Exception
+    public partial class SyntaxError : Exception
     {
         public SyntaxError(TokenType actual, params TokenType[] expected) : base(CreateErrorString(actual, expected)) { }
 
@@ -2745,7 +2744,7 @@ namespace compiler
     }
 
     /* All the possible token types */
-    enum TokenType
+    public enum TokenType
     {
         /* Basic Lexicons */
         NEWLINE, LBRACKET, RBRACKET, BANG, LPAREN, RPAREN, LBRACE, RBRACE, DOT, APOS, COMMA, EQUAL, GREATER, SLASH, COLON, SEMICOLON, CARROT, PLUS,

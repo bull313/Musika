@@ -1,13 +1,12 @@
 ﻿using Microsoft.Win32;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
+
+using compiler;
 
 namespace ide
 {
@@ -57,7 +56,7 @@ namespace ide
         private string                    currentDirectory; /* Keeps track of the directory of the current file             */
         private string                    currentText;      /* Buffer to store Run text that will be checked for keywords   */
                                                             /* (initialized to the bin directory                            */
-        private string                    savedFilename;    /* Name of file we are writing to                              */
+        private string                    savedFilename;    /* Name of file we are writing to                               */
 
         /* Style text struct that includes its location, content, and style */
         private struct StyleText
@@ -300,45 +299,11 @@ namespace ide
          *  ---------------- MENU BAR CLICK HANDLERS ----------------
         */
 
-        private void File_Exit_Click(object sender, RoutedEventArgs e)
-        {
-            /* Exit the program */
-            System.Environment.Exit(0);
-        }
-
         private void File_New_Click(object sender, RoutedEventArgs e)
         {
             /* Clear text */
             Editor.Document.Blocks.Clear();
             savedFilename = null; /* Clear the saved file buffer to always prompt a filename on first save */
-        }
-
-        private void File_Save_Click(object sender, RoutedEventArgs e)
-        {
-            /* Re-save a saved file or save a new one */
-            if (savedFilename != null)
-                File.WriteAllText(savedFilename, GetProgramText());
-
-            /* This is an unsaved file, so treat this function just like Save As */
-            else
-                File_SaveAs_Click(sender, e);
-        }
-
-        private void File_SaveAs_Click(object sender, RoutedEventArgs e)
-        {
-            /* Save a new file */
-            SaveFileDialog dialog = new SaveFileDialog()
-            {
-                Filter = "Musika Files(*.ka)|*.ka|All(*.*)|*"
-            };
-
-            bool? fileSelected = dialog.ShowDialog();
-
-            if (fileSelected == true)
-            {
-                savedFilename = dialog.FileName; /* Store the file name into a variable to save more quickly later */
-                File.WriteAllText(savedFilename, GetProgramText());
-            }
         }
 
         private void File_Open_Click(object sender, RoutedEventArgs e)
@@ -376,6 +341,100 @@ namespace ide
 
                 /* Set the new directory to the directory of the opened file */
                 currentDirectory = Path.GetDirectoryName(filename);
+                savedFilename = Path.GetFileName(filename);
+            }
+        }
+
+        private void File_Save_Click(object sender, RoutedEventArgs e)
+        {
+            /* Re-save a saved file or save a new one */
+            if (currentDirectory != null && savedFilename != null)
+                File.WriteAllText(Path.Combine(currentDirectory, savedFilename), GetProgramText());
+
+            /* This is an unsaved file, so treat this function just like Save As */
+            else
+                File_SaveAs_Click(sender, e);
+        }
+
+        private void File_SaveAs_Click(object sender, RoutedEventArgs e)
+        {
+            /* Local Variables */
+            SaveFileDialog dialog;
+            bool? fileSelected;
+            /* / Local Variables */
+
+            /* Save a new file */
+            dialog = new SaveFileDialog()
+            {
+                Filter = MUSIKA_FILE_FILTER
+            };
+
+            fileSelected = dialog.ShowDialog();
+
+            if (fileSelected == true)
+            {
+                /* Store the file name into a variable to save more quickly later */
+                currentDirectory = Path.GetDirectoryName(dialog.FileName);
+                savedFilename = Path.GetFileName(dialog.FileName); 
+                File_Save_Click(sender, e);
+            }
+        }
+
+        private void File_Exit_Click(object sender, RoutedEventArgs e)
+        {
+            /* Exit the program */
+            System.Environment.Exit(0);
+        }
+
+        private void Build_Build_Click(object sender, RoutedEventArgs e)
+        {
+            /* Local Variables */
+            Compiler compiler;
+            string fileNameNoExtension;
+            string outputMessage = "";
+            string sourceCode;
+            /* / Local Variables */
+
+            /* Attempt to build current file */
+            try
+            {
+                /* Get the current file */
+                if (currentDirectory != null && savedFilename != null)
+                {
+                    /* Get the saved source code from the file */
+                    sourceCode = File.ReadAllText(Path.Combine(currentDirectory, savedFilename));
+                    fileNameNoExtension = Path.ChangeExtension(savedFilename, null);
+
+                    /* Build source code and save/serialize binary if build is successful */
+                    compiler = new Compiler(currentDirectory, savedFilename, sourceCode);
+                    compiler.CompileToNoteSheet();
+
+                    /* Build success output message */
+                    outputMessage = "BUILD SUCCESSFUL\n\nCompiled sheet saved to " + fileNameNoExtension + ".mkc";
+                }
+                else
+                {
+                    /* No file was selected */
+                    outputMessage = "Cannot build: No file is selected. Please open and/or save a file.";
+                }
+            }
+
+            /* Syntax Error thrown by parser */
+            catch (SyntaxError se)
+            {
+                outputMessage = "SYNTAX ERROR\n\n" + se.Message;
+            }
+
+            /* Context Error thrown by parser */
+            catch (ContextError ce)
+            {
+                outputMessage = "CONTEXTUAL ERROR\n\n" + ce.Message;
+            }
+
+            /* Output message to user */
+            finally
+            {
+                MessageBox.Show(outputMessage);
             }
         }
 
