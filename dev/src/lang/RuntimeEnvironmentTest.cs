@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using compiler;
 
 namespace runtimeenvironment
@@ -96,9 +97,24 @@ namespace runtimeenvironment
                 }
             }
 
+            private void TestConstructWAV()
+            {
+                string filepath = "../../../../../test/lang/";
+                string filename = "re_test2.ka";
+
+                Parser p = new Parser(System.IO.File.ReadAllText(filepath + filename), filepath, filename);
+                Serializer.Serialize(p.ParseScore(), filepath, filename);
+
+                RuntimeEnvironment r = new RuntimeEnvironment(filepath, filename);
+                r.ConstructWAV();
+
+                VerifyEqual(File.Exists(Path.Combine(filepath, Path.ChangeExtension(filename, null)) + ".wav"), true, "Verify WAV file exists (play it to test that it sounds correct");
+            }
+
             public override void RunTests()
             {
                 TestConstructor();
+                TestConstructWAV();
             }
         }
     }

@@ -5,7 +5,8 @@ time: common
 tempo: 4 = 60
 octave: 4
 ---
-
+pattern [harmony]:
+    E....F...G..A.B..C'...D'....E'.....
 ---
 C....D...E..F.G..A...B....C'..... & just a C major scale
 ---
