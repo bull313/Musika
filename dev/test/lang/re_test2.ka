@@ -126,7 +126,7 @@ pattern [hail_to_the_king]:
     ! time: 1 !
     Eb5. |.
 ---
-repeat(20) {
+repeat(5) {
     layer(test1>harmony)
     test1
     & layer(test1)

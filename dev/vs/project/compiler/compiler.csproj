@@ -50,9 +50,6 @@
     <Compile Include="..\..\..\src\lang\RuntimeEnvironment.cs">
       <Link>RuntimeEnvironment.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\src\lang\RuntimeEnvironmentTest.cs">
-      <Link>RuntimeEnvironmentTest.cs</Link>
-    </Compile>
     <Compile Include="..\..\..\src\lang\Test.cs">
       <Link>Test.cs</Link>
     </Compile>

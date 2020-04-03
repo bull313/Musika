@@ -9,7 +9,6 @@ namespace test
         {
             int numFails = 0;
             numFails += CompilerTest.RunUnitTests();
-            numFails += RuntimeEnvironmentTest.RunUnitTests();
             System.Environment.Exit(numFails);
         }
     }

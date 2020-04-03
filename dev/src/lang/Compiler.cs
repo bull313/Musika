@@ -4,23 +4,522 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace compiler
 {
-    /* Serializes and deserializes note sheets to allow storage and access in persistent memory */
-    partial class Serializer
+    /* Abstract representation of all compiler modules */
+    /* This class should be the only one directly referenced by classes outside this namespace */
+    public partial class Compiler
     {
-        private static readonly string SERIALIZE_EXT = ".mkc"; /* File extension of serialized NoteSheet objects */
+        /* CONSTANTS */
+        public const string MUSIKA_FILE_EXT = ".ka"; /* Musika file extension */
+        /* / CONSTANTS */
+
+
+        /* PROPERTIES */
+        private readonly string filepath;   /* Location to store code/representations           */
+        private readonly string filename;   /* Name of code and representation files            */
+
+        private string code;                /* Source code to compile                           */
+        /* / PROPERTIES */
+
+
+        /* CONSTRUCTORS */
+        public Compiler(string filepath, string filename, string code = null) /* Path and name are separate */
+        {
+            this.filepath = filepath;
+            this.filename = Path.ChangeExtension(filename, null);
+
+            GetCode(code);
+        }
+
+        /* / CONSTRUCTORS */
+
+        /* PRIVATE METHODS */
+        private void GetCode(string code) /* If code is not provided, read from the given file path or file name */
+        {
+            if (code != null)
+            {
+                this.code = code;
+            }
+            else
+            {
+                this.code = File.ReadAllText(Path.Combine(filepath, Path.ChangeExtension( filename, MUSIKA_FILE_EXT )));
+            }
+        }
+        /* / PRIVATE METHODS */
+
+
+        /* PUBLIC METHODS */
+        public void CompileToNoteSheet()
+        {
+            Parser parser = new Parser(code, filepath, filename);
+            NoteSheet noteSheet = parser.ParseScore();
+            Serializer.Serialize(noteSheet, filepath, filename);
+        }
+
+        public void CompileToWAV()
+        {
+            /* Local Variables */
+            string serializedFileAddress;   /* Filepath + name with the serialized file extension   */
+            WAVConstructor wavConstructor;  /* Constructs a WAV file from serialized file           */
+            /* / Local Variables */
+
+            /* Check if there is a serialized note sheet file. If not, generate it */
+            serializedFileAddress = Path.Combine
+            (
+                filepath, Path.ChangeExtension(filename, Serializer.SERIALIZE_EXT)
+            );
+
+            if (File.Exists(serializedFileAddress) == false)
+            {
+                CompileToNoteSheet();
+            }
+            
+            /* Use the WAV constructor to write the corresponding WAV file */
+            wavConstructor = new WAVConstructor(filepath, filename);
+            wavConstructor.ConstructWAV();
+        }
+        /* / PUBLIC METHODS */
+    }
+
+    /* Constructs a WAV file from a compiled note sheet */
+    class WAVConstructor
+    {
+        /* PROPERTIES */
+
+        private readonly NoteSheet noteSheet;    /* The compiled note sheet to be converted to WAV   */
+        private readonly string filename;        /* The name of the constructed WAV file             */
+        private readonly string filepath;        /* Location where the WAV file should be saved      */
+
+        /* / PROPERTIES */
+
+
+        /* CONSTRUCTOR */
+
+        public WAVConstructor(string filepath, string filename)
+        {
+            /* Store the file information */
+            this.filepath = filepath;
+            this.filename = filename;
+
+            /* Deserialize the compiled NoteSheet and store it */
+            noteSheet = Serializer.Deserialize(filepath, filename);
+        }
+
+        /* / CONSTRUCTOR */
+
+
+        /* PRIVATE METHODS */
+
+        private void ConstructFreqAndDurationTables(Sheet sheet, out double[][] frequencyTable, out double[] durationTable) /* Takes a Sheet of music and converts it into 2 tables:                    */
+        {                                                                                                                   /* A table of chords laid out by frequencies and a table of note durations  */
+            /* Local Variables */
+            List<List<double>> frequencyTableList;  /* Table to dynamically add frequenices to a table */
+            List<double> durationTableList;         /* Table to dynamically add durations to a table   */
+            /* / Local Variables */
+
+            /* Initialize dynamic tables */
+            frequencyTableList = new List<List<double>>();
+            durationTableList = new List<double>();
+
+            /* Get the list of list of frequencies and maximum durations from the note sheet */
+            foreach (NoteSet noteSet in sheet)
+            {
+                frequencyTableList.Add( noteSet.Select( note => (double) note.frequency ).ToList() );
+                durationTableList.Add( noteSet.Select( note => note.length ).Max() );
+            }
+
+            /* Convert dynamic tables to arrays */
+            frequencyTable = frequencyTableList.Select(chord => chord.ToArray()).ToArray();
+            durationTable = durationTableList.ToArray();
+        }
+
+        /* / PRIVATE METHODS */
+
+
+        /* PUBLIC METHODS */
+
+        public void ConstructWAV()  /* Package the music sheet and store it as a WAV file */
+        {
+            /* Local Variables */
+            OffsetFrequencyDurationTableListMap positionFrequencyDurationTable; /* Maps duration offsets (in seconds) to a list of musical sheets that should begin playing at that offset  */
+            WAVFile wavFile;                                                    /* WAV file object to convert frequency and duration data to a WAV binary                                   */
+            double offset;                                                      /* Buffer for the current offset (in seconds)                                                               */
+            int i;                                                              /* Increment variable                                                                                       */
+            /* Local Variables */
+
+            /* Create frequency and duration tables from the main sheet */
+            ConstructFreqAndDurationTables(noteSheet.Sheet, out double[][] frequencyTable, out double[] durationTable);
+
+            /* Create a list for the first offset (where the main sheet will be placed) and add that buffer to the main map */
+            positionFrequencyDurationTable = new OffsetFrequencyDurationTableListMap
+            {
+                { 
+                    0.0,
+                    new FrequencyDurationTableList
+                    {
+                        new FrequencyDurationTable(frequencyTable, durationTable)
+                    }
+                }
+            };
+
+            foreach (KeyValuePair<int, SheetSet> positionSheetSetPair in noteSheet.Layers)
+            {
+                /* Convert a note position to an offset by summing the note lengths before it */
+                offset = 0.0;
+
+                for (i = 0; i < positionSheetSetPair.Key; ++i)
+                {
+                    offset += noteSheet.Sheet[i][0].length;
+                }
+
+                foreach (Sheet layerSheet in positionSheetSetPair.Value)
+                {
+                    /* Create frequency and duration tables from this layer */
+                    ConstructFreqAndDurationTables(layerSheet, out double[][] layerFrequencyTable, out double[] layerDurationTable);
+
+                    /* If there is already a table at this duration, add this table to the map */
+                    if (positionFrequencyDurationTable.ContainsKey(offset))
+                    {
+                        positionFrequencyDurationTable[offset].Add(new FrequencyDurationTable(layerFrequencyTable, layerDurationTable));
+                    }
+                    
+                    /* If there is no table at this duration, create a new table list and add that to the map */
+                    else
+                    {
+                        positionFrequencyDurationTable.Add
+                        (
+                            offset,
+                            new FrequencyDurationTableList
+                            {
+                                new FrequencyDurationTable(layerFrequencyTable, layerDurationTable)
+                            }
+                        );
+                    }
+                }
+            }
+
+            /* Write WAV file */
+            wavFile = new WAVFile(noteSheet.Layers.Count + 1, positionFrequencyDurationTable, filepath, Path.ChangeExtension(filename, WAVFile.WAV_FILE_EXT));
+            wavFile.WriteWAVFile();
+        }
+
+        public bool NoteSheetReceived() /* Check if the notesheet was successfully stored from the serialized Musika file */
+        {
+            return noteSheet != null;
+        }
+
+        /* / PUBLIC METHODS */
+    }
+
+    class WAVFile
+    {
+        /* CONSTANTS */
+
+        public const double ANGULAR_FREQUENCY_COEFFICIENT = (2 * Math.PI) / WAVDataChunk.SAMPLES_PER_SEC_PER_CHANNEL;   /* Angular frequency of the sine wave function adjusted for the samples per second per channel  */
+        public const int BITS_IGNORED = 8;                                                                              /* Number of bits ignored when calculating WAV file size                                        */
+        public const string WAV_FILE_EXT = ".wav";                                                                      /* File extension WAV files                                                                     */
+
+        /* / CONSTANTS */
+
+
+        /* PROPERTIES */
+
+        private readonly OffsetFrequencyDurationTableListMap positionFrequencyDurationTable;    /* Map containing a list of frequency and duration tables at each offset of the song    */
+        private readonly WAVDataChunk data;                                                     /* WAV data chunk contains sample data and some metadata                                */
+        private readonly int numLayers;                                                         /* Total number of layers of the song, including the main sheet                         */
+        private readonly string wavFilename;                                                    /* Name of the WAV file                                                                 */
+        private readonly string wavFilePath;                                                    /* Path where the WAV file is located                                                   */
+
+        /* / PROPERTIES */
+
+
+        /* CONSTRUCTOR */
+
+        public WAVFile(int numLayers, OffsetFrequencyDurationTableListMap positionFrequencyDurationTable, string wavFilePath, string wavFilename)
+        {
+            data                                = new WAVDataChunk();
+
+            this.numLayers                      = numLayers;
+            this.positionFrequencyDurationTable = positionFrequencyDurationTable;
+            this.wavFilePath                    = wavFilePath;
+            this.wavFilename                    = wavFilename;
+        }
+
+        /* / CONSTRUCTOR */
+
+
+        /* PRIVATE METHODS */
+
+        private double ConvertSecondsToSamples(double duration) /* Number of samples is the duratin in seconds times the sample rate per channel */
+        {
+            return WAVDataChunk.SAMPLES_PER_SEC_PER_CHANNEL * duration;
+        }
+
+        private int GetNumberOfSamples(double[] durationTable) /* Number of samples is the sum total duration times the sample rate per channel */
+        {
+            return (int) durationTable.Select(duration => ConvertSecondsToSamples(duration)).Sum();
+        }
+
+        private short[] GenerateSampleData(int maxChordLength, double[][] frequencyTable, double[] durationTable) /* Compute sample data values from a given frequency and duration table */
+        {
+            /* Local Variables */
+            double amplitude;                   /* Sine wave function amplitude                                 */
+            double elapsedTime;                 /* Time (in seconds) of already processed sample data           */
+            int chordIndex;                     /* Increment variable for chords (collection of frequencies)    */
+            int freqIndex;                      /* Increment variable for the current frequency in a chord      */
+            int timeIndex;                      /* Increment variable for the current time/sample               */
+            short[] returnData;                 /* Generated sample data from the frequency and duration tabels */
+            /* / Local Variables */
+
+            /* Initiailize the return data */
+            returnData = new short[ GetNumberOfSamples(durationTable) ];
+
+            /* Compute max amplitude based on the number of bits and number of notes in largest chord */
+            amplitude = WAVDataChunk.MAX_AMPLITUDE / maxChordLength;
+
+            /* Generate and store samples */
+            elapsedTime = 0.0;
+
+            for (chordIndex = 0; chordIndex < durationTable.Length; ++chordIndex)
+            {
+                for (
+                    timeIndex = (int) ConvertSecondsToSamples(elapsedTime);
+                    timeIndex < (int) ConvertSecondsToSamples(elapsedTime + durationTable[chordIndex]);
+                    ++timeIndex
+                )
+                {
+                    for (freqIndex = 0; freqIndex < frequencyTable[chordIndex].Length; ++freqIndex)
+                    {
+                        returnData[timeIndex] += (short)
+                        (
+                            amplitude * Math.Sin(ANGULAR_FREQUENCY_COEFFICIENT * frequencyTable[chordIndex][freqIndex] * timeIndex)
+                        );
+                    }
+                }
+
+                elapsedTime += durationTable[chordIndex];
+            }
+
+            /* Return result */
+            return returnData;
+        }
+
+        private short[] CombineSampleDataArrays(List<short[]> sampleDatasetList) /* Combine a list of sample data arrays into one big data array */
+        {
+            /* Local Variables */
+            int i;                          /* Increment variable  */
+            short[] combinedSampleData;     /* Combined data array */
+            /* / Local Variables */
+
+            /* Create a combined array with a size equal to the longest length sub-data list    */
+            /* Add each sample data value to the combined array                                 */
+            combinedSampleData = new short[ sampleDatasetList.Select(sampleDataSet => sampleDataSet.Length).ToList().Max() ];
+
+            foreach (short[] sampleDataset in sampleDatasetList)
+            {
+                for (i = 0; i < sampleDataset.Length; ++i)
+                {
+                    combinedSampleData[i] += sampleDataset[i];
+                }
+            }
+
+            return combinedSampleData;
+        }
+
+        /* / PRIVATE METHODS */
+
+        /* PUBLIC METHODS */
+
+        public void WriteWAVFile() /* Construct WAV binary file from WAV data */
+        {
+            /* Local Variables */
+            BinaryWriter binaryWriter;  /* Writes the binary data to a file stream          */
+            FileStream fileStream;      /* Stream to store the final WAV file               */
+            uint dwFileLength;          /* Size of the binary file minus the header data    */
+            /* / Local Variables */
+
+            /* Generate audio samples from the Notesheet */
+            CreateSampleData();
+
+            /* Create a file and binary writer to write to it */
+            fileStream = new FileStream(Path.Combine(wavFilePath, wavFilename), FileMode.Create);
+            binaryWriter = new BinaryWriter(fileStream);
+
+            /* Write WAV Header */
+            binaryWriter.Write(WAVHeader.S_GROUP_ID);
+            binaryWriter.Write(0); /* Temporarily set to 0: will be updated when everything else is written */
+            binaryWriter.Write(WAVHeader.S_RIFF_TYPE);
+
+            /* Write WAV Format Chunk */
+            binaryWriter.Write(WAVFormatChunk.S_GROUP_ID);
+            binaryWriter.Write(WAVFormatChunk.DW_CHUNK_SIZE);
+            binaryWriter.Write(WAVFormatChunk.W_FORMAT_TAG);
+            binaryWriter.Write(WAVFormatChunk.W_CHANNELS);
+            binaryWriter.Write(WAVFormatChunk.DW_SAMPLES_PER_SEC);
+            binaryWriter.Write(WAVFormatChunk.DW_AVG_BYTES_PER_SEC);
+            binaryWriter.Write(WAVFormatChunk.W_BLOCK_ALIGN);
+            binaryWriter.Write(WAVFormatChunk.W_BITS_PER_SAMPLE);
+
+            /* Write WAV Data Chunk */
+            binaryWriter.Write(WAVDataChunk.S_GROUP_ID);
+            binaryWriter.Write(data.dwChunkSize);
+
+            foreach (short dataPoint in data.sampleData)
+            {
+                binaryWriter.Write(dataPoint);
+            }
+
+            /* Update the file size section of the WAV header */
+            binaryWriter.Seek(WAVHeader.S_GROUP_ID.Length, SeekOrigin.Begin);
+            dwFileLength = (uint) binaryWriter.BaseStream.Length - BITS_IGNORED;
+            binaryWriter.Write(dwFileLength);
+
+            /* Close streams */
+            binaryWriter.Close();
+            fileStream.Close();
+        }
+
+        /* / PUBLIC METHODS */
+
+        private void CreateSampleData() /* Create a data array from the position frequency duration table map */
+        {
+            /* Local Variables */
+            Dictionary<double, int> offsetDict;                 /* Maps a time in seconds to the number of samples that makes it up                     */
+            OffsetSampleDatasetListMap offsetSampleDataListMap; /* Maps start times in seconds to lists of sample data sets that start at those offsets */
+            int finalSampleDataLength;                          /* Size of the final sample data array                                                  */
+            int timeIndex;                                      /* Increment variable for the current sample in a sample data array                     */
+            int maxChordLength;                                 /* Number of frequencies that makes up the largest chord in all layers                  */
+            int maxNumFrequencies;                              /* Largest number of frequencies that can possibly be played at the same time           */
+            int offsetIndex;                                    /* Starting sample index equivalent to waiting an offset in seconds                     */
+            int sampleDataLength;                               /* Length of sample data of a sub-sampled data array                                    */
+            short[] sampleData;                                 /* Buffer for sample data generated by given frequency and duration table               */
+            /* / Local Variables */
+
+            /* Find the maximum number of notes that can possibly play simultaneously at the same time */
+            maxChordLength = 0;
+
+            foreach (KeyValuePair<double, FrequencyDurationTableList> offsetFreqDurTablePair in positionFrequencyDurationTable)
+            {
+                foreach (FrequencyDurationTable frequencyDurationTable in offsetFreqDurTablePair.Value)
+                {
+                    foreach (double[] chord in frequencyDurationTable.FrequencyTable)
+                    {
+                        if (chord.Length > maxChordLength)
+                        {
+                            maxChordLength = chord.Length;
+                        }
+                    }
+                }
+            }
+
+            maxNumFrequencies = maxChordLength * numLayers;
+
+            /* Convert frequency and duration tables into data tables */
+            offsetSampleDataListMap = new OffsetSampleDatasetListMap();
+
+            foreach (KeyValuePair<double, FrequencyDurationTableList> positionFreqDurTablePair in positionFrequencyDurationTable)
+            {
+                foreach (FrequencyDurationTable freqDurTable in positionFreqDurTablePair.Value)
+                {
+                    sampleData = GenerateSampleData(maxNumFrequencies, freqDurTable.FrequencyTable, freqDurTable.DurationTable);
+
+                    if (offsetSampleDataListMap.ContainsKey(positionFreqDurTablePair.Key))
+                    {
+                        offsetSampleDataListMap[positionFreqDurTablePair.Key].Add(sampleData);
+                    }
+                    else
+                    {
+                        offsetSampleDataListMap.Add(positionFreqDurTablePair.Key, new List<short[]>() { sampleData });
+                    }
+                }
+            }
+
+            /* Combine data tabes that are at the same offest */
+            OffsetSampleDatasetMap positionDataTable = new OffsetSampleDatasetMap();
+
+            foreach (KeyValuePair<double, List<short[]>> positionDataListPair in offsetSampleDataListMap)
+            {
+                positionDataTable.Add(positionDataListPair.Key, CombineSampleDataArrays(positionDataListPair.Value));
+            }
+
+            /* Compute the length of the final sample data array */
+            finalSampleDataLength = 0;
+            offsetDict = new Dictionary<double, int>();
+
+            foreach (KeyValuePair<double, short[]> positionDataPair in positionDataTable)
+            {
+                offsetIndex = (int) ConvertSecondsToSamples(positionDataPair.Key);
+                offsetDict.Add(positionDataPair.Key, offsetIndex);
+
+                sampleDataLength = offsetIndex + positionDataPair.Value.Length;
+
+                if (finalSampleDataLength < sampleDataLength)
+                {
+                    finalSampleDataLength = sampleDataLength;
+                }
+            }
+
+            /* Build the final sample data array */
+            data.sampleData = new short[finalSampleDataLength];
+            data.dwChunkSize = (uint) finalSampleDataLength * (WAVFormatChunk.W_BITS_PER_SAMPLE / 8);
+
+            foreach (KeyValuePair<double, short[]> positionDataPair in positionDataTable)
+            {
+                offsetIndex = offsetDict[positionDataPair.Key];
+
+                for (timeIndex = 0; timeIndex < positionDataPair.Value.Length; ++timeIndex)
+                {
+                    data.sampleData[timeIndex + offsetIndex] += positionDataPair.Value[timeIndex];
+                }
+            }
+        }
+    }
+
+    static class WAVHeader
+    {
+        public static readonly char[] S_GROUP_ID = "RIFF".ToCharArray();
+        public static readonly char[] S_RIFF_TYPE = "WAVE".ToCharArray();
+    }
+
+    static class WAVFormatChunk
+    {
+        public const uint DW_AVG_BYTES_PER_SEC = DW_SAMPLES_PER_SEC * W_BLOCK_ALIGN;
+        public const uint DW_CHUNK_SIZE = 16;
+        public const uint DW_SAMPLES_PER_SEC = 44100;
+
+        public const ushort W_BITS_PER_SAMPLE = 16;
+        public const ushort W_BLOCK_ALIGN = (W_BITS_PER_SAMPLE / 8) * W_CHANNELS;
+        public const ushort W_FORMAT_TAG = 1;
+        public const ushort W_CHANNELS = 1;
+
+        public static readonly char[] S_GROUP_ID = "fmt ".ToCharArray();
+    }
+
+    class WAVDataChunk
+    {
+        public const uint MAX_AMPLITUDE = (1 << 15) - 8;
+        public const uint SAMPLES_PER_SEC_PER_CHANNEL = WAVFormatChunk.DW_SAMPLES_PER_SEC * WAVFormatChunk.W_CHANNELS;
+
+        public static readonly char[] S_GROUP_ID = "data".ToCharArray();
+
+        public uint dwChunkSize;
+        public short[] sampleData;
+    }
+
+    /* Serializes and deserializes note sheets to allow storage and access in persistent memory */
+    static partial class Serializer
+    {
+        public static readonly string SERIALIZE_EXT = ".mkc"; /* File extension of serialized NoteSheet objects */
 
         public static void Serialize(NoteSheet instance, string filepath, string filename) /* Takes a NoteSheet instance, file name, and file path and uses them to */
                                                                                            /* serialize the instance and store it at the path with the name         */
         {
             /* Set up the formatter and stream object s */
             IFormatter formatter = new BinaryFormatter();
-            Stream stream = new FileStream(filepath + filename + SERIALIZE_EXT, FileMode.Create, FileAccess.Write, FileShare.None);
+            Stream stream = new FileStream(Path.Combine( filepath, Path.ChangeExtension(filename, SERIALIZE_EXT) ), FileMode.Create, FileAccess.Write, FileShare.None);
 
             /* Serialize the given obejct */
             formatter.Serialize(stream, instance);
@@ -34,7 +533,7 @@ namespace compiler
             {
                 /* Set up the formatter and stream object */
                 IFormatter formatter = new BinaryFormatter();
-                Stream stream = new FileStream(filepath + filename + SERIALIZE_EXT, FileMode.Open, FileAccess.Read, FileShare.Read);
+                Stream stream = new FileStream(Path.Combine(filepath, Path.ChangeExtension(filename, SERIALIZE_EXT)), FileMode.Open, FileAccess.Read, FileShare.Read);
 
                 /* Deserialize the object and return it */
                 NoteSheet instance = (NoteSheet)formatter.Deserialize(stream);
@@ -79,7 +578,7 @@ namespace compiler
 
         /* / CONSTANTS */
 
-        /* PUBLIC UTILITY FUNCTIONS */
+        /* PUBLIC UTILITY METHODS */
 
         public bool KeySignuatureExists(string key) /* Verifies if a given key signature is defined */
         {
@@ -121,7 +620,7 @@ namespace compiler
             return returnValue;
         }
 
-        /* / PUBLIC UTILITY FUNCTIONS */
+        /* / PUBLIC UTILITY METHODS */
 
         /* MUSIC REPRESENTATION */
 
@@ -206,19 +705,18 @@ namespace compiler
     {
         /* PROPERTIES */
 
-        private HashSet<string> doNotCompileSet;    /* Do not use any of these files in an accompaniment       */
-        private LexicalAnalyzer lexer;              /* Token manager                                           */
-        private NoteSheet       noteSheet;          /* Intermediate representation of the compiled Musika file */
-        private string          filename;           /* File name of the current Musika file                    */
-        private string          filepath;           /* File path of the current Musika file                    */
-        private string          program;            /* Musika program text                                     */
-        private bool            ignoreContext;      /* Flag marked true if only syntax is checked              */
+        private readonly HashSet<string> doNotCompileSet;   /* Do not use any of these files in an accompaniment        */
+        private readonly string filename;                   /* File name of the current Musika file                     */
+        private readonly string filepath;                   /* File path of the current Musika file                     */
+        private readonly string program;                    /* Musika program text                                      */
+
+        private LexicalAnalyzer lexer;                      /* Token manager                                            */
+        private NoteSheet       noteSheet;                  /* Intermediate representation of the compiled Musika file  */
+        private bool            ignoreContext;              /* Flag marked true if only syntax is checked               */
 
         /* / PROPERTIES */
 
         /* CONSTANTS */
-
-        public const string MUSIKA_FILE_EXT = ".ka";
 
         public static readonly HashSet<TokenType> musicFirstSet = new HashSet<TokenType>()                      /* First set of "music" grammar rule */
         {
@@ -271,8 +769,8 @@ namespace compiler
                     doNotCompileSet.Add(file);
 
             /* Add the Musika file extension to the filename if not already present */
-            if (!filename.EndsWith(MUSIKA_FILE_EXT))
-                filename += MUSIKA_FILE_EXT;
+            if (!filename.EndsWith(Compiler.MUSIKA_FILE_EXT))
+                filename += Compiler.MUSIKA_FILE_EXT;
             this.filename = filename;
 
             /* Add the current file to the do-not-compile set */
@@ -285,7 +783,7 @@ namespace compiler
 
         /* / CONSTRUCTOR */
 
-        /* HELPER FUNCTIONS */
+        /* HELPER METHODS */
 
         public void IgnoreContext() /* Sets parser to only check for syntax: this will NOT generate a NoteSheet instance */
         {
@@ -319,9 +817,9 @@ namespace compiler
             lexer.PutToken(next);
         }
 
-        /* / HELPER FUNCTIONS */
+        /* / HELPER METHODS */
 
-        /* GRAMMAR PARSER FUNCTIONS */
+        /* GRAMMAR PARSER METHODS */
 
         public NoteSheet ParseScore(bool reset = true) /* score -> NEWLINE* accompaniment BREAK NEWLINE* sheet NEWLINE* | NEWLINE* sheet NEWLINE* */
                                                        /* This is the start symbol                                                                */
@@ -443,15 +941,11 @@ namespace compiler
             float tempo                  = noteSheet.tempo;
             int octave                   = noteSheet.octave;
             Sheet noteList;
+
             noteSheet.positionCounting   = true; /* These notes are used in the actual note sheet, so keep track of position for any potential layer placement */
 
-            /* Enter a child scope to quickly deallocate the discard variable */
-            {
-                PositionSheetMap discard;
-
-                /* Generate a note sheet from the main music */
-                noteList = ParseMusic(out discard);
-            }
+            /* Generate a note sheet from the main music */
+            noteList = ParseMusic(out _);
 
             /* The ParseMusic() function returns the main music representation */
             noteSheet.Sheet = noteList;
@@ -1628,7 +2122,7 @@ namespace compiler
             }
         }
 
-        /* GRAMMAR PARSER FUNCTIONS */
+        /* GRAMMAR PARSER METHODS */
     }
 
     /* Exception subclass that is thrown when a syntax error is made in the parser */
@@ -1638,7 +2132,12 @@ namespace compiler
 
         private static string CreateErrorString(TokenType actual, TokenType[] expected)
         {
-            string errorMsg = "SYNTAX ERROR: expected: ";
+            /* Local Variables */
+            string errorMsg;    /* Buffer for syntax error message */
+            int i;              /* Increment variable */
+            /* / Local Variables */
+
+            errorMsg = "SYNTAX ERROR: expected: ";
 
             if (expected.Length == 1) /* expected: THIS; received: THAT */
                 errorMsg += expected[0];
@@ -1648,7 +2147,7 @@ namespace compiler
 
             else /* expected: THIS, THAT, THESE, or THOSE; received: OTHER */
             {
-                for (int i = 0; i < expected.Length - 1; ++i)
+                for (i = 0; i < expected.Length - 1; ++i)
                     errorMsg += expected[i] + ", ";
                 errorMsg += "or " + expected.Last();
             }
@@ -1662,10 +2161,20 @@ namespace compiler
     /* Gets and manages tokens from the input buffer */
     partial class LexicalAnalyzer
     {
+        /* CONSTANTS */
+
         private const int BREAK_DASH_COUNT = 3;
+
+        /* / CONSTANTS */
+
+        /* PROPERTIES */
 
         private InputBuffer input;
         private Stack<Token> tokenBuffer;
+
+        /* / PROPERTIES */
+
+        /* CONSTRUCTOR */
 
         public LexicalAnalyzer(string programText)
         {
@@ -1673,12 +2182,25 @@ namespace compiler
             tokenBuffer = new Stack<Token>();
         }
 
-        public Token GetToken()
+        /* / CONSTRUCTOR */
+
+        /* PUBLIC METHOEDS */
+        public Token GetToken() /* Read and remove the next token from the token buffer or extract the next token from the input buffer */
         {
+            /* Local Variables */
+
+            TokenType type;     /* Buffer for the current token's type                              */
+            bool quoteClosed;   /* Checks if an opening quotation mark was closed by another mark   */
+            char nextChar;      /* Current character to analyze                                     */
+            int dashCount;      /* Used to count the number of dashes for a BREAK token             */
+
+            /* / Local Variables */
+
             if (tokenBuffer.Count > 0)
                 return tokenBuffer.Pop();
 
-            char nextChar = ' ';
+            nextChar = ' ';
+
                 /* Check for whitespace (other than newline)            check for comment characters  */
             while ((nextChar != '\n' && char.IsWhiteSpace(nextChar)) || nextChar == '&' || nextChar == '=')
             {
@@ -1767,7 +2289,8 @@ namespace compiler
                 nextChar = input.GetChar();
 
                 /* Count the number of dashes present (max 3) */
-                int dashCount = 0;
+                dashCount = 0;
+
                 while (dashCount < BREAK_DASH_COUNT && nextChar == '-')
                 {
                     returnTokenString += nextChar;
@@ -1778,7 +2301,7 @@ namespace compiler
                 /* If the dash count hit the maximum, ensure there is a newline following to return a BREAK token */
                 if (dashCount == BREAK_DASH_COUNT)
                 {
-                    TokenType type = TokenType.UNKNOWN;
+                    type = TokenType.UNKNOWN;
 
                     /* Ignore all other characters until a newline or EOF is reached */
                     while (nextChar != '\n' && nextChar != '\0')
@@ -1843,6 +2366,7 @@ namespace compiler
                     case "cut":         return new Token(returnTokenString, TokenType.CUT);
                     case "repeat":      return new Token(returnTokenString, TokenType.REPEAT);
                     case "layer":       return new Token(returnTokenString, TokenType.LAYER);
+
                     /* Signs */
                     case "Cmaj":        return new Token(returnTokenString, TokenType.SIGN);
                     case "Gmaj":        return new Token(returnTokenString, TokenType.SIGN);
@@ -1868,6 +2392,7 @@ namespace compiler
                     case "Bbm":         return new Token(returnTokenString, TokenType.SIGN);
                     case "Ebm":         return new Token(returnTokenString, TokenType.SIGN);
                     case "Abm":         return new Token(returnTokenString, TokenType.SIGN);
+
                     /* Notes */
                     case "A":           return new Token(returnTokenString, TokenType.NOTE);
                     case "B":           return new Token(returnTokenString, TokenType.NOTE);
@@ -1914,10 +2439,10 @@ namespace compiler
 
                     /* If none of these, then it's an ID */
                     default:
-                        TokenType returnType = TokenType.ID;
+                        type = TokenType.ID;
                         if (returnTokenString.Contains("#") || returnTokenString.Contains("*"))
-                            returnType = TokenType.UNKNOWN; /* If this is an ID, make sure there's no # or * in it */
-                        return new Token(returnTokenString, returnType);
+                            type = TokenType.UNKNOWN; /* If this is an ID, make sure there's no # or * in it */
+                        return new Token(returnTokenString, type);
                 }
             }
 
@@ -1926,6 +2451,7 @@ namespace compiler
             {
                 /* Keep adding content to the return string until the closing quote or newline is reached */
                 nextChar = input.GetChar();
+
                 while (nextChar != '\"' && nextChar != '\n')
                 {
                     returnTokenString += nextChar;
@@ -1933,7 +2459,8 @@ namespace compiler
                 }
 
                 /* If the final character was a close quote, it's a valid string; if it was a newline, it is an unknown token (string was never closed in the same line) */
-                bool quoteClosed = true;
+                quoteClosed = true;
+
                 if (nextChar != '\"')
                 {
                     input.PutChar(nextChar);
@@ -1946,8 +2473,6 @@ namespace compiler
             /* Number */
             else if (nextChar == '-' || char.IsNumber(nextChar))
             {
-                int discard; /* Unused but needed to pass in TryParse function */
-
                 /* Include a dash if there is one (to include negative numbers) */
                 if (nextChar == '-')
                 {
@@ -1965,7 +2490,7 @@ namespace compiler
                 input.PutChar(nextChar);
 
                 /* Return a number token iff the returns string is parseable as a number */
-                return new Token(returnTokenString, (int.TryParse(returnTokenString, out discard)) ? TokenType.NUMBER : TokenType.UNKNOWN);
+                return new Token(returnTokenString, (int.TryParse( returnTokenString, out _ )) ? TokenType.NUMBER : TokenType.UNKNOWN);
             }
 
             /* Else unknown token */
@@ -1976,65 +2501,80 @@ namespace compiler
             }
         }
 
-        public void PutToken(Token t)
+        public void PutToken(Token t) /* Place the given token into the token buffer */
         {
             tokenBuffer.Push(t);
         }
 
-        public Token PeekToken()
+        public Token PeekToken() /* Read the next token and then return it to the token buffer */
         {
             Token returnToken = GetToken();
             PutToken(returnToken);
             return returnToken;
         }
+
+        /* / PUBLIC METHODS */
     }
 
     /* Holds the program as a raw string and allows other classes to access it char by char */
     partial class InputBuffer
     {
-        private string programText;
+        /* PROPERTIES */
+
+        public string ProgramText { get; private set; } /* Program code as a string of characters */
+
+        /* / PROPERITES */
+
+        /* CONSTRUCTOR */
 
         public InputBuffer(string programText)
         {
             /* This replaces remove newline character differences among OSs with one universal \n */
-            this.programText = programText.Replace("\r\n", "\n").Replace("\r", "\n");
+            this.ProgramText = programText.Replace("\r\n", "\n").Replace("\r", "\n");
         }
 
-        public char GetChar()
+        /* / CONSTRUCTOR */
+
+        /* PUBLIC METHODS */
+
+        public char GetChar() /* Get the frontmost input character from the string if there is one */
         {
             /* Return a null terminator to allow other objects to know there is no more input */
-            if (programText.Length == 0)
+            if (ProgramText.Length == 0)
                 return '\0';
 
             /* Return the first character in the input buffer and remove it from the buffer */
-            char retVal = programText[0];
-            programText = programText.Substring(1, programText.Length - 1);
+            char retVal = ProgramText[0];
+            ProgramText = ProgramText.Substring(1, ProgramText.Length - 1);
 
             return retVal;
         }
 
-        public void PutChar(char c)
+        public void PutChar(char c) /* Place the given character at the beginning of the program string */
         {
-            programText = c + programText;
-        }
-
-        public string GetRemainingText()
-        {
-            return programText;
+            ProgramText = c + ProgramText;
         }
     }
 
     /* Object representation of a lexical token in the Musika grammar */
     partial class Token
     {
+        /* PROPERTIES */
+
         public readonly string Content;
         public readonly TokenType Type;
+
+        /* / PROPERTIES */
+
+        /* CONSTRUCTOR */
 
         public Token(string content, TokenType type)
         {
             this.Content = content;
             this.Type = type;
         }
+
+        /* / CONSTRUCTOR */
     }
 
     /* Converts a note to an appropriate string */
@@ -2103,8 +2643,6 @@ namespace compiler
             /* / Local Variables */
 
             finalChar = name[name.Length - 1];
-
-            noteName = "ERROR"; /* This initial value should not be returned */
 
             switch (finalChar)
             {
@@ -2211,22 +2749,28 @@ namespace compiler
     {
         /* Basic Lexicons */
         NEWLINE, LBRACKET, RBRACKET, BANG, LPAREN, RPAREN, LBRACE, RBRACE, DOT, APOS, COMMA, EQUAL, GREATER, SLASH, COLON, SEMICOLON, CARROT, PLUS,
+
         /* Compound Lexicons */
         BREAK, ID, SIGN, NOTE, STRING, NUMBER,
+
         /* Tier 1 Keywords */
         ACCOMPANY, NAME, AUTHOR, COAUTHORS, TITLE, KEY, TIME, TEMPO, OCTAVE, PATTERN, CHORD, IS,
+
         /* Tier 2 Keywords */
         COMMON, CUT,
+
         /* Tier 3 Keywords */
         REPEAT, LAYER,
+
         /* End of file */
         EOF,
+
         /* Unknown Token Type (that means there's a syntax error) */
         UNKNOWN
     }
 
     /* Custom types and substitute type names */
-    struct PositionSheetPair /* Replacement for KeyValuePair<int, Sheet> */
+    class PositionSheetPair /* Replacement for KeyValuePair<int, Sheet> */
     {
         public int   Key;
         public Sheet Value;
@@ -2238,16 +2782,36 @@ namespace compiler
         }
     }
 
-    [Serializable]
-    class NoteSet           : List<Note>               { }
+    class FrequencyDurationTable /* Replacement for KeyValuePair<double[][], double[]> */
+    {
+        public double[][] FrequencyTable;
+        public double[] DurationTable;
+
+        public FrequencyDurationTable(double[][] freqTable, double[] durTable)
+        {
+            FrequencyTable = freqTable;
+            DurationTable = durTable;
+        }
+    }
 
     [Serializable]
-    class Sheet             : List<NoteSet>            { }
+    class NoteSet                               : List<Note>                                        { }
 
     [Serializable]
-    class SheetSet          : List<Sheet>              { }
+    class Sheet                                 : List<NoteSet>                                     { }
 
-    class PositionSheetMap  : List<PositionSheetPair>  { }
+    [Serializable]
+    class SheetSet                              : List<Sheet>                                       { }
+
+    class PositionSheetMap                      : List<PositionSheetPair>                           { }
+
+    class OffsetFrequencyDurationTableListMap   : Dictionary<double, FrequencyDurationTableList>    { }
+
+    class OffsetSampleDatasetListMap            : Dictionary<double, List<short[]>>                 { }
+
+    class FrequencyDurationTableList            : List<FrequencyDurationTable>                      { }
+
+    class OffsetSampleDatasetMap                : Dictionary<double, short[]>                       { }
 
     /* Represents a musical note with its data */
     [Serializable]

@@ -14,7 +14,8 @@ namespace compiler
             Test[] testList =
             {
                 new Token.Test__Token(), new InputBuffer.Test__InputBuffer(), new LexicalAnalyzer.Test__LexicalAnalyzer(),
-                new SyntaxError.Test__SyntaxError(), new Parser.Test__Parser(), new NoteSheet.Test__NoteSheet(), new Serializer.Test__Serializer()
+                new SyntaxError.Test__SyntaxError(), new Parser.Test__Parser(), new NoteSheet.Test__NoteSheet(), new Serializer.Test__Serializer(),
+                new Test__WAVConstruction(), new Compiler.Test__Compiler()
             }; /* ADD INSTANCES OF NEW TEST CASES HERE */
 
             foreach (Test test in testList)
@@ -38,6 +39,133 @@ namespace compiler
     }
 
     /* ---------------- TESTS ---------------- */
+
+    partial class Compiler
+    {
+        internal class Test__Compiler : Test
+        {
+            public Test__Compiler()
+            {
+                testName = "Compiler";
+            }
+
+            private string GetFile(string filename)
+            {
+                return File.ReadAllText(Path.Combine(GetDirectory(), filename)); /* Get test file text from the test directory */
+            }
+
+            public string GetDirectory()
+            {
+                return "../../../../../test/lang/";
+            }
+
+            private void TestConstructors()
+            {
+                string code = GetFile("re_test3.ka");
+                string filepath = GetDirectory();
+                string filename = "re_test3.ka";
+
+                Compiler c1 = new Compiler(filepath, filename, code);
+                Compiler c2 = new Compiler(filepath, filename);
+
+                VerifyEqual(code == c1.code, true, "Verify code is stored correctly for code argument with separate filepath/filename args");
+                VerifyEqual(code == c2.code, true, "Verify code is stored correctly for no code argument");
+            }
+
+            private void TestCompileToNoteSheet()
+            {
+                string code = GetFile("re_test3.ka");
+                string filepath = GetDirectory();
+                string filename = "re_test3.ka";
+
+                Compiler compiler = new Compiler(filepath, filename, code);
+                compiler.CompileToNoteSheet();
+
+                try
+                {
+                    NoteSheet noteSheet = Serializer.Deserialize(filepath, Path.ChangeExtension(filename, Serializer.SERIALIZE_EXT));;
+                    VerifyEqual(noteSheet == null, false, "Verify compiler module generates notesheets as traditional and serializes it");
+                }
+                catch
+                {
+                    VerifyEqual(true, false, "An exception occurred; likely because the serialized file does not exist");
+                }
+            }
+
+            private void TestCompileToWAV()
+            {
+                string code = GetFile("re_test3.ka");
+                string filepath = GetDirectory();
+                string filename = "re_test3.ka";
+
+                Compiler compiler = new Compiler(filepath, filename, code);
+                compiler.CompileToWAV();
+
+                VerifyEqual(File.Exists(Path.Combine(filepath, Path.ChangeExtension(filename, WAVFile.WAV_FILE_EXT))), true, "Verify compiler saved constructe WAV file. Need to play it to ensure proper generation");
+            }
+
+            public override void RunTests()
+            {
+                TestConstructors();
+                TestCompileToNoteSheet();
+                TestCompileToWAV();
+            }
+        }
+    }
+
+    class Test__WAVConstruction : Test
+    {
+        public Test__WAVConstruction()
+        {
+            testName = "WAV Construction";
+        }
+
+        private string GetFile(string filename)
+        {
+            return File.ReadAllText(Path.Combine(GetDirectory(), filename)); /* Get test file text from the test directory */
+        }
+
+        public string GetDirectory()
+        {
+            return "../../../../../test/lang/";
+        }
+
+        private void TestWAVConstructor()
+        {
+            string filepath = GetDirectory();
+            string filename = "re_test1.ka";
+            string program = GetFile(filename);
+
+            Parser p = new Parser(program, filepath, filename);
+            NoteSheet n = p.ParseScore();
+            Serializer.Serialize(n, filepath, filename);
+
+            WAVConstructor w = new WAVConstructor(filepath, filename);
+            VerifyEqual(w.NoteSheetReceived(), true, "Verify that a note sheet was received by the WAV constructor");
+        }
+
+        private void TestWAVFile()
+        {
+            string filepath = GetDirectory();
+            string filename = "re_test2.ka";
+            string program = GetFile(filename);
+
+            Parser p = new Parser(program, filepath, filename);
+            NoteSheet n = p.ParseScore();
+            Serializer.Serialize(n, filepath, filename);
+
+            WAVConstructor w = new WAVConstructor(filepath, filename);
+
+            w.ConstructWAV();
+            VerifyEqual(File.Exists(Path.Combine(filepath, Path.ChangeExtension(filename, WAVFile.WAV_FILE_EXT))), true, "Verify WAV file successfully generated (need to play it to verify that the data is correct)");
+        }
+
+        public override void RunTests()
+        {
+            TestWAVConstructor();
+            TestWAVFile();
+        }
+    }
 
     partial class Serializer
     {
@@ -1070,10 +1198,10 @@ namespace compiler
                 input = new InputBuffer(program);
 
                 input.PutChar('z');
-                VerifyEqual(input.GetRemainingText()[0], 'z', "Verify that the new character was put into the program");
+                VerifyEqual(input.ProgramText[0], 'z', "Verify that the new character was put into the program");
                 input.PutChar('q');
-                VerifyEqual(input.GetRemainingText()[0], 'q', "Verify that the new character was put into the program");
-                VerifyEqual(input.GetRemainingText()[1], 'z', "Verify that the previously inserted character was pushed to the 1st index");
+                VerifyEqual(input.ProgramText[0], 'q', "Verify that the new character was put into the program");
+                VerifyEqual(input.ProgramText[1], 'z', "Verify that the previously inserted character was pushed to the 1st index");
             }
         }
     }

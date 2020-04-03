@@ -1,0 +1,19 @@
+title: "Pachelbel"
+author: "Pachelbel"
+key: Cmaj
+time: common
+tempo: 4 = 72
+octave: 4
+---
+
+pattern [bass]:
+    ! octave: -1 !
+    |. |. C. D. E. F. G. A. B. C'. B. A. G. F. E. D. C..
+
+pattern [treble]:
+    C. D. E. F. G. A. B. C'. B. A. G. F. E. D. C....
+
+---
+layer(bass)
+treble
+---
