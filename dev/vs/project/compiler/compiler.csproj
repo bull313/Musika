@@ -54,6 +54,7 @@
       <Link>Test.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RuntimeEnvironmentTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

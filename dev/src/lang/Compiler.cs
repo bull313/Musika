@@ -25,7 +25,7 @@ namespace compiler
         /* / PROPERTIES */
 
 
-        /* CONSTRUCTORS */
+        /* CONSTRUCTOR */
         public Compiler(string filepath, string filename, string code = null) /* Path and name are separate */
         {
             this.filepath = filepath;
@@ -148,6 +148,7 @@ namespace compiler
             WAVFile wavFile;                                                    /* WAV file object to convert frequency and duration data to a WAV binary                                   */
             double offset;                                                      /* Buffer for the current offset (in seconds)                                                               */
             int i;                                                              /* Increment variable                                                                                       */
+            int numLayers;                                                      /* Number of layers in the music including the sheet                                                        */
             /* Local Variables */
 
             /* Create frequency and duration tables from the main sheet */
@@ -201,8 +202,16 @@ namespace compiler
                 }
             }
 
+            /* Compute the number of layers in the song */
+            numLayers = 1; /* Count the main sheet first */
+
+            foreach (KeyValuePair<int, SheetSet> posSheetSetPair in noteSheet.Layers)
+            {
+                numLayers += posSheetSetPair.Value.Count;
+            }
+
             /* Write WAV file */
-            wavFile = new WAVFile(noteSheet.Layers.Count + 1, positionFrequencyDurationTable, filepath, Path.ChangeExtension(filename, WAVFile.WAV_FILE_EXT));
+            wavFile = new WAVFile(numLayers, positionFrequencyDurationTable, filepath, Path.ChangeExtension(filename, WAVFile.WAV_FILE_EXT));
             wavFile.WriteWAVFile();
         }
 
