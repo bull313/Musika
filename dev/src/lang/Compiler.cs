@@ -52,14 +52,14 @@ namespace compiler
 
 
         /* PUBLIC METHODS */
-        public void CompileToNoteSheet()
+        public void CompileToNoteSheet() /* Compile the code into a note sheet instance serialzed to the filepath and filename */
         {
             Parser parser = new Parser(code, filepath, filename);
             NoteSheet noteSheet = parser.ParseScore();
             Serializer.Serialize(noteSheet, filepath, filename);
         }
 
-        public void CompileToWAV()
+        public void CompileToWAV() /* Construct a WAV file from the given code and store it in the given filepath and filename */
         {
             /* Local Variables */
             string serializedFileAddress;   /* Filepath + name with the serialized file extension   */
@@ -72,6 +72,7 @@ namespace compiler
                 filepath, Path.ChangeExtension(filename, Serializer.SERIALIZE_EXT)
             );
 
+            /* Create a note sheet if one does not already exist */
             if (File.Exists(serializedFileAddress) == false)
             {
                 CompileToNoteSheet();

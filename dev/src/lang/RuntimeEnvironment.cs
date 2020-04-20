@@ -23,14 +23,18 @@ namespace runtimeenvironment
 
 
         /* PUBLIC METHODS */
-        public void PlayWAVFile()
+        public void PlayWAVFile() /* Play the WAV file as audible sound */
         {
-            SoundPlayer soundPlayer = new SoundPlayer
+            /* Local Variables */
+            SoundPlayer soundPlayer; /* Media player */
+            /* / Local Variables */
+
+            soundPlayer = new SoundPlayer
             {
                 SoundLocation = Path.Combine(filepath, filename)
             };
 
-            soundPlayer.PlaySync();
+            soundPlayer.PlaySync(); /* Play the sound synched with the thread of execution */
         }
         /* / PUBLIC METHODS */
     }

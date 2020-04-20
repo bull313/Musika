@@ -1,0 +1,36 @@
+title: "Runtime Environment Test"
+author: "alslakdfskladf"
+key: Gm
+time: common
+tempo: 4 = 144
+octave: 4
+---
+pattern [rhythm]:
+    ! time: 1 !
+    B,,.
+    G,,.
+    D,,.
+    E,,.
+
+pattern [harmony_vocal]:
+    ! time: 8 !
+    E. F. ^ 4 |. E. ^ 2         & Line 1
+    F,. G,. ^ 4 |. F,. ^ 2      & Line 2
+    A,,. ^ 4 A,,. |. A,,. ^ 2   & Line 3
+    A,,. D. ^ 4 |...            & Line 4
+
+pattern [lead_vocal]:
+    ! time: 8 !
+
+    & Line 1 and 2
+    repeat(2) {
+        B,. C. ^ 4 |. B,. ^ 2
+    }
+    
+    A,. ^ 4 A,. |. A,. ^ 2  & Line 3
+    A,. B,. ^ 4 |...        & Line 4
+---
+layer(rhythm)
+layer(harmony_vocal)
+lead_vocal
+---
