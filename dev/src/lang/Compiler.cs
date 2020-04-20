@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml;
 
-namespace compiler
+namespace Musika
 {
     /* Abstract representation of all compiler modules */
     /* This class should be the only one directly referenced by classes outside this namespace */
@@ -427,73 +427,85 @@ namespace compiler
 
             maxNumFrequencies = maxChordLength * numLayers;
 
-            /* Convert frequency and duration tables into data tables */
-            offsetSampleDataListMap = new OffsetSampleDatasetListMap();
-
-            foreach (KeyValuePair<double, FrequencyDurationTableList> positionFreqDurTablePair in positionFrequencyDurationTable)
+            /* Cancel Construction if there are no frequencies to construct */
+            if (maxNumFrequencies > 0)
             {
-                foreach (FrequencyDurationTable freqDurTable in positionFreqDurTablePair.Value)
-                {
-                    sampleData = GenerateSampleData(maxNumFrequencies, freqDurTable.FrequencyTable, freqDurTable.DurationTable);
+                /* Convert frequency and duration tables into data tables */
+                offsetSampleDataListMap = new OffsetSampleDatasetListMap();
 
-                    if (offsetSampleDataListMap.ContainsKey(positionFreqDurTablePair.Key))
+                foreach (KeyValuePair<double, FrequencyDurationTableList> positionFreqDurTablePair in positionFrequencyDurationTable)
+                {
+                    foreach (FrequencyDurationTable freqDurTable in positionFreqDurTablePair.Value)
                     {
-                        offsetSampleDataListMap[positionFreqDurTablePair.Key].Add(sampleData);
+                        sampleData = GenerateSampleData(maxNumFrequencies, freqDurTable.FrequencyTable, freqDurTable.DurationTable);
+
+                        if (offsetSampleDataListMap.ContainsKey(positionFreqDurTablePair.Key))
+                        {
+                            offsetSampleDataListMap[positionFreqDurTablePair.Key].Add(sampleData);
+                        }
+                        else
+                        {
+                            offsetSampleDataListMap.Add(positionFreqDurTablePair.Key, new List<short[]>() { sampleData });
+                        }
                     }
-                    else
+                }
+
+                /* Combine data tabes that are at the same offest */
+                OffsetSampleDatasetMap positionDataTable = new OffsetSampleDatasetMap();
+
+                foreach (KeyValuePair<double, List<short[]>> positionDataListPair in offsetSampleDataListMap)
+                {
+                    positionDataTable.Add(positionDataListPair.Key, CombineSampleDataArrays(positionDataListPair.Value));
+                }
+
+                /* Compute the length of the final sample data array */
+                finalSampleDataLength = 0;
+                offsetDict = new Dictionary<double, int>();
+
+                foreach (KeyValuePair<double, short[]> positionDataPair in positionDataTable)
+                {
+                    offsetIndex = (int)ConvertSecondsToSamples(positionDataPair.Key);
+                    offsetDict.Add(positionDataPair.Key, offsetIndex);
+
+                    sampleDataLength = offsetIndex + positionDataPair.Value.Length;
+
+                    if (finalSampleDataLength < sampleDataLength)
                     {
-                        offsetSampleDataListMap.Add(positionFreqDurTablePair.Key, new List<short[]>() { sampleData });
+                        finalSampleDataLength = sampleDataLength;
+                    }
+                }
+
+                /* Build the final sample data array */
+                data.sampleData = new short[finalSampleDataLength];
+                data.dwChunkSize = (uint)finalSampleDataLength * (WAVFormatChunk.W_BITS_PER_SAMPLE / 8);
+
+                foreach (KeyValuePair<double, short[]> positionDataPair in positionDataTable)
+                {
+                    offsetIndex = offsetDict[positionDataPair.Key];
+
+                    for (timeIndex = 0; timeIndex < positionDataPair.Value.Length; ++timeIndex)
+                    {
+                        data.sampleData[timeIndex + offsetIndex] += positionDataPair.Value[timeIndex];
                     }
                 }
             }
 
-            /* Combine data tabes that are at the same offest */
-            OffsetSampleDatasetMap positionDataTable = new OffsetSampleDatasetMap();
-
-            foreach (KeyValuePair<double, List<short[]>> positionDataListPair in offsetSampleDataListMap)
+            /* No frequencies were found in the music => cannot construct WAV file */
+            else
             {
-                positionDataTable.Add(positionDataListPair.Key, CombineSampleDataArrays(positionDataListPair.Value));
-            }
-
-            /* Compute the length of the final sample data array */
-            finalSampleDataLength = 0;
-            offsetDict = new Dictionary<double, int>();
-
-            foreach (KeyValuePair<double, short[]> positionDataPair in positionDataTable)
-            {
-                offsetIndex = (int) ConvertSecondsToSamples(positionDataPair.Key);
-                offsetDict.Add(positionDataPair.Key, offsetIndex);
-
-                sampleDataLength = offsetIndex + positionDataPair.Value.Length;
-
-                if (finalSampleDataLength < sampleDataLength)
-                {
-                    finalSampleDataLength = sampleDataLength;
-                }
-            }
-
-            /* Build the final sample data array */
-            data.sampleData = new short[finalSampleDataLength];
-            data.dwChunkSize = (uint) finalSampleDataLength * (WAVFormatChunk.W_BITS_PER_SAMPLE / 8);
-
-            foreach (KeyValuePair<double, short[]> positionDataPair in positionDataTable)
-            {
-                offsetIndex = offsetDict[positionDataPair.Key];
-
-                for (timeIndex = 0; timeIndex < positionDataPair.Value.Length; ++timeIndex)
-                {
-                    data.sampleData[timeIndex + offsetIndex] += positionDataPair.Value[timeIndex];
-                }
+                throw new WAVConstructionError(WAVConstructionError.NO_FREQUENCIES_ERROR);
             }
         }
     }
 
+    /* Contains constants for the WAV binary header chunk */
     static class WAVHeader
     {
         public static readonly char[] S_GROUP_ID = "RIFF".ToCharArray();
         public static readonly char[] S_RIFF_TYPE = "WAVE".ToCharArray();
     }
 
+    /* Contains contants for the WAV binary format chunk */
     static class WAVFormatChunk
     {
         public const uint DW_AVG_BYTES_PER_SEC = DW_SAMPLES_PER_SEC * W_BLOCK_ALIGN;
@@ -508,6 +520,7 @@ namespace compiler
         public static readonly char[] S_GROUP_ID = "fmt ".ToCharArray();
     }
 
+    /* Contains variables and constants for the WAV binary data chunk */
     class WAVDataChunk
     {
         public const uint MAX_AMPLITUDE = (1 << 15) - 8;
@@ -517,6 +530,16 @@ namespace compiler
 
         public uint dwChunkSize;
         public short[] sampleData;
+    }
+
+    /* Represents issues relating to the construction of a WAV file from a note sheet */
+    public partial class WAVConstructionError : Exception
+    {
+        private const string BASE_STRING = "WAV CONSTRUCTION ERROR: ";
+
+        public const string NO_FREQUENCIES_ERROR = "No music is playing, so no audio can be generated";
+
+        public WAVConstructionError(string text) : base(BASE_STRING + text) { }
     }
 
     /* Serializes and deserializes note sheets to allow storage and access in persistent memory */
@@ -896,8 +919,8 @@ namespace compiler
             nameToken = Expect(TokenType.ID);
 
             /* Construct the literal file (filepath + filename) */
-            filename = fileNameToken.Content + ".ka";
-            file     = filepath + filename;
+            filename = Path.ChangeExtension(fileNameToken.Content, Compiler.MUSIKA_FILE_EXT);
+            file     = Path.Combine(filepath, filename);
 
             if (!ignoreContext)
             {

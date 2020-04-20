@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ide.Properties {
+namespace MusikaIDE.Properties {
     using System;
     
     
