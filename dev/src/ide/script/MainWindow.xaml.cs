@@ -578,6 +578,11 @@ namespace MusikaIDE
                 outputMessage = "CONTEXTUAL ERROR\n\n" + ce.Message;
             }
 
+            catch
+            {
+                outputMessage = "UNKNOWN ERROR\n\n" + "An unkown error occurred when constructing your WAV file. Please consult your nearest tech support engineer.";
+            }
+
             /* Output message to user */
             finally
             {
@@ -635,6 +640,12 @@ namespace MusikaIDE
             catch (WAVConstructionError wce)
             {
                 outputMessage += "WAV CONSTRUCTION FAILED\n\n" + wce.Message;
+            }
+
+            catch
+            {
+                /* SHOULD NEVER OCCURR UNLESS SOMETHING WENT HORRIBLY WRONG */
+                outputMessage += "WAV CONSTRUCTION FAILED\n\n" + "An unkown error occurred when constructing your WAV file. Please consult your nearest tech support engineer.";
             }
 
             /* Show output message if it exists */

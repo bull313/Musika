@@ -205,11 +205,11 @@ namespace Musika
                 {
                     VerifyEqual(toSerialize.Title, toDeserialize.Title, "Verify the object has been successfully deserialized and that its data is the same");
                     VerifyEqual(toSerialize.Author, toDeserialize.Author, "Verify the object has been successfully deserialized and that its data is the same");
-                    VerifyEqual(toSerialize.key, toDeserialize.key, "Verify the object has been successfully deserialized and that its data is the same");
-                    VerifyEqual(toSerialize.time.baseNote, toDeserialize.time.baseNote, "Verify the object has been successfully deserialized and that its data is the same");
-                    VerifyEqual(toSerialize.time.beatsPerMeasure, toDeserialize.time.beatsPerMeasure, "Verify the object has been successfully deserialized and that its data is the same");
-                    VerifyEqual(toSerialize.tempo, toDeserialize.tempo, "Verify the object has been successfully deserialized and that its data is the same");
-                    VerifyEqual(toSerialize.octave, toDeserialize.octave, "Verify the object has been successfully deserialized and that its data is the same");
+                    VerifyEqual(toSerialize.Key, toDeserialize.Key, "Verify the object has been successfully deserialized and that its data is the same");
+                    VerifyEqual(toSerialize.Time.baseNote, toDeserialize.Time.baseNote, "Verify the object has been successfully deserialized and that its data is the same");
+                    VerifyEqual(toSerialize.Time.beatsPerMeasure, toDeserialize.Time.beatsPerMeasure, "Verify the object has been successfully deserialized and that its data is the same");
+                    VerifyEqual(toSerialize.Tempo, toDeserialize.Tempo, "Verify the object has been successfully deserialized and that its data is the same");
+                    VerifyEqual(toSerialize.Octave, toDeserialize.Octave, "Verify the object has been successfully deserialized and that its data is the same");
                 }
                 else
                 {
@@ -265,11 +265,11 @@ namespace Musika
                     VerifyEqual(n.Title, "Test", "Test title was set properly");
                     VerifyEqual(n.Author, "The Tester", "Test author was set properly");
                     VerifyEqual(n.Coauthors, null, "Verify coauthors were not set");
-                    VerifyEqual(n.key, 0, "Verify C major scale set as key");
-                    VerifyEqual(n.time.baseNote, 4, "Verify quarter note base rhythm");
-                    VerifyEqual(n.time.beatsPerMeasure, 4, "Verify bpm set properly");
-                    VerifyEqual(n.tempo, 1f, "Verify tempo set properly");
-                    VerifyEqual(n.octave, 4, "Verify octave set properly");
+                    VerifyEqual(n.Key, 0, "Verify C major scale set as key");
+                    VerifyEqual(n.Time.baseNote, 4, "Verify quarter note base rhythm");
+                    VerifyEqual(n.Time.beatsPerMeasure, 4, "Verify bpm set properly");
+                    VerifyEqual(n.Tempo, 1f, "Verify tempo set properly");
+                    VerifyEqual(n.Octave, 4, "Verify octave set properly");
 
                     /* Verify Notes */
                     if (VerifyEqual(n.Sheet.Count, 8, "Verify the number of notes is correct"))
@@ -304,11 +304,11 @@ namespace Musika
                     VerifyEqual(n.Author, "Ben", "Test author was set properly");
                     for (int i = 0; i < expectedCoauthors.Length; ++i)
                         VerifyEqual(n.Coauthors[i], expectedCoauthors[i], "Verify coauthor " + expectedCoauthors[i] + " was set properly");
-                    VerifyEqual(n.key, -4, "Verify E minor scale set as key");
-                    VerifyEqual(n.time.baseNote, 4, "Verify quarter note base rhythm");
-                    VerifyEqual(n.time.beatsPerMeasure, 4, "Verify bpm set properly");
-                    VerifyEqual(Math.Round(n.tempo, 5), 0.33708, "Verify tempo set properly"); /* Round to 5 decimal places */
-                    VerifyEqual(n.octave, 5, "Verify octave set properly");
+                    VerifyEqual(n.Key, -4, "Verify E minor scale set as key");
+                    VerifyEqual(n.Time.baseNote, 4, "Verify quarter note base rhythm");
+                    VerifyEqual(n.Time.beatsPerMeasure, 4, "Verify bpm set properly");
+                    VerifyEqual(Math.Round(n.Tempo, 5), 0.33708, "Verify tempo set properly"); /* Round to 5 decimal places */
+                    VerifyEqual(n.Octave, 5, "Verify octave set properly");
 
                     if (VerifyEqual(n.Sheet.Count, 35, "Verify the number of notes is correct"))
                     {
@@ -367,11 +367,11 @@ namespace Musika
                     VerifyEqual(n.Title, "New Title", "Test title was set properly");
                     VerifyEqual(n.Author, "Auth", "Test author was set properly");
                     VerifyEqual(n.Coauthors, null, "Verify coauthors were not set");
-                    VerifyEqual(n.key, 4, "Verify E major scale set as key");
-                    VerifyEqual(n.time.baseNote, 2, "Verify half note base rhythm");
-                    VerifyEqual(n.time.beatsPerMeasure, 2, "Verify bpm set properly");
-                    VerifyEqual(n.tempo, 2f, "Verify tempo set properly");
-                    VerifyEqual(n.octave, 2, "Verify octave set properly");
+                    VerifyEqual(n.Key, 4, "Verify E major scale set as key");
+                    VerifyEqual(n.Time.baseNote, 2, "Verify half note base rhythm");
+                    VerifyEqual(n.Time.beatsPerMeasure, 2, "Verify bpm set properly");
+                    VerifyEqual(n.Tempo, 2f, "Verify tempo set properly");
+                    VerifyEqual(n.Octave, 2, "Verify octave set properly");
 
                     /* Verify Notes */
                     if (VerifyEqual(n.Sheet.Count, 10, "Verify the number of notes is correct"))
@@ -420,11 +420,11 @@ namespace Musika
                     VerifyEqual(n.Author, "Benjamin", "Test author was set properly");
                     for (int i = 0; i < coauthors.Length; ++i)
                         VerifyEqual(n.Coauthors[i], coauthors[i], "Verify coauthor was set");
-                    VerifyEqual(n.key, 0, "Verify A minor scale set as key");
-                    VerifyEqual(n.time.baseNote, 4, "Verify half note base rhythm");
-                    VerifyEqual(n.time.beatsPerMeasure, 4, "Verify bpm set properly");
-                    VerifyEqual((float) Math.Round(n.tempo, 5), 0.66667f, "Verify tempo set properly");
-                    VerifyEqual(n.octave, 5, "Verify octave set properly");
+                    VerifyEqual(n.Key, 0, "Verify A minor scale set as key");
+                    VerifyEqual(n.Time.baseNote, 4, "Verify half note base rhythm");
+                    VerifyEqual(n.Time.beatsPerMeasure, 4, "Verify bpm set properly");
+                    VerifyEqual((float) Math.Round(n.Tempo, 5), 0.66667f, "Verify tempo set properly");
+                    VerifyEqual(n.Octave, 5, "Verify octave set properly");
 
                     /* Verify Notes */
                     Note[] patternNotes = {
@@ -523,11 +523,11 @@ namespace Musika
                     VerifyEqual(n.Title, "The Layer Test", "Test title was set properly");
                     VerifyEqual(n.Author, "Ben", "Test author was set properly");
                     VerifyEqual(n.Coauthors, null, "Verify coauthors were not set");
-                    VerifyEqual(n.key, 2, "Verify D major scale set as key");
-                    VerifyEqual(n.time.baseNote, 4, "Verify half note base rhythm");
-                    VerifyEqual(n.time.beatsPerMeasure, 4, "Verify bpm set properly");
-                    VerifyEqual((float) Math.Round(n.tempo, 5), 1f, "Verify tempo set properly");
-                    VerifyEqual(n.octave, 4, "Verify octave set properly");
+                    VerifyEqual(n.Key, 2, "Verify D major scale set as key");
+                    VerifyEqual(n.Time.baseNote, 4, "Verify half note base rhythm");
+                    VerifyEqual(n.Time.beatsPerMeasure, 4, "Verify bpm set properly");
+                    VerifyEqual((float) Math.Round(n.Tempo, 5), 1f, "Verify tempo set properly");
+                    VerifyEqual(n.Octave, 4, "Verify octave set properly");
 
                     /* Verify Notes */
                     Note[] harmonyNotes = {
@@ -640,11 +640,11 @@ namespace Musika
                     VerifyEqual(n.Title, "Test #6 and #7", "Test title was set properly");
                     VerifyEqual(n.Author, "Ben", "Test author was set properly");
                     VerifyEqual(n.Coauthors, null, "Verify coauthors were not set");
-                    VerifyEqual(n.key, -6, "Verify Eb minor scale set as key");
-                    VerifyEqual(n.time.baseNote, 4, "Verify quarter note base rhythm");
-                    VerifyEqual(n.time.beatsPerMeasure, 4, "Verify bpm set properly");
-                    VerifyEqual(n.tempo, 1f, "Verify tempo set properly");
-                    VerifyEqual(n.octave, 7, "Verify octave set properly");
+                    VerifyEqual(n.Key, -6, "Verify Eb minor scale set as key");
+                    VerifyEqual(n.Time.baseNote, 4, "Verify quarter note base rhythm");
+                    VerifyEqual(n.Time.beatsPerMeasure, 4, "Verify bpm set properly");
+                    VerifyEqual(n.Tempo, 1f, "Verify tempo set properly");
+                    VerifyEqual(n.Octave, 7, "Verify octave set properly");
 
                     /* Verify Notes */
                     Note[] majorScale = {
@@ -695,11 +695,11 @@ namespace Musika
                     VerifyEqual(n.Title, "Test #6 and #7", "Test title was set properly");
                     VerifyEqual(n.Author, "Ben", "Test author was set properly");
                     VerifyEqual(n.Coauthors, null, "Verify coauthors were not set");
-                    VerifyEqual(n.key, 0, "Verify A minor scale set as key");
-                    VerifyEqual(n.time.baseNote, 2, "Verify quarter note base rhythm");
-                    VerifyEqual(n.time.beatsPerMeasure, 2, "Verify bpm set properly");
-                    VerifyEqual(n.tempo, 2f, "Verify tempo set properly");
-                    VerifyEqual(n.octave, 4, "Verify octave set properly");
+                    VerifyEqual(n.Key, 0, "Verify A minor scale set as key");
+                    VerifyEqual(n.Time.baseNote, 2, "Verify quarter note base rhythm");
+                    VerifyEqual(n.Time.beatsPerMeasure, 2, "Verify bpm set properly");
+                    VerifyEqual(n.Tempo, 2f, "Verify tempo set properly");
+                    VerifyEqual(n.Octave, 4, "Verify octave set properly");
 
                     /* Verify Notes */
                     NoteSet correctNoteList = new NoteSet();

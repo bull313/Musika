@@ -633,7 +633,7 @@ namespace Musika
             else
             {
                 /* Adjust note by key and format it as a valid element name in the XML frequency lookup file */
-                name = NoteFactory.GetFormattedNote(noteName, key, octave);
+                name = NoteFactory.GetFormattedNote(noteName, Key, octave);
 
                 /* Load XML frequency lookup file */
                 noteFrequencyChart = new XmlDocument();
@@ -657,6 +657,8 @@ namespace Musika
 
         /* MUSIC REPRESENTATION */
 
+        public Dictionary<string, PositionSheetMap> RelativeLayerPositions { get; set; }  /* Used to track the relative positions of layer calls in patterns  */
+
         private string title; /* Song title */
         public string Title   /* Can only be set once */
         {
@@ -678,12 +680,10 @@ namespace Musika
             get { return coauthors; }
         }
 
-        public int                           key;                           /* Song's key signature                                               */
-        public TimeSignature                 time;                          /* Song's time signature                                              */
-        public float                         tempo;                         /* Song's tempo (seconds per base beat)                               */
-        public int                           octave;                        /* Song's main octave                                                 */
-        public int                           noteCount;                     /* Number of notes in main music                                      */
-        public bool                          positionCounting;              /* Set to "true" if the note position of the song is being tracked    */
+        public int                           Key            { get; set; }   /* Song's key signature                                               */
+        public TimeSignature                 Time;                          /* Song's time signature                                              */
+        public float                         Tempo          { get; set; }   /* Song's tempo (seconds per base beat)                               */
+        public int                           Octave         { get; set; }   /* Song's main octave                                                 */
 
         public Sheet                         Sheet          { get; set; }   /* Main music sheet                                                   */
         public Dictionary<string, NoteSheet> Accompaniments { get; set; }   /* Collection of accompaniment sheets                                 */
@@ -698,11 +698,12 @@ namespace Musika
         public NoteSheet()
         {
             /* Initialize all instance objects */
-            Sheet          = new Sheet();
-            Patterns       = new Dictionary<string, Sheet>();
-            Chords         = new Dictionary<string, NoteSet>();
-            Accompaniments = new Dictionary<string, NoteSheet>();
-            Layers         = new Dictionary<int,    SheetSet>();
+            Sheet                  = new Sheet();
+            Patterns               = new Dictionary<string, Sheet>();
+            Chords                 = new Dictionary<string, NoteSet>();
+            Accompaniments         = new Dictionary<string, NoteSheet>();
+            Layers                 = new Dictionary<int,    SheetSet>();
+            RelativeLayerPositions = new Dictionary<string, PositionSheetMap>();
         }
 
         /* / CONSTRUCTOR */
@@ -714,6 +715,7 @@ namespace Musika
         private const string BASE_STRING                = "CONTEXT ERROR: ";
 
         public const string CROSS_REFERENCE_ERROR       = "cross-referencing files is not allowed.";
+        public const string DUPLICATE_NAME_ERROR        = "cannot have duplicate names for patterns, chords, or accompaniment names!";
         public const string INVALID_ACC_REFERENCE_ERROR = "invalid accompaniment reference!";
         public const string INVALID_FILENAME_ERROR      = "invalid Musika file name in accompaniment!";
         public const string INVALID_PA_REF_ERROR        = "invalid pattern or accompaniment reference name!";
@@ -738,14 +740,15 @@ namespace Musika
     {
         /* PROPERTIES */
 
-        private readonly HashSet<string> doNotCompileSet;   /* Do not use any of these files in an accompaniment        */
-        private readonly string filename;                   /* File name of the current Musika file                     */
-        private readonly string filepath;                   /* File path of the current Musika file                     */
-        private readonly string program;                    /* Musika program text                                      */
+        private readonly HashSet<string> doNotCompileSet;                       /* Do not use any of these files in an accompaniment                */
+        private readonly string filename;                                       /* File name of the current Musika file                             */
+        private readonly string filepath;                                       /* File path of the current Musika file                             */
+        private readonly string program;                                        /* Musika program text                                              */
 
-        private LexicalAnalyzer lexer;                      /* Token manager                                            */
-        private NoteSheet       noteSheet;                  /* Intermediate representation of the compiled Musika file  */
-        private bool            ignoreContext;              /* Flag marked true if only syntax is checked               */
+        private LexicalAnalyzer lexer;                                          /* Token manager                                                    */
+        private List<int>       noteCountTracker;                               /* Tracks the current note count for layering position purposes     */
+        private NoteSheet       noteSheet;                                      /* Intermediate representation of the compiled Musika file          */
+        private bool            ignoreContext;                                  /* Flag marked true if only syntax is checked                       */
 
         /* / PROPERTIES */
 
@@ -826,8 +829,9 @@ namespace Musika
 
         public void Reset() /* Restore the program and refresh/restart the lexical analyzer and notesheet */
         {
-            lexer     = new LexicalAnalyzer(program);
-            noteSheet = new NoteSheet();
+            lexer                   = new LexicalAnalyzer(program);
+            noteSheet               = new NoteSheet();
+            noteCountTracker        = new List<int>();
         }
 
         private Token Expect(TokenType etype) /* The passed TokenType must be read from the lexer or a syntax error is thrown (we EXPECT this token type next) */
@@ -848,6 +852,32 @@ namespace Musika
                 next = lexer.GetToken();
 
             lexer.PutToken(next);
+        }
+
+        private void ClearNoteCountTracker() /* Set the note count tracker to 0 notes at layer 0 (default) */
+        {
+            noteCountTracker.Clear();
+            noteCountTracker.Add(0);
+        }
+
+        private void AddNoteCountTrackerLayer() /* Add a new layer to the note */
+        {
+            noteCountTracker.Add(0);
+        }
+
+        private void RemoveNoteCountTrackerLayer() /* Remove the topmost layer of the note tracker */
+        {
+            noteCountTracker.RemoveAt(noteCountTracker.Count - 1);
+        }
+
+        private void IncrementNoteCountTracker() /* Incremement the value of the topmost layer of the note tracker */
+        {
+            ++noteCountTracker[noteCountTracker.Count - 1];
+        }
+
+        private int GetNoteCountTrackerNoteCount() /* Get the total number of notes from the note tracker */
+        {
+            return noteCountTracker.Sum();
         }
 
         /* / HELPER METHODS */
@@ -969,28 +999,26 @@ namespace Musika
             ConsumeNewlines();
 
             /* Changes to key, time, tempo, and octave will be temporary; so save the original values in buffers */
-            int key                      = noteSheet.key;
-            TimeSignature time           = noteSheet.time;
-            float tempo                  = noteSheet.tempo;
-            int octave                   = noteSheet.octave;
+            int key                      = noteSheet.Key;
+            TimeSignature time           = noteSheet.Time;
+            float tempo                  = noteSheet.Tempo;
+            int octave                   = noteSheet.Octave;
             Sheet noteList;
 
-            noteSheet.positionCounting   = true; /* These notes are used in the actual note sheet, so keep track of position for any potential layer placement */
+            /* Reset note count tracker */
+            ClearNoteCountTracker();
 
             /* Generate a note sheet from the main music */
             noteList = ParseMusic(out _);
 
-            /* The ParseMusic() function returns the main music representation */
+            /* The Parse Music function returns the main music representation */
             noteSheet.Sheet = noteList;
 
-            /* Turn off position countning as the main music has been generated */
-            noteSheet.positionCounting = false;
-
             /* Restore key, time, tempo, and octave info */
-            noteSheet.key    = key;
-            noteSheet.time   = time;
-            noteSheet.tempo  = tempo;
-            noteSheet.octave = octave;
+            noteSheet.Key    = key;
+            noteSheet.Time   = time;
+            noteSheet.Tempo  = tempo;
+            noteSheet.Octave = octave;
 
             /* Parse the rest of the sheet */
             ConsumeNewlines();
@@ -1052,13 +1080,12 @@ namespace Musika
             }
         }
 
-        private Sheet ParseMusic(out PositionSheetMap layerDict) /* music -> music_element NEWLINE* music | music_element | EPSILON */
+        private Sheet ParseMusic(out PositionSheetMap layerDict, string patternName = null) /* music -> music_element NEWLINE* music | music_element | EPSILON */
         {
             /* Local Variables */
-            Sheet layerSheet    = null;         /* Layered music             */
-            Sheet returnValue   = new Sheet();  /* Main music return value   */
-            Token next;                         /* Next token                */
-            int   layerPosition = -1;           /* Position of layered music */
+            List<PositionSheetPair> layerPositionSheetPairs = new List<PositionSheetPair>();    /* Position sheet pairs extracted out of a music element for use later  */
+            Sheet returnValue                               = new Sheet();                      /* Main music return value                                              */
+            Token next;                                                                         /* Next token                                                           */
             /* / Local Variables */
 
             /* Initialize the dictionary of layer sheets */
@@ -1068,21 +1095,24 @@ namespace Musika
             next = lexer.PeekToken();
             while (musicFirstSet.Contains(next.Type))
             {
-                /* Parse the music element and store the Sheet instance and layer data it returns */
-                Sheet elementList = ParseMusicElement(ref layerPosition, ref layerSheet);
+                /* Clear layer buffer list for new musical element */
+                layerPositionSheetPairs.Clear();
 
-                /* If a layer was present, add it to the layer dicitonary */
-                if (layerPosition != -1 && layerSheet != null) /* Layer was called */
-                    layerDict.Add(new PositionSheetPair(layerPosition, layerSheet));
+                /* Parse the music element and store the Sheet instance and layer data it returns */
+                Sheet elementList = ParseMusicElement(layerPositionSheetPairs, patternName: patternName);
+
+                /* If any layers were present, add them to the layer dicitonary */
+                layerDict.AddRange(layerPositionSheetPairs);
 
                 /* If a list of notes was returned from parsing the music element, add each note to returned note sheet  */
                 if (elementList != null)
+                {
                     foreach (NoteSet element in elementList)
                     {
                         returnValue.Add(element);
-                        if (noteSheet.positionCounting)
-                            ++noteSheet.noteCount;
+                        IncrementNoteCountTracker();
                     }
+                }
 
                 /* Continue parsing */
                 ConsumeNewlines();
@@ -1267,7 +1297,7 @@ namespace Musika
                 /* If the vlaue is a literal, set the key to the literal value */
                 if (next.Type == TokenType.SIGN && !ignoreContext)
                     if (noteSheet.KeySignuatureExists(next.Content))
-                        noteSheet.key = NoteSheet.KeyConversion[next.Content];
+                        noteSheet.Key = NoteSheet.KeyConversion[next.Content];
                     else
                         throw new ContextError(ContextError.KEY_ERROR);
 
@@ -1283,7 +1313,7 @@ namespace Musika
 
                         /* Look up the referred value and set the key to it */
                         referenceSheet = noteSheet.Accompaniments[idName];
-                        noteSheet.key = referenceSheet.key;
+                        noteSheet.Key = referenceSheet.Key;
                     }
                 }
 
@@ -1313,7 +1343,7 @@ namespace Musika
             Expect(TokenType.COLON);
 
             /* Store the original time signature in a temp variable to use later */
-            originalBaseNote = noteSheet.time.baseNote;
+            originalBaseNote = noteSheet.Time.baseNote;
 
             /* Value is numeric */
             next = lexer.GetToken();
@@ -1329,14 +1359,14 @@ namespace Musika
                     next = Expect(TokenType.NUMBER);
                     secondNumber = int.Parse(next.Content);
 
-                    noteSheet.time = new TimeSignature { baseNote = secondNumber, beatsPerMeasure = firstNumber };
+                    noteSheet.Time = new TimeSignature { baseNote = secondNumber, beatsPerMeasure = firstNumber };
                 }
 
                 /* If the value is a single integer, set the base note to the specified value and adjust the beats per measure accordingly */
                 else
                 {
                     /* Check that the time signature was initialized (there must be an initial value before you can modify it) */
-                    if (noteSheet.time.baseNote == 0 && noteSheet.time.beatsPerMeasure == 0 && !ignoreContext)
+                    if (noteSheet.Time.baseNote == 0 && noteSheet.Time.beatsPerMeasure == 0 && !ignoreContext)
                         throw new ContextError(ContextError.TIME_ERROR);
                     else
                     {
@@ -1346,9 +1376,9 @@ namespace Musika
 
                         /* Increase/Decrease the beats per measure by the same order of magnitude (so that the true time signature remains the same */
                         /* Example: if the original time signature is 4 / 4, and the base note is set to 8, the new time signature is 8 / 8         */
-                        baseNoteRatio = (float)firstNumber / (float)noteSheet.time.baseNote;
-                        noteSheet.time.baseNote = firstNumber;
-                        noteSheet.time.beatsPerMeasure *= baseNoteRatio;
+                        baseNoteRatio = (float)firstNumber / (float)noteSheet.Time.baseNote;
+                        noteSheet.Time.baseNote = firstNumber;
+                        noteSheet.Time.beatsPerMeasure *= baseNoteRatio;
                     }
 
                     lexer.PutToken(next); /* NUMBER */
@@ -1359,7 +1389,7 @@ namespace Musika
             else if (TokenTypeFactory.Tier2Keywords.Contains(next.Type))
             {
                 if (NoteSheet.TimeSignatureDict.ContainsKey(next.Type))
-                    noteSheet.time = NoteSheet.TimeSignatureDict[next.Type];
+                    noteSheet.Time = NoteSheet.TimeSignatureDict[next.Type];
 
                 /* This should never happend because the token is already checked to be a Tier 2 keyword and all Tier 2 keywords should be keys in the */
                 /* time signature dictionary (NoteSheet class)                                                                                         */
@@ -1379,7 +1409,7 @@ namespace Musika
 
                     /* Look up the referred value and set the time to it */
                     referenceSheet = noteSheet.Accompaniments[idName];
-                    noteSheet.time = referenceSheet.time;
+                    noteSheet.Time = referenceSheet.Time;
                 }
             }
 
@@ -1393,8 +1423,8 @@ namespace Musika
             /* Update the tempo if the base note changed. This is because each beat total length will change because the base note is different */
             /* For example, if the original base note was 4 and now it is 8, divide the tempo by 2 because each 8th note is half the time of a  */
             /* quarter note                                                                                                                     */
-            if (noteSheet.time.baseNote != originalBaseNote)
-                noteSheet.tempo *= (float)originalBaseNote / (float)noteSheet.time.baseNote;
+            if (noteSheet.Time.baseNote != originalBaseNote)
+                noteSheet.Tempo *= (float)originalBaseNote / (float)noteSheet.Time.baseNote;
         }
 
         private void ParseTempo(bool endWithNewline) /* tempo -> TEMPO COLON NUMBER EQUAL NUMBER NEWLINE  | TEMPO COLON NUMBER  | TEMPO COLON ID NEWLINE */
@@ -1431,20 +1461,20 @@ namespace Musika
                     secondNumber = int.Parse(next.Content);
 
                     /* first number: tempo's base note; second number: beats per minute */
-                    baseNoteRatio  = firstNumber / noteSheet.time.baseNote;
+                    baseNoteRatio  = firstNumber / noteSheet.Time.baseNote;
                     secondsPerBeat = SECONDS_PER_MINUTE / secondNumber;
 
                     /* Multiply the seconds per beat by the ratio of the base notes to get the seconds per beat in the time signature's base note */
-                    noteSheet.tempo = baseNoteRatio * secondsPerBeat;
+                    noteSheet.Tempo = baseNoteRatio * secondsPerBeat;
                 }
 
                 /* One integer specified, so just multiply/divide the current tempo by this coefficient */
                 else
                 {
                     if (firstNumber >= 0)
-                        noteSheet.tempo *= firstNumber;
+                        noteSheet.Tempo *= firstNumber;
                     else /* If the number is negative, multiply by the negative reciprocal (Example: -2 becomes 1/2) */
-                        noteSheet.tempo /= -firstNumber; /* if the number is negative, it slows down time so divide by absolute value */
+                        noteSheet.Tempo /= -firstNumber; /* if the number is negative, it slows down time so divide by absolute value */
 
                     lexer.PutToken(next); /* NUMBER */
                 }
@@ -1462,10 +1492,10 @@ namespace Musika
 
                     /* Look up the referred value and set the tempo to it */
                     referenceSheet = noteSheet.Accompaniments[idName];
-                    noteSheet.tempo = referenceSheet.tempo;
+                    noteSheet.Tempo = referenceSheet.Tempo;
 
-                    if (noteSheet.time.baseNote != referenceSheet.time.baseNote) /* Adjust tempo for accompaniment sheet's different time signature */
-                        noteSheet.tempo *= referenceSheet.time.baseNote / noteSheet.time.baseNote;
+                    if (noteSheet.Time.baseNote != referenceSheet.Time.baseNote) /* Adjust tempo for accompaniment sheet's different time signature */
+                        noteSheet.Tempo *= referenceSheet.Time.baseNote / noteSheet.Time.baseNote;
                 }
             }
 
@@ -1504,10 +1534,10 @@ namespace Musika
                     newOctave = int.Parse(next.Content);
 
                     /* Increment current octave by the specified value */
-                    noteSheet.octave += newOctave;
+                    noteSheet.Octave += newOctave;
 
                     /* Throw an error if the new octave is below 0 */
-                    if (noteSheet.octave < 0 && !ignoreContext)
+                    if (noteSheet.Octave < 0 && !ignoreContext)
                         throw new ContextError(ContextError.OCTAVE_ERROR);
                 }
 
@@ -1522,11 +1552,11 @@ namespace Musika
                 newOctave = int.Parse(next.Content);
 
                 if (newOctave >= 0) /* Value is positive, so set the octave to this value */
-                    noteSheet.octave = newOctave;
+                    noteSheet.Octave = newOctave;
                 else if (newOctave < 0) /* Value is negative or has a plus sign, so add the current octave by the specified value  */
-                    noteSheet.octave += newOctave;
+                    noteSheet.Octave += newOctave;
 
-                if (noteSheet.octave < 0 && !ignoreContext)
+                if (noteSheet.Octave < 0 && !ignoreContext)
                     throw new ContextError(ContextError.OCTAVE_ERROR);
             }
 
@@ -1542,7 +1572,7 @@ namespace Musika
 
                     /* Look up the referred value and set the octave to it */
                     referenceSheet = noteSheet.Accompaniments[idName];
-                    noteSheet.octave = referenceSheet.octave;
+                    noteSheet.Octave = referenceSheet.Octave;
                 }
             }
 
@@ -1556,7 +1586,6 @@ namespace Musika
             Token            next;          /* Next token                                   */
             NoteSet          noteList;      /* Note set returned by ParseChordType          */
             Sheet            music;         /* Music sheet returned by ParseMusic           */
-            PositionSheetMap discard;       /* Not used, but needed to pass into ParseMusic */
             TimeSignature    timeBuffer;    /* Original time signature buffer               */
             int              keyBuffer;     /* Original key signature buffer                */
             int              octaveBuffer;  /* Original octave buffer                       */
@@ -1580,23 +1609,32 @@ namespace Musika
                 ConsumeNewlines();
 
                 /* Changes to key, time, tempo, and octave will be temporary; so save the original values in buffers */
-                keyBuffer    = noteSheet.key;
-                timeBuffer   = noteSheet.time;
-                tempoBuffer  = noteSheet.tempo;
-                octaveBuffer = noteSheet.octave;
+                keyBuffer       = noteSheet.Key;
+                timeBuffer      = noteSheet.Time;
+                tempoBuffer     = noteSheet.Tempo;
+                octaveBuffer    = noteSheet.Octave;
+                patternName     = nameTok.Content;
+
+                /* Reset note count tracker */
+                ClearNoteCountTracker();
 
                 /* Parse Body */
-                music = ParseMusic(out discard);
+                music = ParseMusic(out _, patternName: patternName);
+
+                /* Make sure the pattern name does not exist */
+                if (noteSheet.Patterns.ContainsKey(patternName))
+                {
+                    throw new ContextError(ContextError.DUPLICATE_NAME_ERROR);
+                }
 
                 /* Add the generated sheet to the list of patterns */
-                patternName = nameTok.Content;
                 noteSheet.Patterns.Add(patternName, music);
 
                 /* Restore info */
-                noteSheet.key    = keyBuffer;
-                noteSheet.time   = timeBuffer;
-                noteSheet.tempo  = tempoBuffer;
-                noteSheet.octave = octaveBuffer;
+                noteSheet.Key    = keyBuffer;
+                noteSheet.Time   = timeBuffer;
+                noteSheet.Tempo  = tempoBuffer;
+                noteSheet.Octave = octaveBuffer;
             }
 
             /* Parse a chord definition */
@@ -1639,7 +1677,7 @@ namespace Musika
                 /* Store the current note's name and octave (there must be at least one note in the chord) */
                 note = Expect(TokenType.NOTE);
                 noteName = note.Content;
-                octave = noteSheet.octave;
+                octave = noteSheet.Octave;
 
                 /* Offset octave if there is a change */
                 octave += ParseOctaveChange();
@@ -1660,23 +1698,23 @@ namespace Musika
             return returnValue;
         }
 
-        private Sheet ParseMusicElement(ref int position, ref Sheet sheet) /* music_element -> function | riff */
+        private Sheet ParseMusicElement(List<PositionSheetPair> layerPositionSheetPairs, string patternName = null) /* music_element -> function | riff */
         {
             Token next = lexer.PeekToken();
 
             /* Parse function if the next token is in the function first set */
             if (TokenTypeFactory.Tier3Keywords.Contains(next.Type)) /* This is also the first set of the function grammar rule */
-                return ParseFunction(ref position, ref sheet);
+                return ParseFunction(layerPositionSheetPairs, patternName: patternName);
 
             /* Parse riff if the next token is in the riff first set */
             else if (riffFirstSet.Contains(next.Type))
-                return ParseRiff();
+                return ParseRiff(layerPositionSheetPairs);
 
             /* If the next token was not in the function or riff first set, throw a syntax error */
             else throw new SyntaxError(next.Type, TokenType.REPEAT, TokenType.LAYER, TokenType.NOTE, TokenType.ID, TokenType.CARROT, TokenType.BANG);
         }
 
-        private Sheet ParseFunction(ref int position, ref Sheet sheet) /* function -> repeat | layer */
+        private Sheet ParseFunction(List<PositionSheetPair> layerPositionSheetPairs, string patternName = null) /* function -> repeat | layer */
         {
             Token next = lexer.PeekToken();
 
@@ -1688,9 +1726,8 @@ namespace Musika
             else if (next.Type == TokenType.LAYER)
             {
                 /* Parse the layer and save both the music and its relative position in the song */
-                PositionSheetPair layerReturn = ParseLayer();
-                position = layerReturn.Key;
-                sheet = layerReturn.Value;
+                PositionSheetPair layerReturn = ParseLayer(patternName: patternName);
+                layerPositionSheetPairs.Add(layerReturn);
 
                 return null; /* A layer does not produce any note sheets for the main sheet */
             }
@@ -1703,8 +1740,7 @@ namespace Musika
             /* Local Variables */
             Sheet              returnValue;     /* Sheet music to be returned (music the repeat number of times)    */
             Sheet              music;           /* Sheet music returend from ParseMusic                             */
-            PositionSheetMap   layerReference;  /* Stores a detected layer reference in the music                   */
-            SheetSet           newLayerList;    /* List of newly defined layers in repeat                           */
+            SheetSet newLayerList;    /* List of newly defined layers in repeat                           */
             Token              numberTok;       /* Token for number of repetitions                                  */
             int                i;               /* Repeat loop index                                                */
             int                position;        /* Specified layer position                                         */
@@ -1734,8 +1770,14 @@ namespace Musika
             else if (repeatNum < 0)
                 throw new ContextError(ContextError.INVALID_REPEAT_NUM_ERROR);
 
+            /* Add a layer to the note count tracker to count only the notes in the repeat section */
+            AddNoteCountTrackerLayer();
+
             /* Parse the music in the repeat block */
-            music = ParseMusic(out layerReference);
+            music = ParseMusic(out PositionSheetMap layerReference);
+
+            /* Remove new note count layer */
+            RemoveNoteCountTrackerLayer();
 
             /* Add the layers to the layer dictionary */
             foreach (PositionSheetPair pair in layerReference)
@@ -1750,8 +1792,10 @@ namespace Musika
                         noteSheet.Layers[position].Add(pair.Value);
                     else
                     {
-                        newLayerList = new SheetSet();
-                        newLayerList.Add(pair.Value);
+                        newLayerList = new SheetSet
+                        {
+                            pair.Value
+                        };
                         noteSheet.Layers.Add(position, newLayerList);
                     }
                 }
@@ -1768,16 +1812,15 @@ namespace Musika
             return returnValue;
         }
 
-        private PositionSheetPair ParseLayer() /* layer -> LAYER L_PAREN callback R_PAREN */
+        private PositionSheetPair ParseLayer(string patternName = null) /* layer -> LAYER L_PAREN callback R_PAREN */
         {
             /* Local Variables */
-            CallbackType      idPatternRef; /* Type of id callback                                              */
-            PositionSheetPair returnValue;  /* Layer as position-sheet music pair to return                     */
-            Sheet             pattern;      /* Layered music                                                    */
-            SheetSet          newLayerList; /* Layer list to set as the layer list if not already initialized   */
-            string            accname;      /* Accompaniment name                                               */
-            string            name;         /* Name of pattern/accompaniment                                    */
-            int               position;     /* Position of layered music in song                                */
+            CallbackType      idPatternRef;     /* Type of id callback                                                      */
+            PositionSheetPair returnValue;      /* Layer as position-sheet music pair to return                             */
+            Sheet             pattern;          /* Layered music                                                            */
+            SheetSet          newLayerList;     /* Layer list to set as the layer list if not already initialized           */
+            int               position;         /* Position of layered music in song                                        */
+            int               absolutePosition; /* Position of a layer call in the invoked pattern                          */
             /* / Local Variables */
 
             /* Parse declaration */
@@ -1787,7 +1830,7 @@ namespace Musika
             if (!ignoreContext)
             {
                 /* Parse the reference, store the name, and store the name of the accompaniment if there is one */
-                idPatternRef = ParseCallback(out accname, out name);
+                idPatternRef = ParseCallback(out string accname, out string name);
 
                 /* Get the pattern based off of the reference */
                 switch (idPatternRef)
@@ -1814,28 +1857,92 @@ namespace Musika
                 }
 
                 /* Set the position to the current note count so that the layer begins when that many notes have passed */
-                position = noteSheet.noteCount;
+                position = GetNoteCountTrackerNoteCount();
 
-                /* Add the pattern to the layer list at the stored position */
-                if (noteSheet.Layers.ContainsKey(position))
-                    noteSheet.Layers[position].Add(pattern);
-                else
+                /* If parsing a pattern, add layer to relative position map */
+                if (patternName != null)
                 {
                     newLayerList = new SheetSet
                     {
                         pattern
                     };
                     noteSheet.Layers.Add(position, newLayerList);
-                }
+                    if (noteSheet.RelativeLayerPositions.ContainsKey(patternName))
+                    {
+                        noteSheet.RelativeLayerPositions[patternName].Add(new PositionSheetPair(position, pattern));
+                    }
+                    else
+                    {
+                        noteSheet.RelativeLayerPositions.Add(patternName, new PositionSheetMap()
+                        {
+                            new PositionSheetPair(position, pattern)
+                        });
+                    }
 
-                /* Construct the position-pattern pair from the calculated position and received pattern */
-                returnValue = new PositionSheetPair(position, pattern);
+                    /* Add any relative patterns from the layered pattern (nested layer call) */
+                    switch (idPatternRef)
+                    {
+                        case CallbackType.ACCOMPANIMENT_SHEET:
+                            foreach (KeyValuePair<int, SheetSet> posSheetSetPair in noteSheet.Accompaniments[name].Layers)
+                            {
+                                absolutePosition = position + posSheetSetPair.Key;
+
+                                foreach (Sheet sheet in posSheetSetPair.Value)
+                                {
+                                    noteSheet.RelativeLayerPositions[patternName].Add(new PositionSheetPair(absolutePosition, sheet));
+                                }
+                            }
+                            break;
+
+                        case CallbackType.ACCOMPANIMENT_PATTERN:
+                            if (noteSheet.Accompaniments[accname].RelativeLayerPositions.ContainsKey(name))
+                            {
+                                foreach (PositionSheetPair posSheetPair in noteSheet.RelativeLayerPositions[name])
+                                {
+                                    absolutePosition = position + posSheetPair.Key;
+                                    noteSheet.RelativeLayerPositions[patternName].Add(new PositionSheetPair(absolutePosition, posSheetPair.Value));
+                                }
+                            }
+                            break;
+
+                        case CallbackType.LOCAL_PATTERN:
+                            if (noteSheet.RelativeLayerPositions.ContainsKey(name))
+                            {
+                                foreach (PositionSheetPair posSheetPair in noteSheet.RelativeLayerPositions[name])
+                                {
+                                    absolutePosition = position + posSheetPair.Key;
+                                    noteSheet.RelativeLayerPositions[patternName].Add(new PositionSheetPair(absolutePosition, posSheetPair.Value));
+                                }
+                            }
+                            break;
+                    }
+
+                    /* Do not return an explicit value: return empty pair */
+                    returnValue = new PositionSheetPair(-1, null);
+                }
+                else
+                {
+                    /* Add the pattern to the layer list at the stored position */
+                    if (noteSheet.Layers.ContainsKey(position))
+                        noteSheet.Layers[position].Add(pattern);
+                    else
+                    {
+                        newLayerList = new SheetSet
+                        {
+                            pattern
+                        };
+                        noteSheet.Layers.Add(position, newLayerList);
+                    }
+
+                    /* Construct the position-pattern pair from the calculated position and received pattern */
+                    returnValue = new PositionSheetPair(position, pattern);
+                }
             }
 
             /* If we are ignoring context, then all we need to do is parse the rest of the layer call and return an empty pair */
             else
             {
-                ParseCallback(out accname, out name);
+                ParseCallback(out _, out _);
                 returnValue = new PositionSheetPair(-1, null);
             }
 
@@ -1844,7 +1951,7 @@ namespace Musika
             return returnValue;
         }
 
-        private Sheet ParseRiff() /* riff -> riff_element NEWLINE* riff  | riff_element NEWLINE* */
+        private Sheet ParseRiff(List<PositionSheetPair> layerPositionSheetPairs) /* riff -> riff_element NEWLINE* riff  | riff_element NEWLINE* */
         {
             /* Local Variables */
             Sheet returnValue; /* Sheet music riff to be returned   */
@@ -1860,7 +1967,7 @@ namespace Musika
             while (riffElementFirstSet.Contains(next.Type))
             {
                 /* Parse and retrieve a list of notes/chords OR a number of times to repeat last note */
-                dynamic elementReturn = ParseRiffElement();
+                dynamic elementReturn = ParseRiffElement(layerPositionSheetPairs, returnValue.Count);
 
                 /* If value returned was a list, add all notes/chords to the return list */
                 if (elementReturn is Sheet)
@@ -1887,29 +1994,29 @@ namespace Musika
             return returnValue;
         }
 
-        private dynamic ParseRiffElement() /* riff_element -> NOTE dot_set | NOTE octave_change dot_set | callback | callback dot_set */
-                                           /* | CARROT NUMBER | BANG key \ NEWLINE BANG | BANG time \ NEWLINE BANG                    */
+        private dynamic ParseRiffElement(List<PositionSheetPair> layerPositionSheetPairs, int currentNoteCount)     /* riff_element -> NOTE dot_set | NOTE octave_change dot_set | callback | callback dot_set */
+                                                                                                                    /* | CARROT NUMBER | BANG key \ NEWLINE BANG | BANG time \ NEWLINE BANG                    */
         {
             /* Constants */
             const bool NO_END_NEWLINE = false; /* Do not expect a newline */
             /* / Constants */
 
             /* Local Variables */
-            CallbackType idRefPattern;      /* Type of id callback                                          */
-            NoteSet      chordCopy;         /* Copy of the referenced chord (to add if element is chord)    */
-            NoteSet      chordRef;          /* Chord referenced by id                                       */
-            NoteSet      singleNoteList;    /* Element to add if element is a single note                   */
-            Token        next;              /* Next token                                                   */
-            Token        numberToken;       /* Token containing shorthand repeat number                     */
-            int          i;                 /* Chord copy loop index                                        */
-            int          numDots;           /* Duration of note/chord in dots (base rhythms)                */
-            int          octave;            /* Specified octave                                             */
-            string       accName;           /* Name of specified accompaniment                              */
-            string       idName;            /* Name of specified id                                         */
-            string       noteName;          /* Name of specified note                                       */
-            float        duration;          /* Duration of note/chord in seconds                            */
-            float        frequency;         /* Frequency of specified note                                  */
-            dynamic      returnValue;       /* Return value (either Sheet or int type)                      */
+            CallbackType idRefPattern;              /* Type of id callback                                                  */
+            NoteSet      chordCopy;                 /* Copy of the referenced chord (to add if element is chord)            */
+            NoteSet      chordRef;                  /* Chord referenced by id                                               */
+            NoteSet      singleNoteList;            /* Element to add if element is a single note                           */
+            SheetSet     newLayerList;              /* Set of layers at a newly-specified position if needed                */
+            Token        next;                      /* Next token                                                           */
+            Token        numberToken;               /* Token containing shorthand repeat number                             */
+            int          i;                         /* Chord copy loop index                                                */
+            int          numDots;                   /* Duration of note/chord in dots (base rhythms)                        */
+            int          octave;                    /* Specified octave                                                     */
+            int          layerAbsolutePosition;     /* Absolute position of layer if it was called in a pattern reference   */
+            string       noteName;                  /* Name of specified note                                               */
+            float        duration;                  /* Duration of note/chord in seconds                                    */
+            float        frequency;                 /* Frequency of specified note                                          */
+            dynamic      returnValue;               /* Return value (either Sheet or int type)                              */
             /* / Local Variables */
 
             /* Assume return value is a list and initialize (since most paths return a list) */
@@ -1922,10 +2029,7 @@ namespace Musika
             {
                 /* Store the initial information */
                 noteName = next.Content;
-                octave   = noteSheet.octave;
-                numDots  = 0;
-
-                next = lexer.PeekToken();
+                octave   = noteSheet.Octave;
 
                 /* Offset the octave if specified */
                 octave += ParseOctaveChange();
@@ -1935,11 +2039,13 @@ namespace Musika
 
                 /* With updated information, find the note frequency and duration */
                 frequency = noteSheet.GetFrequency(noteName, octave);
-                duration  = noteSheet.tempo * numDots;
+                duration  = noteSheet.Tempo * numDots;
 
                 /* Store the note information into a note instance and store in the return value as a single note */
-                singleNoteList = new NoteSet();
-                singleNoteList.Add(new Note { note = noteName, frequency = frequency, length = duration }); /* stored in a list by itself since it is not a chord */
+                singleNoteList = new NoteSet
+                {
+                    new Note { note = noteName, frequency = frequency, length = duration } /* stored in a list by itself since it is not a chord */
+                };
                 returnValue.Add(singleNoteList);
             }
 
@@ -1948,13 +2054,13 @@ namespace Musika
             {
                 /* Parse the callback and store its type and names */
                 lexer.PutToken(next);
-                idRefPattern = ParseCallback(out accName, out idName);
+                idRefPattern = ParseCallback(out string accName, out string idName);
                 next = lexer.PeekToken();
 
                 if (ignoreContext) /* Should only be used for testing and should never be run for release */
                 {
                     if (next.Type == TokenType.DOT)
-                        numDots = ParseDotSet();
+                        _ = ParseDotSet();
                 }
                 else /* Should always run for release */
                 {
@@ -1963,7 +2069,7 @@ namespace Musika
                     {
                         /* Find the length of the chord */
                         numDots = ParseDotSet();
-                        duration = noteSheet.tempo * numDots;
+                        duration = noteSheet.Tempo * numDots;
 
                         /* Find the chord reference from the notesheet */
                         if (idRefPattern == CallbackType.LOCAL_CHORD)
@@ -2000,6 +2106,32 @@ namespace Musika
 
                             default:
                                 throw new ContextError(ContextError.PC_REFERENCE_ERROR);
+                        }
+
+                        /* Add the pattern's layers to the layer dictionary */
+                        if (noteSheet.RelativeLayerPositions.ContainsKey(idName))
+                        {
+                            foreach (PositionSheetPair posSheetPair in noteSheet.RelativeLayerPositions[idName])
+                            {
+                                /* Compute the layer's absolute position based off of its relative position in the pattern */
+                                layerAbsolutePosition = GetNoteCountTrackerNoteCount() + currentNoteCount + posSheetPair.Key;
+
+                                /* Add the layer to the song */
+                                if (noteSheet.Layers.ContainsKey(layerAbsolutePosition))
+                                    noteSheet.Layers[layerAbsolutePosition].Add(posSheetPair.Value);
+                                else
+                                {
+                                    newLayerList = new SheetSet
+                                    {
+                                        posSheetPair.Value
+                                    };
+
+                                    noteSheet.Layers.Add(layerAbsolutePosition, newLayerList);
+                                }
+
+                                /* Add the absolute position and layer sheet to the layer position sheet pair structure */
+                                layerPositionSheetPairs.Add(new PositionSheetPair(layerAbsolutePosition, posSheetPair.Value));
+                            }
                         }
                     }
                 }
@@ -2937,6 +3069,7 @@ namespace Musika
     }
 
     /* Custom types and substitute type names */
+    [Serializable]
     class PositionSheetPair /* Replacement for KeyValuePair<int, Sheet> */
     {
         public int   Key;
@@ -2970,6 +3103,7 @@ namespace Musika
     [Serializable]
     class SheetSet                              : List<Sheet>                                       { }
 
+    [Serializable]
     class PositionSheetMap                      : List<PositionSheetPair>                           { }
 
     class OffsetFrequencyDurationTableListMap   : Dictionary<double, FrequencyDurationTableList>    { }
