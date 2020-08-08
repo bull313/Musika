@@ -1821,8 +1821,10 @@ namespace Musika
                     noteSheet.Layers[position].Add(pattern);
                 else
                 {
-                    newLayerList = new SheetSet();
-                    newLayerList.Add(pattern);
+                    newLayerList = new SheetSet
+                    {
+                        pattern
+                    };
                     noteSheet.Layers.Add(position, newLayerList);
                 }
 
@@ -2191,7 +2193,7 @@ namespace Musika
     }
 
     /* Gets and manages tokens from the input buffer */
-    partial class LexicalAnalyzer
+    public partial class LexicalAnalyzer
     {
         /* CONSTANTS */
 
@@ -2201,8 +2203,11 @@ namespace Musika
 
         /* PROPERTIES */
 
-        private InputBuffer input;
-        private Stack<Token> tokenBuffer;
+        private readonly InputBuffer input;
+        private readonly Stack<Token> tokenBuffer;
+
+        public Dictionary<int, string> SingleLineCommentStartPositionMap { get; private set; }
+        public Dictionary<int, string> MultiLineCommentStartPositionMap { get; private set; }
 
         /* / PROPERTIES */
 
@@ -2212,6 +2217,8 @@ namespace Musika
         {
             input = new InputBuffer(programText);
             tokenBuffer = new Stack<Token>();
+            SingleLineCommentStartPositionMap = new Dictionary<int, string>();
+            MultiLineCommentStartPositionMap = new Dictionary<int, string>();
         }
 
         /* / CONSTRUCTOR */
@@ -2221,10 +2228,12 @@ namespace Musika
         {
             /* Local Variables */
 
-            TokenType type;     /* Buffer for the current token's type                              */
-            bool quoteClosed;   /* Checks if an opening quotation mark was closed by another mark   */
-            char nextChar;      /* Current character to analyze                                     */
-            int dashCount;      /* Used to count the number of dashes for a BREAK token             */
+            TokenType   type;               /* Buffer for the current token's type                              */
+            bool        quoteClosed;        /* Checks if an opening quotation mark was closed by another mark   */
+            char        nextChar;           /* Current character to analyze                                     */
+            int         dashCount;          /* Used to count the number of dashes for a BREAK token             */
+            int         commentPosition;    /* Position of found comment                                        */
+            string      foundComment;       /* Identified comment when finding token                            */
 
             /* / Local Variables */
 
@@ -2234,33 +2243,51 @@ namespace Musika
             nextChar = ' ';
 
                 /* Check for whitespace (other than newline)            check for comment characters  */
-            while ((nextChar != '\n' && char.IsWhiteSpace(nextChar)) || nextChar == '&' || nextChar == '=')
+            while ((nextChar != '\n' && nextChar != '\r' && char.IsWhiteSpace(nextChar)) || nextChar == '&' || nextChar == '=')
             {
                 /* Skip single-line comment */
                 if (nextChar == '&')
                 {
-                    while (nextChar != '\n' && nextChar != '\0') /* End of file detecting to prevent infiite loop */
+                    commentPosition = input.Position;
+                    foundComment = nextChar + "";
+
+                    while (nextChar != '\n' && nextChar != '\r' && nextChar != '\0') /* End of file detecting to prevent infiite loop */
+                    {
                         nextChar = input.GetChar();
+                        foundComment += nextChar;
+                    }
+
                     input.PutChar(nextChar);
+                    foundComment = foundComment.Substring(0, foundComment.Length - 1);
+
+                    /* Save comment */
+                    SingleLineCommentStartPositionMap.Add(commentPosition, foundComment);
                 }
 
                 /* Skip multi-line comment or return equals sign */
                 else if (nextChar == '=')
                 {
+                    foundComment = nextChar + "";
                     nextChar = input.GetChar();
 
                     /* Multi-line comment */
                     if (nextChar == '>')
                     {
+                        commentPosition = input.Position - 1; /* Offset for first multi line comment start character */
+                        foundComment += nextChar;
+
                         /* Stop at the end of file to prevent infinite loop */
                         while (nextChar != '\0')
                         {
                             nextChar = input.GetChar();
+                            foundComment += nextChar;
 
                             /* Check for closing multiline comment */
                             if (nextChar == '<')
                             {
                                 nextChar = input.GetChar();
+                                foundComment += nextChar;
+
                                 if (nextChar == '=')
                                 {
                                     nextChar = input.GetChar();
@@ -2268,6 +2295,8 @@ namespace Musika
                                 }
                             }
                         }
+
+                        MultiLineCommentStartPositionMap.Add(commentPosition, foundComment);
                     }
 
                     /* Equals sign */
@@ -2281,7 +2310,7 @@ namespace Musika
                 /* Skip whitespace */
                 else
                 {
-                    while (nextChar != '\n' && char.IsWhiteSpace(nextChar))
+                    while (nextChar != '\n' && nextChar != '\r' && char.IsWhiteSpace(nextChar))
                         nextChar = input.GetChar();
                 }
             }
@@ -2314,10 +2343,30 @@ namespace Musika
             /* Complex tokens */
 
             /* BREAK */
-            if (nextChar == '\n')
+            if (nextChar == '\n' || nextChar == '\r')
             {
-                /* Store the newline in the return string */
-                returnTokenString += nextChar;
+                /* Store the newline in the return string (either \r\n or \n) */
+                if (nextChar == '\r')
+                {
+                    returnTokenString += nextChar;
+                    nextChar = input.GetChar();
+
+                    if (nextChar == '\n')
+                    {
+                        returnTokenString += nextChar; /* Store \r\n as newline */
+                    }
+                    else
+                    {
+                        input.PutChar(nextChar);
+                        returnTokenString = returnTokenString.Substring(0, returnTokenString.Length - 1);
+                        returnTokenString += '\n'; /* Change \r to \n to save \n */
+                    }
+                }
+                else
+                {
+                    returnTokenString += nextChar; /* Character was \n */
+                }
+
                 nextChar = input.GetChar();
 
                 /* Count the number of dashes present (max 3) */
@@ -2335,14 +2384,90 @@ namespace Musika
                 {
                     type = TokenType.UNKNOWN;
 
+                    /* Check for a closing newline (ignoring comments if they are present) */
+
                     /* Ignore all other characters until a newline or EOF is reached */
-                    while (nextChar != '\n' && nextChar != '\0')
+                    while (nextChar != '\n' && nextChar != '\r' && nextChar != '\0')
+                    {
+                        /* Collect single-line comment */
+                        if (nextChar == '&')
+                        {
+                            commentPosition = input.Position;
+                            foundComment = nextChar + "";
+
+                            while (nextChar != '\n' && nextChar != '\r' && nextChar != '\0')
+                            {
+                                nextChar = input.GetChar();
+                                foundComment += nextChar;
+                            }
+
+                            SingleLineCommentStartPositionMap.Add(commentPosition, foundComment);
+                        }
+                        else if (nextChar == '=')
+                        {
+                            foundComment = nextChar + "";
+                            nextChar = input.GetChar();
+
+                            if (nextChar == '>')
+                            {
+                                commentPosition = input.Position - 1;
+                                foundComment += nextChar;
+
+                                /* Handle multi-line comment */
+                                while (nextChar != '\0')
+                                {
+                                    nextChar = input.GetChar();
+                                    foundComment += nextChar;
+
+                                    if (nextChar == '<')
+                                    {
+                                        nextChar = input.GetChar();
+                                        foundComment += nextChar;
+
+                                        if (nextChar == '=')
+                                        {
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                MultiLineCommentStartPositionMap.Add(commentPosition, foundComment);
+                            }
+                        }
+                        else if (!char.IsWhiteSpace(nextChar))
+                        {
+                            /* Other character (non-whitespace) found. Therefore, BREAK token is not recognized */
+                            returnTokenString += nextChar;
+                            return new Token(returnTokenString, type);
+                        }
+
                         nextChar = input.GetChar();
+                    }
 
                     /* If a newline was reached, the BREAK is \n---\n, ignoring all other characters in between */
-                    if (nextChar == '\n')
+                    if (nextChar == '\n' || nextChar == '\r')
                     {
-                        returnTokenString += nextChar;
+                        /* Store the newline in the return string */
+                        if (nextChar == '\r')
+                        {
+                            returnTokenString += nextChar;
+                            nextChar = input.GetChar();
+
+                            if (nextChar == '\n')
+                            {
+                                returnTokenString += nextChar;
+                            }
+                            else
+                            {
+                                input.PutChar(nextChar);
+                                returnTokenString = returnTokenString.Substring(0, returnTokenString.Length - 1);
+                                returnTokenString += '\n';
+                            }
+                        }
+                        else
+                        {
+                            returnTokenString += nextChar;
+                        }
                         type = TokenType.BREAK;
                     }
 
@@ -2484,7 +2609,7 @@ namespace Musika
                 /* Keep adding content to the return string until the closing quote or newline is reached */
                 nextChar = input.GetChar();
 
-                while (nextChar != '\"' && nextChar != '\n')
+                while (nextChar != '\"' && nextChar != '\n' && nextChar != '\r' && nextChar != '\0')
                 {
                     returnTokenString += nextChar;
                     nextChar = input.GetChar();
@@ -2545,15 +2670,21 @@ namespace Musika
             return returnToken;
         }
 
+        public int GetTextPosition() /* Get the current position in the program text */
+        {
+            return input.Position;
+        }
+
         /* / PUBLIC METHODS */
     }
 
     /* Holds the program as a raw string and allows other classes to access it char by char */
-    partial class InputBuffer
+    public partial class InputBuffer
     {
         /* PROPERTIES */
 
         public string ProgramText { get; private set; } /* Program code as a string of characters */
+        public int Position { get; private set; }
 
         /* / PROPERITES */
 
@@ -2562,7 +2693,8 @@ namespace Musika
         public InputBuffer(string programText)
         {
             /* This replaces remove newline character differences among OSs with one universal \n */
-            this.ProgramText = programText.Replace("\r\n", "\n").Replace("\r", "\n");
+            ProgramText = programText + '\0';
+            Position = -1;
         }
 
         /* / CONSTRUCTOR */
@@ -2577,7 +2709,9 @@ namespace Musika
 
             /* Return the first character in the input buffer and remove it from the buffer */
             char retVal = ProgramText[0];
+
             ProgramText = ProgramText.Substring(1, ProgramText.Length - 1);
+            ++Position;
 
             return retVal;
         }
@@ -2585,11 +2719,12 @@ namespace Musika
         public void PutChar(char c) /* Place the given character at the beginning of the program string */
         {
             ProgramText = c + ProgramText;
+            --Position;
         }
     }
 
     /* Object representation of a lexical token in the Musika grammar */
-    partial class Token
+    public partial class Token
     {
         /* PROPERTIES */
 

@@ -10,227 +10,396 @@ using Musika;
 
 namespace MusikaIDE
 {
-    /* STYLE CLASS TO STYLE SPECIAL WORDS/CHARS */
+    /* Used to style special words and characters */
     internal class Style
     {
         private Dictionary<DependencyProperty, object> styleDict;
 
-        /* CONSTRUCTOR */
+        /*
+        *  ---------------- CONSTRUCTOR ----------------
+        */
         internal Style()
         {
             styleDict = new Dictionary<DependencyProperty, object>();
         }
-        /* / CONSTRUCTOR */
+        /*
+        *  ---------------- / CONSTRUCTOR ----------------
+        */
 
-        internal void AddColor(Color c)
+        /*
+        *  ---------------- INTERNAL METHODS ----------------
+        */
+        internal void AddColor(Color c) /* Add the specified font color */
         {
             AddStyle(TextElement.ForegroundProperty, new SolidColorBrush(c));
         }
 
-        internal void AddWeight(FontWeight f)
+        internal void AddWeight(FontWeight f) /* Add the specified font weight (e.g. bold) */
         {
             AddStyle(TextElement.FontWeightProperty, f);
         }
 
-        internal void AddStyle(DependencyProperty dp, object val)
+        internal void AddStyle(FontStyle s) /* Add the specified font syle (e.g. oblique, italic) */
+        {
+            AddStyle(TextElement.FontStyleProperty, s);
+        }
+
+        internal void AddStyle(DependencyProperty dp, object val) /* Add a miscellaneous style */
         {
             styleDict.Add(dp, val);
         }
 
-        internal Dictionary<DependencyProperty, object> GetDict()
+        internal Dictionary<DependencyProperty, object> GetDict() /* Getter for style dictionary */
         {
             return styleDict;
         }
+        /*
+        *  ---------------- / INTERNAL METHODS ----------------
+        */
     }
-    /* / STYLE CLASS TO STYLE SPECIAL WORDS/CHARS */
+    /*
+        *  ---------------- / STYLE CLASS TO STYLE SPECIAL WORDS/CHARS ----------------
+    */
 
-    /* MAIN CLASS */
+    /*
+        *  ---------------- MAIN CLASS ----------------
+    */
     public partial class MainWindow : Window
     {
-        /* CONSTANTS */
-        public const int EXIT_OK_CODE = 0;                                              /* Application quitting on its own with no issues   */
-        public const string MUSIKA_FILE_FILTER = "Musika Files(*.ka)|*.ka|All(*.*)|*";  /* Filters Musika files in file dialogs             */
-        public const string NOTESHEET_FILE_EXT = ".mkc";                                /* Serialized note sheet file extension             */
-        public const string WAV_FILE_EXT = ".wav";                                      /* WAV audio file extension                         */
-        /*/CONSTANTS */
+        /*
+        *  ---------------- CONSTANTS ----------------
+        */
+        public const int    EXIT_OK_CODE            = 0;                                                                                                                                           /* Application quitting on its own with no issues   */
+        public const string MUSIKA_FILE_FILTER      = "Musika Files(*.ka)|*.ka|All(*.*)|*";                                                                                                        /* Filters Musika files in file dialogs             */
+        public const string NOTESHEET_FILE_EXT      = ".mkc";                                                                                                                                      /* Serialized note sheet file extension             */
+        public const string UKNOWN_ISSUE_MESSAGE    = "Musika IDE ran into a problem processing your last request.\nPlease consult your nearest Musika engineer.\nSorry for the inconvenience.";   /* Error message if an unknown exception occurrs    */
+        public const string WAV_FILE_EXT            = ".wav";                                                                                                                                      /* WAV audio file extension                         */
+        /*
+        *  ---------------- / CONSTANTS ----------------
+        */
 
 
-        /* PROPERTIES */
-        private readonly Dictionary<string, Style>      wordStyleDict;      /* Determines which words are styled and how they are styled            */
-        private readonly List<StyleText>                keywordBuffer;      /* Used to keep track of the keywords in in the text box                */
-
-        private SongPlayer                              songPlayer;         /* Environment object to play a WAV song                                */
-        private string                                  currentDirectory;   /* Keeps track of the directory of the current file                     */
-        private string                                  currentText;        /* Buffer to store Run text that will be checked for keywords           */
-                                                                            /* (initialized to the bin directory                                    */
-        private string                                  savedFilename;      /* Name of file we are writing to                                       */
-        /* / PROPERTIES */
+        /*
+        *  ---------------- PROPERTIES ----------------
+        */
+        private readonly Dictionary<TokenType, Style>   tokenTypeStyleDict;             /* Determines which token types are styled and how they are styled                                  */
+        private readonly Dictionary<string, Style>      wordStyleDict;                  /* Determines which words are styled and how they are styled                                        */
+        private readonly List<StyleText>                styledTextRanges;               /* Used to keep track of the keywords in in the text box                                            */
+        private readonly Style                          multiLineCommentStyle;          /* Styling data for multi-line comments                                                             */
+        private readonly Style                          singleLineCommentStyle;         /* Styling data for single line comments                                                            */
 
 
-        /* Style text struct that includes its location, content, and style */
-        private struct StyleText
+        private SongPlayer                              songPlayer;                     /* Environment object to play a WAV song                                                            */
+        bool                                            inMultiLineComment;             /* Checks if the current text is in a multi line comment based on the context of the previous run   */
+        private string                                  currentDirectory;               /* Keeps track of the directory of the current file                                                 */
+        private string                                  savedFilename;                  /* Name of file we are writing to (initialized to the bin directory of the executable               */
+        /*
+        *  ---------------- / PROPERTIES ----------------
+        */
+
+
+        /*
+        *  ---------------- DATA TYPES ----------------
+        */
+        private struct StyleText /* Style text struct that includes its location, content, and style */
         {
             internal TextPointer Start, End;
-            internal Style       Style;
-            internal string      Word;
+            internal Style Style;
         }
+        /*
+        *  ---------------- / DATA TYPES ----------------
+        */
 
+        /*
+        *  ---------------- CONSTRUCTOR ----------------
+        */
         public MainWindow()
         {
+            /* Initialize properties */
             InitializeComponent();
-            keywordBuffer = new List<StyleText>();
+            styledTextRanges = new List<StyleText>();
 
             /* Create Styles */
 
-            /* Tier-1 keywords */
-            Style tier1 = new Style();
+            /* Intialize all style Variables */
+            Style bangStyle = new Style(),              /* Bangs !                                      */
+                    breakStyle = new Style(),           /* Break token (\n---\n)                        */
+                    caretStyle = new Style(),           /* Carets ^                                     */
+                    dotStyle = new Style(),             /* Dots .                                       */
+                    greaterThanStyle = new Style(),     /* Greater than symbol >                        */
+                    keySignStyle = new Style(),         /* Key signature keywords (Cmaj, Am, etc.)      */
+                    noteStyle = new Style(),            /* Note names (C, D, G, etc.)                   */
+                    numberStyle = new Style(),          /* Numbers 1234567890                           */
+                    octaveModifierStyle = new Style(),  /* Commas, and apostrophes' (octave modifiers)  */
+                    stringStyle = new Style(),          /* "Strings"                                    */
+                    tier1 = new Style(),                /* Tier-1 keywords (see grammar.html)           */
+                    tier2 = new Style(),                /* Tier-2 keywords (see grammar.html)           */
+                    tier3 = new Style();                /* Tier-3 keywords (see grammar.html)           */
+
+            multiLineCommentStyle = new Style();        /* => Multi Line Comments <=                    */
+            singleLineCommentStyle = new Style();       /* & Signle Line Comments                       */
+
+            /* Add Colors */
+            bangStyle.AddColor(Colors.DarkTurquoise);
+            breakStyle.AddColor(Colors.Olive);
+            caretStyle.AddColor(Colors.Firebrick);
+            dotStyle.AddColor(Colors.Teal);
+            greaterThanStyle.AddColor(Colors.HotPink);
+            keySignStyle.AddColor(Colors.SandyBrown);
+            noteStyle.AddColor(Colors.CadetBlue);
+            numberStyle.AddColor(Colors.Indigo);
+            octaveModifierStyle.AddColor(Colors.DarkSlateBlue);
+            stringStyle.AddColor(Colors.Purple);
             tier1.AddColor(Colors.Red);
-            tier1.AddWeight(FontWeights.Bold);
-
-            /* Tier-2 keywords */
-            Style tier2 = new Style();
             tier2.AddColor(Colors.OrangeRed);
-
-            /* Tier-3 keywords */
-            Style tier3 = new Style();
             tier3.AddColor(Colors.Green);
 
-            /* Break token (---) */
-            Style breakStyle = new Style();
-            breakStyle.AddColor(Colors.Olive);
+            singleLineCommentStyle.AddColor(Colors.CornflowerBlue);
+            multiLineCommentStyle.AddColor(Colors.DarkSlateGray);
+
+            /* Add Weight (Bold, Light, etc.) */
             breakStyle.AddWeight(FontWeights.Bold);
+            tier1.AddWeight(FontWeights.Bold);
 
-            /* Key signature keywords */
-            Style signStyle = new Style();
-            signStyle.AddColor(Colors.SandyBrown);
-
-            /* Note keywords */
-            Style noteStyle = new Style();
-            noteStyle.AddColor(Colors.CadetBlue);
+            /* Add Styles (Italic, Oblique, etc.) */
+            singleLineCommentStyle.AddStyle(FontStyles.Oblique);
+            multiLineCommentStyle.AddStyle(FontStyles.Oblique);
 
             /* Populate dictionary */
-            wordStyleDict = new Dictionary<string, Style>()
+            tokenTypeStyleDict = new Dictionary<TokenType, Style>()
             {
                 /* Tier 1 Keywords */
-                {"accompany", tier1}, {"name",      tier1}, {"author",    tier1}, {"coauthors", tier1}, {"title",     tier1}, {"key",       tier1},
-                {"time",      tier1}, {"tempo",     tier1}, {"octave",    tier1}, {"pattern",   tier1}, {"chord",     tier1}, {"is",        tier1},
+                {TokenType.ACCOMPANY, tier1}, {TokenType.NAME,      tier1}, {TokenType.AUTHOR,    tier1}, {TokenType.COAUTHORS, tier1}, {TokenType.TITLE,     tier1}, {TokenType.KEY,       tier1},
+                {TokenType.TIME,      tier1}, {TokenType.TEMPO,     tier1}, {TokenType.OCTAVE,    tier1}, {TokenType.PATTERN,   tier1}, {TokenType.CHORD,     tier1}, {TokenType.IS,        tier1},
 
                 /* Tier 2 Keywords */
-                {"common", tier2}, {"cut", tier2},
+                {TokenType.COMMON, tier2}, {TokenType.CUT, tier2},
 
                 /* Tier 3 Keywords */
-                {"repeat", tier3}, {"layer", tier3},
+                {TokenType.REPEAT, tier3}, {TokenType.LAYER, tier3},
 
-                /* BREAK Token */
-                {"---", breakStyle},
+                /* Octave Modifiers */
+                { TokenType.COMMA, octaveModifierStyle }, { TokenType.APOS, octaveModifierStyle },
 
-                /* Key Signatures */
-                {"Cmaj",  signStyle}, {"Gmaj",  signStyle}, {"Dmaj",  signStyle}, {"Amaj",  signStyle}, {"Emaj",  signStyle}, {"Bmaj",  signStyle},
-                {"F#maj", signStyle}, {"C#maj", signStyle}, {"Fmaj",  signStyle}, {"Bbmaj", signStyle}, {"Ebmaj", signStyle}, {"Abmaj", signStyle},
-                {"Cm",    signStyle}, {"Gm",    signStyle}, {"Dm",    signStyle}, {"Am",    signStyle}, {"Em",    signStyle}, {"Bm",    signStyle},
-                {"F#m",   signStyle}, {"C#m",   signStyle}, {"Fm",    signStyle}, {"Bbm",   signStyle}, {"Ebm",   signStyle}, {"Abm",   signStyle},
+                /* Individual Styles */
+                {TokenType.BANG, bangStyle},        {TokenType.BREAK, breakStyle},                  {TokenType.CARROT, caretStyle},
+                {TokenType.DOT, dotStyle},          {TokenType.GREATER, greaterThanStyle},          {TokenType.SIGN,  keySignStyle},
+                {TokenType.NOTE,   noteStyle},      {TokenType.NUMBER, numberStyle},                {TokenType.STRING, stringStyle }
+            };
 
-                /* Notes */
-                {"A",   noteStyle}, {"B",   noteStyle}, {"C",   noteStyle}, {"D",   noteStyle}, {"E",   noteStyle}, {"F",   noteStyle}, {"G",   noteStyle},
-                {"A#",  noteStyle}, {"B#",  noteStyle}, {"C#",  noteStyle}, {"D#",  noteStyle}, {"E#",  noteStyle}, {"F#",  noteStyle}, {"G#",  noteStyle},
-                {"Ab",  noteStyle}, {"Bb",  noteStyle}, {"Cb",  noteStyle}, {"Db",  noteStyle}, {"Eb",  noteStyle}, {"Fb",  noteStyle}, {"Gb",  noteStyle},
-                {"A$",  noteStyle}, {"B$",  noteStyle}, {"C$",  noteStyle}, {"D$",  noteStyle}, {"E$",  noteStyle}, {"F$",  noteStyle}, {"G$",  noteStyle},
-                {"A*",  noteStyle}, {"B*",  noteStyle}, {"C*",  noteStyle}, {"D*",  noteStyle}, {"E*",  noteStyle}, {"F*",  noteStyle}, {"G*",  noteStyle},
-                {"Abb", noteStyle}, {"Bbb", noteStyle}, {"Cbb", noteStyle}, {"Dbb", noteStyle}, {"Ebb", noteStyle}, {"Fbb", noteStyle}, {"Gbb", noteStyle}
+            wordStyleDict = new Dictionary<string, Style>()
+            {
+                /* BREAK Token sans newlines */
+                {"-", breakStyle}
             };
         }
+        /*
+        *  ---------------- / CONSTRUCTOR ----------------
+        */
 
         /*
          *  ---------------- HELPER FUNCTIONS ----------------
         */
 
-        private string HasStyle(string word) /* Checks if a word is marked to be styled in the dictionary */
-        {
-            while (word != "")
-            {
-                if (wordStyleDict.ContainsKey(word))
-                    return word;
-                else
-                    word = word.Substring(0, word.Length - 1); /* We are checking every prefix of the word too in case there are symbols following the keyword (e.g. title:) */
-            }
-            return null;
-        }
-
         private void CheckWordsInRun(Run r) /* Scans a run for keywords and stores the keywords with their information in the buffer */
         {
             /* Local Variables */
-            StyleText styleText;
-            int       startIndex;
-            int       endIndex;
-            int       i;
-            string    hasStyleReturn;
-            string    word;
-            string    lastWord;
+            StyleText       styleText;                  /* Contains the beginning and end positions of a styled token along with the style object to style the token    */
+            LexicalAnalyzer lexer;                      /* Identifies tokens in the text to be colored                                                                  */
+            Token           nextToken;                  /* Pointer to the current token                                                                                 */
+            int             textOffset;                 /* Start position of the current text ignoring the prefix under a multi-line comment                            */
+            int             leftRangePointer;           /* Pointer to the beginning position of the current token in the text                                           */
+            int             previousLeftRangePointer;   /* Stores the left range pointer for adjusting BREAK tokens                                                     */
+            int             rightRangePointer;          /* Pointer to the end position of the current token in the text                                                 */
+            string          currentText;                /* Current text to process                                                                                      */
             /* / Local Variables */
 
-            startIndex = 0;
-            endIndex   = 0;
+            /* Create new lexical analyzer and start reading tokens */
+            currentText         = r.Text;
+            lexer               = new LexicalAnalyzer(currentText);
+            nextToken           = lexer.GetToken();
+            textOffset          = 0;
+            rightRangePointer   = textOffset + lexer.GetTextPosition() + 1;       /* Initial range is from the beginning of the text  */
+            leftRangePointer    = rightRangePointer - nextToken.Content.Length;   /* to the end of the first read token               */
 
-            /* Find special words */
-            for (i = 0; i < currentText.Length; ++i)
+            /* If this comes from an unclosed multi-line comment, style everything accordingly */
+            if (inMultiLineComment)
             {
-                if (char.IsWhiteSpace(currentText[i]))
+                /* Identify the end of the multi-line comment (either where there is a comment closer or at the end of the string if that is not present) */
+                if (currentText.Contains("<="))
                 {
-                    /* Check to see if we're at the end of a word (because we're on whitespace and the character before is not whitespace) */
-                    if (i > 0 && !(char.IsWhiteSpace(currentText[i - 1])))
-                    {
-                        endIndex = i - 1;
-                        word = currentText.Substring(startIndex, endIndex - startIndex + 1);
-
-                        hasStyleReturn = HasStyle(word);
-
-                        /* If the word is marked to be styled */
-                        if (hasStyleReturn != null)
-                        {
-                            styleText = new StyleText();
-                            styleText.Start = r.ContentStart.GetPositionAtOffset(startIndex, LogicalDirection.Forward); /* Get starting position in textbox */
-
-                            /* Get ending position in textbox */
-                            if (hasStyleReturn == word)
-                                styleText.End = r.ContentStart.GetPositionAtOffset(endIndex + 1, LogicalDirection.Backward);
-                            else
-                                styleText.End = r.ContentStart.GetPositionAtOffset(endIndex + 1 - (word.Length - hasStyleReturn.Length), LogicalDirection.Backward);
-
-                            /* Store the word itself and the styler instance (lookup from dictionary) */
-                            styleText.Word = word;
-                            styleText.Style = wordStyleDict[hasStyleReturn];
-
-                            /* Add the new StyleText instance containing the word's position, content, and style to the buffer */
-                            keywordBuffer.Add(styleText);
-                        }
-                    }
-                    startIndex = i + 1;
+                    rightRangePointer   = currentText.IndexOf("<=") + 2;
+                    inMultiLineComment  = false;
                 }
+                else
+                {
+                    rightRangePointer = currentText.Length;
+                }
+
+                /* Build style text object and add it to the words to style buffer */
+                styleText = new StyleText
+                {
+                    Start   = r.ContentStart.GetPositionAtOffset(leftRangePointer),
+                    End     = r.ContentStart.GetPositionAtOffset(rightRangePointer),
+                    Style   = multiLineCommentStyle
+                };
+
+                styledTextRanges.Add(styleText);
+
+                /* Reset lexer to ignore the commented out section */
+                currentText         = currentText.Substring(rightRangePointer);
+                lexer               = new LexicalAnalyzer(currentText);
+                textOffset          = rightRangePointer;
+                nextToken           = lexer.GetToken();
+                rightRangePointer   = textOffset + lexer.GetTextPosition() + 1;
+                leftRangePointer    = rightRangePointer - nextToken.Content.Length;
             }
 
-            /* The previous loop doesn't deal with the last word */
-            lastWord = currentText.Substring(startIndex, currentText.Length - startIndex);
-
-            /* Process is the same as above */
-            hasStyleReturn = HasStyle(lastWord);
-            if (hasStyleReturn != null)
+            /* Find keywords in program by checking each run */
+            while (nextToken.Type != TokenType.EOF)
             {
-                styleText = new StyleText();
-                styleText.Start = r.ContentStart.GetPositionAtOffset(startIndex, LogicalDirection.Forward);
-                if (hasStyleReturn == lastWord)
-                    styleText.End = r.ContentStart.GetPositionAtOffset(endIndex + 1, LogicalDirection.Backward);
-                else
-                    styleText.End = r.ContentStart.GetPositionAtOffset(endIndex + 1 - (lastWord.Length - hasStyleReturn.Length), LogicalDirection.Backward);
-                styleText.Word = lastWord;
-                styleText.Style = wordStyleDict[hasStyleReturn];
-                keywordBuffer.Add(styleText);
+                /* Adjust range pointers if this is a BREAK token */
+                if (nextToken.Type == TokenType.BREAK)
+                {
+                    /* Store the current value of the left range pointer */
+                    previousLeftRangePointer = leftRangePointer;
+
+                    /* Move the left range pointer further left until it points to a newline (the first newline in the BREAK token) */
+                    while (r.Text[leftRangePointer] != '\n' && r.Text[leftRangePointer] != '\r')
+                    {
+                        --leftRangePointer;
+                    }
+
+                    /* Offset the right range pointer the same amount (add 1 in case a newline is \r\n) */
+                    if (previousLeftRangePointer > leftRangePointer)
+                    {
+                        rightRangePointer -= previousLeftRangePointer - leftRangePointer + 1;
+                    }
+                }
+
+                /* Adjust range poitners if this is a STRING token */
+                if (nextToken.Type == TokenType.STRING)
+                {
+                    leftRangePointer -= 2; /* Offset for the two quotes in the string */
+                }
+
+                /* Add any tokens with a recognized type to the words to style buffer */
+                if (tokenTypeStyleDict.ContainsKey(nextToken.Type))
+                {
+                    styleText = new StyleText
+                    {
+                        Start   = r.ContentStart.GetPositionAtOffset(leftRangePointer),
+                        End     = r.ContentStart.GetPositionAtOffset(rightRangePointer),
+                        Style   = tokenTypeStyleDict[nextToken.Type]
+                    };
+
+                    styledTextRanges.Add(styleText);
+                }
+
+                /* Add any other recognized strings to the words to style buffer */
+                else if (wordStyleDict.ContainsKey(nextToken.Content))
+                {
+                    styleText = new StyleText
+                    {
+                        Start   = r.ContentStart.GetPositionAtOffset(leftRangePointer),
+                        End     = r.ContentStart.GetPositionAtOffset(rightRangePointer),
+                        Style   = wordStyleDict[nextToken.Content]
+                    };
+
+                    styledTextRanges.Add(styleText);
+                }
+
+                /* Get the next token and update the left and right pointers accordingly */
+                nextToken           = lexer.GetToken();
+                rightRangePointer   = textOffset + lexer.GetTextPosition() + 1;
+                leftRangePointer    = rightRangePointer - nextToken.Content.Length;
+            }
+
+            /* Style comments */
+            foreach (KeyValuePair<int, string> positionCommentPair in lexer.SingleLineCommentStartPositionMap)
+            {
+                styleText = new StyleText
+                {
+                    Start = r.ContentStart.GetPositionAtOffset(positionCommentPair.Key),
+                    End = r.ContentStart.GetPositionAtOffset(textOffset + positionCommentPair.Key + positionCommentPair.Value.Length),
+                    Style = singleLineCommentStyle
+                };
+
+                styledTextRanges.Add(styleText);
+            }
+
+            foreach (KeyValuePair<int, string> positionCommentPair in lexer.MultiLineCommentStartPositionMap)
+            {
+                /* Check if the multi-line comment ends */
+                inMultiLineComment = !positionCommentPair.Value.Contains("<=");
+
+                styleText = new StyleText
+                {
+                    Start = r.ContentStart.GetPositionAtOffset(positionCommentPair.Key),
+                    End = r.ContentStart.GetPositionAtOffset(textOffset + positionCommentPair.Key + positionCommentPair.Value.Length),
+                    Style = multiLineCommentStyle,
+                };
+
+                styledTextRanges.Add(styleText);
             }
         }
 
-        public string GetProgramText()
+        private string GetProgramText()
         {
             string text = new TextRange(Editor.Document.ContentStart, Editor.Document.ContentEnd).Text;
             return text.Substring(0, text.Length - 2); /* Remove final added whitespace character */
+        }
+
+        private void ClearDocumentFormatting() /* Remove all current formatting properties */
+        {
+            /* Local Variables */
+            TextRange docRange; /* Text range obeject containing the text of the entire document */
+            /* / Local Variables */
+
+            docRange = new TextRange(Editor.Document.ContentStart, Editor.Document.ContentEnd);
+            docRange.ClearAllProperties();
+            inMultiLineComment = false; /* Reset checker for multi-line comments */
+        }
+
+        private void IdentifyTextRangesToStyle() /* Identify all strings to be styled in the document */
+        {
+            /* Local Variables */
+            TextPointer nav; /* Text pointer to the next "content position" in the document */
+            /* / Local Variables */
+
+            nav = Editor.Document.ContentStart;
+
+            /* Iterate through each text pointer in the document */
+            while (nav.CompareTo(Editor.Document.ContentEnd) < 0)
+            {
+                /* Document text is only in TextElements that are children to Runs */
+                if (nav.GetPointerContext(LogicalDirection.Backward) == TextPointerContext.ElementStart && nav.Parent is Run)
+                {
+                    CheckWordsInRun((Run)nav.Parent);
+                }
+
+                /* Get next text pointer */
+                nav = nav.GetNextContextPosition(LogicalDirection.Forward);
+            }
+        }
+
+        private void AddStylesToDocument() /* Highlight keywords in program */
+        {
+            /* Local Variables */
+            TextRange styleBuffer; /* Text pointer to a string in the document to be styled    */
+            /* / Local Variables */
+
+            foreach (StyleText styleTextrange in styledTextRanges)
+            {
+                /* Find the desired keyword in the text box using the current word's location data */
+                styleBuffer = new TextRange(styleTextrange.Start, styleTextrange.End);
+
+                /* Apply every style property from the Style data */
+                foreach (KeyValuePair<DependencyProperty, object> style in styleTextrange.Style.GetDict())
+                {
+                    styleBuffer.ApplyPropertyValue(style.Key, style.Value);
+                }
+            }
         }
 
         /*
@@ -244,59 +413,28 @@ namespace MusikaIDE
 
         private void Editor_TextChanged(object sender, TextChangedEventArgs e)
         {
-            /* Don't do anything if the document is not set up yet */
-            if (Editor.Document == null) return;
-
-            /* Temporarily disable TextChanged event handler */
-            Editor.TextChanged -= Editor_TextChanged;
-
-            /* Clear the buffer that holds the words to be styled */
-            keywordBuffer.Clear();
-
-            /* Remove all current formatting properties */
-            TextRange docRange = new TextRange(Editor.Document.ContentStart, Editor.Document.ContentEnd);
-            docRange.ClearAllProperties();
-
-            /* Find keywords in program by checking each run */
-            TextPointer nav = Editor.Document.ContentStart;
-            while (nav.CompareTo(Editor.Document.ContentEnd) < 0)
+            try
             {
-                TextPointerContext ctxt = nav.GetPointerContext(LogicalDirection.Backward);
-                if (ctxt == TextPointerContext.ElementStart && nav.Parent is Run)
-                {
-                    currentText = ((Run)nav.Parent).Text;
+                /* Temporarily disable TextChanged event handler */
+                Editor.TextChanged -= Editor_TextChanged;
 
-                    /* Only check words if the Run is not empty */
-                    if (currentText != "")
-                        CheckWordsInRun((Run)nav.Parent);
-                }
-                nav = nav.GetNextContextPosition(LogicalDirection.Forward);
+                /* Clear the buffer that holds the words to be styled */
+                styledTextRanges.Clear();
+
+                /* Remove all styles from the document, identify where to replace them, then replace all styles in the document */
+                ClearDocumentFormatting();
+                IdentifyTextRangesToStyle();
+                AddStylesToDocument();
+
+                /* Re-enable TextChanged event handler */
+                Editor.TextChanged += Editor_TextChanged;
             }
-            /* / Find keywords in program */
-
-            /* Highlight keywords in program */
-            for (int i = 0; i < keywordBuffer.Count; ++i)
+            /* This shouldn't ever happen */
+            catch
             {
-                try
-                {
-                    /* Find the desired keyword in the text box using the current word's location data */
-                    TextRange range = new TextRange(keywordBuffer[i].Start, keywordBuffer[i].End);
-
-                    /* Apply every style property from the Style data */
-                    foreach (KeyValuePair<DependencyProperty, object> style in keywordBuffer[i].Style.GetDict())
-                        range.ApplyPropertyValue(style.Key, style.Value);
-                }
-
-                /* This shouldn't ever happen */
-                catch
-                {
-                    MessageBox.Show("There was a problem with the editor's color highlighting feature\nSorry for the inconvenience....");
-                    System.Environment.Exit(1);
-                }
+                MessageBox.Show(UKNOWN_ISSUE_MESSAGE);
+                System.Environment.Exit(1);
             }
-            /* / Highlight keywords in program */
-
-            Editor.TextChanged += Editor_TextChanged; /* Re-enable TextChanged event handler */
         }
 
         /*
@@ -318,10 +456,10 @@ namespace MusikaIDE
         private void File_Open_Click(object sender, RoutedEventArgs e) /* Open a file's content and store it's location */
         {
             /* Local Variables */
-            OpenFileDialog ofDialog;    /* File chooser to open a file                  */
-            bool? validFileRequested;   /* Was a valid file selected from the dialog?   */
-            string fileText;            /* Text inside a valid selected file            */
-            string filename;            /* Name of the valid selected file              */
+            OpenFileDialog  ofDialog;           /* File chooser to open a file                  */
+            bool?           validFileRequested; /* Was a valid file selected from the dialog?   */
+            string          fileText;           /* Text inside a valid selected file            */
+            string          filename;           /* Name of the valid selected file              */
             /* / Local Variables */
 
             /* Open a Musika file */
@@ -371,8 +509,8 @@ namespace MusikaIDE
         private void File_SaveAs_Click(object sender, RoutedEventArgs e) /* Prompt the user for a save location/file and performa a Save operation */
         {
             /* Local Variables */
-            SaveFileDialog dialog;  /* File chooser to select a location/file name to save to   */
-            bool? fileSelected;     /* Was a valid file selected?                               */
+            SaveFileDialog  dialog;         /* File chooser to select a location/file name to save to   */
+            bool?           fileSelected;   /* Was a valid file selected?                               */
             /* / Local Variables */
 
             /* File or create a file to save to */
@@ -402,8 +540,8 @@ namespace MusikaIDE
         private void Build_BuildNoteSheet_Click(object sender, RoutedEventArgs e) /* Build the code as a note sheet instance */
         {
             /* Local Variables */
-            Compiler compiler;      /* Object to compile source code down to a note sheet   */
-            string outputMessage;   /* Message to ouput status to user                      */
+            Compiler    compiler;       /* Object to compile source code down to a note sheet   */
+            string      outputMessage;  /* Message to ouput status to user                      */
             /* / Local Variables */
 
             outputMessage = null;
@@ -453,10 +591,10 @@ namespace MusikaIDE
         private void Build_BuildWAVFile_Click(object sender, RoutedEventArgs e) /* Construct a note sheet as a WAV file */
         {
             /* Local Variables */
-            Compiler compiler;              /* Object to compile source code down to a note sheet   */
-            string noteSheetFilename;       /* Name + extension of the note sheet file              */
-            string noteSheetFileAddress;    /* Location of the note sheet file                      */
-            string outputMessage;           /* Message to display to the user after build           */
+            Compiler    compiler;               /* Object to compile source code down to a note sheet   */
+            string      noteSheetFilename;      /* Name + extension of the note sheet file              */
+            string      noteSheetFileAddress;   /* Location of the note sheet file                      */
+            string      outputMessage;          /* Message to display to the user after build           */
             /* / Local Variables */
 
             outputMessage = null;

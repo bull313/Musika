@@ -1,0 +1,13 @@
+title: "Sweet New Map"
+author: "Ben :)"
+key: Cmaj
+time: common
+tempo: 4 = 120
+octave: 4
+--- 
+pattern [second_harmony]:
+    |. G'.
+--- 
+layer(second_harmony)
+C'..
+---

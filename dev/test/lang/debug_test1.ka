@@ -1,0 +1,22 @@
+accompany [debug_test3] name newtest
+---
+title: newtest
+author: newtest
+key: newtest
+time: newtest
+tempo: newtest
+octave: newtest
+--- 
+pattern [harmony]:
+    |. ^ 2 
+    layer(newtest)
+    C. D. E. F. G. A. B. 
+    layer(newtest>second_harmony)
+    C'. B. A. G. F. E. D. C..
+
+pattern [scale]:
+    layer(harmony)
+    C. D. E. F. G. A. B. C'. B. A. G. F. E. D. C.. |..
+--- 
+repeat(2) { scale scale }
+---

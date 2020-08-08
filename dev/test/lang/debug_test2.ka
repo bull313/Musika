@@ -1,0 +1,72 @@
+title: "Sweet New Map"
+author: "Ben :)"
+key: Em
+time: common
+tempo: 4 = 178
+octave: 4
+--- 
+& Chords Section
+chord G3 is G;B
+chord F3 is F;A
+chord F3_5 is F';A'
+chord E3 is E;G
+chord D3 is D;F
+chord G5 is G;D'
+chord F5 is F;B
+
+& Pattern Section
+pattern [f3s]:
+F3_5. ^ 6
+
+pattern [a]:
+A. ^ 5 |. B. ^ 4 B..
+
+pattern [chug_f3s]:
+! octave: -1 !
+E. ^ 5 |.
+layer(f3s)
+F. ^ 5 |.
+
+pattern [chug_a]:
+! octave: -1 !
+layer(a)
+E. ^ 5 |. F. ^ 5
+
+pattern [low_chug]:
+! octave: -1 !
+C. ^ 5 |. D. ^ 4 D..
+
+pattern [chug]:
+! octave: -1 !
+E. ^ 5 |. F. ^ 4 F..
+--- 
+& Half 1
+repeat(2) {
+! time: 8 !
+G5. F5. E3.
+layer(chug)
+E3. F3. G3.
+layer(chug_f3s)
+G3. F3. E.
+layer(low_chug)
+E3. F3.
+
+! time: 4 !
+G3. C,. F3. B,. E3. B,. D3.
+}
+
+& Half 2
+repeat(2) {
+! time: 8 !
+G5. F5. E3.
+layer(chug_a)
+E3. F3. G3.
+layer(chug_f3s)
+G3. F3. E3.
+layer(low_chug)
+E3. F3.
+
+! time: 4 !
+G3. C,. F3. B,. E3. B,. D3. 
+}
+--- 
