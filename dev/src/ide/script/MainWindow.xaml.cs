@@ -13,7 +13,13 @@ namespace MusikaIDE
     /* Used to style special words and characters */
     internal class Style
     {
-        private Dictionary<DependencyProperty, object> styleDict;
+        /*
+        *  ---------------- PROPERTIES ----------------
+        */
+        private readonly Dictionary<DependencyProperty, object> styleDict;
+        /*
+        *  ---------------- / PROPERTIES ----------------
+        */
 
         /*
         *  ---------------- CONSTRUCTOR ----------------
@@ -69,11 +75,12 @@ namespace MusikaIDE
         /*
         *  ---------------- CONSTANTS ----------------
         */
-        public const int    EXIT_OK_CODE            = 0;                                                                                                                                           /* Application quitting on its own with no issues   */
-        public const string MUSIKA_FILE_FILTER      = "Musika Files(*.ka)|*.ka|All(*.*)|*";                                                                                                        /* Filters Musika files in file dialogs             */
-        public const string NOTESHEET_FILE_EXT      = ".mkc";                                                                                                                                      /* Serialized note sheet file extension             */
-        public const string UKNOWN_ISSUE_MESSAGE    = "Musika IDE ran into a problem processing your last request.\nPlease consult your nearest Musika engineer.\nSorry for the inconvenience.";   /* Error message if an unknown exception occurrs    */
-        public const string WAV_FILE_EXT            = ".wav";                                                                                                                                      /* WAV audio file extension                         */
+        public const int    EXIT_OK_CODE                                = 0;                                                                                                                                                                                    /* Application quitting on its own with no issues                       */
+        public const string MUSIKA_FILE_FILTER                          = "Musika Files(*.ka)|*.ka|All(*.*)|*";                                                                                                                                                 /* Filters Musika files in file dialogs                                 */
+        public const string NOTESHEET_FILE_EXT                          = ".mkc";                                                                                                                                                                               /* Serialized note sheet file extension                                 */
+        public const string UKNOWN_ISSUE_MESSAGE                        = "Musika IDE ran into a problem processing your last request.\nPlease consult your nearest Musika engineer.\nSorry for the inconvenience.";                                            /* Error message if an unknown exception occurrs                        */
+        public const string VIEW_TOGGLE_SYNTAX_HIGHLIGHTING_WARNING     = "WARNING:\nThe syntax highlighting feature allows you to view Musika code in a more visual style, but currently the process of highlighting is VERY slow.\nPlease use with caution";  /* Syntax highlighting is slow warning message when user turns it on    */
+        public const string WAV_FILE_EXT                                = ".wav";                                                                                                                                                                               /* WAV audio file extension                                             */
         /*
         *  ---------------- / CONSTANTS ----------------
         */
@@ -91,6 +98,7 @@ namespace MusikaIDE
 
         private SongPlayer                              songPlayer;                     /* Environment object to play a WAV song                                                            */
         bool                                            inMultiLineComment;             /* Checks if the current text is in a multi line comment based on the context of the previous run   */
+        bool                                            viewSyntaxHighlighting;         /* If and only if enabled, syntax highlighting functionality is on                                  */
         private string                                  currentDirectory;               /* Keeps track of the directory of the current file                                                 */
         private string                                  savedFilename;                  /* Name of file we are writing to (initialized to the bin directory of the executable               */
         /*
@@ -122,22 +130,22 @@ namespace MusikaIDE
             /* Create Styles */
 
             /* Intialize all style Variables */
-            Style bangStyle = new Style(),              /* Bangs !                                      */
-                    breakStyle = new Style(),           /* Break token (\n---\n)                        */
-                    caretStyle = new Style(),           /* Carets ^                                     */
-                    dotStyle = new Style(),             /* Dots .                                       */
-                    greaterThanStyle = new Style(),     /* Greater than symbol >                        */
-                    keySignStyle = new Style(),         /* Key signature keywords (Cmaj, Am, etc.)      */
-                    noteStyle = new Style(),            /* Note names (C, D, G, etc.)                   */
-                    numberStyle = new Style(),          /* Numbers 1234567890                           */
+            Style bangStyle             = new Style(),  /* Bangs !                                      */
+                    breakStyle          = new Style(),  /* Break token (\n---\n)                        */
+                    caretStyle          = new Style(),  /* Carets ^                                     */
+                    dotStyle            = new Style(),  /* Dots .                                       */
+                    greaterThanStyle    = new Style(),  /* Greater than symbol >                        */
+                    keySignStyle        = new Style(),  /* Key signature keywords (Cmaj, Am, etc.)      */
+                    noteStyle           = new Style(),  /* Note names (C, D, G, etc.)                   */
+                    numberStyle         = new Style(),  /* Numbers 1234567890                           */
                     octaveModifierStyle = new Style(),  /* Commas, and apostrophes' (octave modifiers)  */
-                    stringStyle = new Style(),          /* "Strings"                                    */
-                    tier1 = new Style(),                /* Tier-1 keywords (see grammar.html)           */
-                    tier2 = new Style(),                /* Tier-2 keywords (see grammar.html)           */
-                    tier3 = new Style();                /* Tier-3 keywords (see grammar.html)           */
+                    stringStyle         = new Style(),  /* "Strings"                                    */
+                    tier1               = new Style(),  /* Tier-1 keywords (see grammar.html)           */
+                    tier2               = new Style(),  /* Tier-2 keywords (see grammar.html)           */
+                    tier3               = new Style();  /* Tier-3 keywords (see grammar.html)           */
 
-            multiLineCommentStyle = new Style();        /* => Multi Line Comments <=                    */
-            singleLineCommentStyle = new Style();       /* & Signle Line Comments                       */
+            multiLineCommentStyle       = new Style();  /* => Multi Line Comments <=                    */
+            singleLineCommentStyle      = new Style();  /* & Signle Line Comments                       */
 
             /* Add Colors */
             bangStyle.AddColor(Colors.DarkTurquoise);
@@ -346,8 +354,7 @@ namespace MusikaIDE
 
         private string GetProgramText()
         {
-            string text = new TextRange(Editor.Document.ContentStart, Editor.Document.ContentEnd).Text;
-            return text.Substring(0, text.Length - 2); /* Remove final added whitespace character */
+            return new TextRange(Editor.Document.ContentStart, Editor.Document.ContentEnd).Text;
         }
 
         private void ClearDocumentFormatting() /* Remove all current formatting properties */
@@ -423,8 +430,13 @@ namespace MusikaIDE
 
                 /* Remove all styles from the document, identify where to replace them, then replace all styles in the document */
                 ClearDocumentFormatting();
-                IdentifyTextRangesToStyle();
-                AddStylesToDocument();
+
+                /* Only perform syntax highlighting if enabled */
+                if (viewSyntaxHighlighting)
+                {
+                    IdentifyTextRangesToStyle();
+                    AddStylesToDocument();
+                }
 
                 /* Re-enable TextChanged event handler */
                 Editor.TextChanged += Editor_TextChanged;
@@ -535,6 +547,21 @@ namespace MusikaIDE
         {
             /* Exit the program */
             System.Environment.Exit(0);
+        }
+
+        private void View_ToggleSyntaxHighlighting_Click(object sender, RoutedEventArgs e)
+        {
+            /* Show warning message if toggling syntax highlighting from OFF to ON */
+            if (!viewSyntaxHighlighting)
+            {
+                MessageBox.Show(VIEW_TOGGLE_SYNTAX_HIGHLIGHTING_WARNING);
+            }
+
+            /* Invert toggle flag */
+            viewSyntaxHighlighting = !viewSyntaxHighlighting;
+
+            /* Invoke TextChanged event to turn syntax highlighting on */
+            Editor_TextChanged(sender, null);
         }
 
         private void Build_BuildNoteSheet_Click(object sender, RoutedEventArgs e) /* Build the code as a note sheet instance */

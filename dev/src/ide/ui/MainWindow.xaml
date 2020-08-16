@@ -39,6 +39,13 @@
 
             </MenuItem>
 
+            <!-- View -->
+            <MenuItem Header="View">
+
+                <MenuItem Header="Toggle Syntax Highlighting"    x:Name="View_ToggleSyntaxHighlighting"    Click="View_ToggleSyntaxHighlighting_Click"   />
+
+            </MenuItem>
+
             <!-- Build -->
             <MenuItem Header="Build">
 
