@@ -1,20 +1,20 @@
-title: "High Noon Chorus Patterns"
-author: "Benjamin Ladick"
-coauthors: "Masking The Fallen"
-key: Em
+accompany [_scale_] name scale
+accompany [example2] name ex2
+---
+title: "Example 3"
+author: "Musika"
+key: Cmaj
 time: common
-tempo: 4 = 144
+tempo: 4 = 120
 octave: 4
 ---
-pattern [chorus2]:
-! tempo: 8 !
-! time: 8 !
-E.B,.D,.E.A..G..F.G.D..B.A.G.F.
-pattern [chorus_end]:
-! time: 8 !
-G..F..F.G.D,.F.E.
-! octave: -1 !
-B.D.B.D.B.D.E'.
----
 
+---
+scale & This is the main music from the "scale" standard library file! Let's first play it by itself
+
+layer(ex2>scale_chords) & Play example 2's "scale_chords" pattern on top of the scale
+scale
+
+layer(ex2>scale_harmony) & Now let's play the scale again, but give it a harmony!
+scale
 ---

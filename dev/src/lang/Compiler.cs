@@ -738,21 +738,9 @@ namespace Musika
     /* Parses a Musika program to check for correct syntax and synthesize the intermediate representation */
     partial class Parser
     {
-        /* PROPERTIES */
-
-        private readonly HashSet<string> doNotCompileSet;                       /* Do not use any of these files in an accompaniment                */
-        private readonly string filename;                                       /* File name of the current Musika file                             */
-        private readonly string filepath;                                       /* File path of the current Musika file                             */
-        private readonly string program;                                        /* Musika program text                                              */
-
-        private LexicalAnalyzer lexer;                                          /* Token manager                                                    */
-        private List<int>       noteCountTracker;                               /* Tracks the current note count for layering position purposes     */
-        private NoteSheet       noteSheet;                                      /* Intermediate representation of the compiled Musika file          */
-        private bool            ignoreContext;                                  /* Flag marked true if only syntax is checked                       */
-
-        /* / PROPERTIES */
-
         /* CONSTANTS */
+
+        public static readonly string STDLIB_FILEPATH = "../../../../../src/lang/stdlib";
 
         public static readonly HashSet<TokenType> musicFirstSet = new HashSet<TokenType>()                      /* First set of "music" grammar rule */
         {
@@ -780,6 +768,20 @@ namespace Musika
         };
 
         /* / CONSTANTS */
+
+        /* PROPERTIES */
+
+        private readonly HashSet<string> doNotCompileSet;                       /* Do not use any of these files in an accompaniment                */
+        private readonly string filename;                                       /* File name of the current Musika file                             */
+        private readonly string filepath;                                       /* File path of the current Musika file                             */
+        private readonly string program;                                        /* Musika program text                                              */
+
+        private LexicalAnalyzer lexer;                                          /* Token manager                                                    */
+        private List<int>       noteCountTracker;                               /* Tracks the current note count for layering position purposes     */
+        private NoteSheet       noteSheet;                                      /* Intermediate representation of the compiled Musika file          */
+        private bool            ignoreContext;                                  /* Flag marked true if only syntax is checked                       */
+
+        /* / PROPERTIES */
 
         /* CONSTRUCTOR */
 
@@ -927,14 +929,19 @@ namespace Musika
 
         private void ParseAccompanyStatement() /* accompany_statement -> ACCOMPANY L_BRACKET ID R_BRACKET NAME ID */
         {
+            /* Constants */
+            const string STDLIB_REFERENCE_INDICATOR = "__";
+            /* / Cosntants */
+
             /* Local Variables */
-            Token     fileNameToken;    /* Accompaniment file name token                   */
-            Token     nameToken;        /* Reference name of the accompaniment token       */
-            Parser    accParser;        /* Parses accompanied Musika file                  */
-            NoteSheet accSheet;         /* Noteh sheet from accompanied file               */
-            string    accProgram;       /* Accompanied file program text                   */
-            string    file;             /* Accompanied file path + accompanied file name   */
-            string    filename;         /* Accompanied file path                           */
+            Token     fileNameToken;        /* Accompaniment file name token                                                    */
+            Token     nameToken;            /* Reference name of the accompaniment token                                        */
+            Parser    accParser;            /* Parses accompanied Musika file                                                   */
+            NoteSheet accSheet;             /* Note sheet from accompanied file                                                 */
+            string    accProgram;           /* Accompanied file program text                                                    */
+            string    file;                 /* Accompanied file path + accompanied file name                                    */
+            string    filename;             /* Accompanied file path                                                            */
+            string    stdlibReferenceCheck; /* Captures first and last character in file name to check for std lib reference    */
             /* / Local Variables */
 
             /* Parse The Accompany Statement */
@@ -948,38 +955,66 @@ namespace Musika
 
             nameToken = Expect(TokenType.ID);
 
-            /* Construct the literal file (filepath + filename) */
-            filename = Path.ChangeExtension(fileNameToken.Content, Compiler.MUSIKA_FILE_EXT);
-            file     = Path.Combine(filepath, filename);
+            /* Check for standard library reference */
+            stdlibReferenceCheck = null;
 
-            if (!ignoreContext)
+            if (fileNameToken.Content.Length > 1)
             {
-                /* File is not in the do-not-compile list */
-                if (!doNotCompileSet.Contains(file))
+                stdlibReferenceCheck = char.ToString(fileNameToken.Content[0]) + char.ToString(fileNameToken.Content[fileNameToken.Content.Length - 1]);
+            }
+
+            /* Construct the literal file (filepath + filename) */
+            if (stdlibReferenceCheck == STDLIB_REFERENCE_INDICATOR)
+            {
+                filename = Path.ChangeExtension(fileNameToken.Content.Substring(1, fileNameToken.Content.Length - 2), Serializer.SERIALIZE_EXT); /* Remove stdlib indicators and look for binary file */
+                file = Path.Combine(STDLIB_FILEPATH, filename);
+
+                if (!ignoreContext)
                 {
-                    /* Compile the referenced file and add its notesheet to the accompaniments dictionary */
+                    /* Load standard library binary */
                     if (File.Exists(file))
                     {
-                        accProgram = File.ReadAllText(file);
-                        accParser = new Parser(accProgram, filepath, filename, doNotCompileSet);
-                        accSheet = accParser.ParseScore();
-
+                        accSheet = Serializer.Deserialize(STDLIB_FILEPATH, filename);
                         noteSheet.Accompaniments.Add(nameToken.Content, accSheet);
                     }
                     else if (!ignoreContext)
                         throw new ContextError(ContextError.INVALID_FILENAME_ERROR);
                 }
+            }
+            else
+            {
+                filename = Path.ChangeExtension(fileNameToken.Content, Compiler.MUSIKA_FILE_EXT);
+                file = Path.Combine(filepath, filename);
 
-                /* File is in the do-not-compile list */
-                else
+                if (!ignoreContext)
                 {
-                    /* Check for self-reference and throw self-reference error if there is one */
-                    if (filename == this.filename)
-                        throw new ContextError(ContextError.SELF_REFERENCE_ERROR);
+                    /* File is not in the do-not-compile list */
+                    if (!doNotCompileSet.Contains(file))
+                    {
+                        /* Compile the referenced file and add its notesheet to the accompaniments dictionary */
+                        if (File.Exists(file))
+                        {
+                            accProgram = File.ReadAllText(file);
+                            accParser = new Parser(accProgram, filepath, filename, doNotCompileSet);
+                            accSheet = accParser.ParseScore();
 
-                    /* Throw a cross-reference error */
+                            noteSheet.Accompaniments.Add(nameToken.Content, accSheet);
+                        }
+                        else if (!ignoreContext)
+                            throw new ContextError(ContextError.INVALID_FILENAME_ERROR);
+                    }
+
+                    /* File is in the do-not-compile list */
                     else
-                        throw new ContextError(ContextError.CROSS_REFERENCE_ERROR);
+                    {
+                        /* Check for self-reference and throw self-reference error if there is one */
+                        if (filename == this.filename)
+                            throw new ContextError(ContextError.SELF_REFERENCE_ERROR);
+
+                        /* Throw a cross-reference error */
+                        else
+                            throw new ContextError(ContextError.CROSS_REFERENCE_ERROR);
+                    }
                 }
             }
         }
@@ -1649,8 +1684,15 @@ namespace Musika
                 /* Parse the chord value */
                 noteList = ParseChordType();
 
-                /* Store the name-list pair in the chords dictionary */
-                noteSheet.Chords.Add(chordName, noteList);
+                if (!noteSheet.Chords.ContainsKey(chordName))
+                {
+                    /* Store the name-list pair in the chords dictionary */
+                    noteSheet.Chords.Add(chordName, noteList);
+                }
+                else
+                {
+                    throw new ContextError(ContextError.DUPLICATE_NAME_ERROR);
+                }
             }
 
             else throw new SyntaxError(next.Type, TokenType.PATTERN, TokenType.CHORD);
@@ -1862,11 +1904,20 @@ namespace Musika
                 /* If parsing a pattern, add layer to relative position map */
                 if (patternName != null)
                 {
-                    newLayerList = new SheetSet
+                    if (noteSheet.Layers.ContainsKey(position))
                     {
-                        pattern
-                    };
-                    noteSheet.Layers.Add(position, newLayerList);
+                        noteSheet.Layers[position].Add(pattern);
+                    }
+                    else
+                    {
+                        newLayerList = new SheetSet
+                        {
+                            pattern
+                        };
+
+                        noteSheet.Layers.Add(position, newLayerList);
+                    }
+
                     if (noteSheet.RelativeLayerPositions.ContainsKey(patternName))
                     {
                         noteSheet.RelativeLayerPositions[patternName].Add(new PositionSheetPair(position, pattern));
@@ -2094,44 +2145,99 @@ namespace Musika
                         {
                             case CallbackType.LOCAL_PATTERN:
                                 returnValue.AddRange(noteSheet.Patterns[idName]);
+
+                                /* Add layers to layer dictionary */
+                                if (noteSheet.RelativeLayerPositions.ContainsKey(idName))
+                                {
+                                    foreach (PositionSheetPair posSheetPair in noteSheet.RelativeLayerPositions[idName])
+                                    {
+                                        /* Compute the layer's absolute position based off of its relative position in the pattern */
+                                        layerAbsolutePosition = GetNoteCountTrackerNoteCount() + currentNoteCount + posSheetPair.Key;
+
+                                        /* Add the layer to the song */
+                                        if (noteSheet.Layers.ContainsKey(layerAbsolutePosition))
+                                            noteSheet.Layers[layerAbsolutePosition].Add(posSheetPair.Value);
+                                        else
+                                        {
+                                            newLayerList = new SheetSet
+                                            {
+                                                posSheetPair.Value
+                                            };
+
+                                            noteSheet.Layers.Add(layerAbsolutePosition, newLayerList);
+                                        }
+
+                                        /* Add the absolute position and layer sheet to the layer position sheet pair structure */
+                                        layerPositionSheetPairs.Add(new PositionSheetPair(layerAbsolutePosition, posSheetPair.Value));
+                                    }
+                                }
                                 break;
 
                             case CallbackType.ACCOMPANIMENT_PATTERN:
                                 returnValue.AddRange(noteSheet.Accompaniments[accName].Patterns[idName]);
+
+                                /* Add layers to layer dictionary */
+                                if (noteSheet.Accompaniments[accName].RelativeLayerPositions.ContainsKey(idName))
+                                {
+                                    foreach (PositionSheetPair posSheetPair in noteSheet.Accompaniments[accName].RelativeLayerPositions[idName])
+                                    {
+                                        /* Compute the layer's absolute position based off of its relative position in the pattern */
+                                        layerAbsolutePosition = GetNoteCountTrackerNoteCount() + currentNoteCount + posSheetPair.Key;
+
+                                        /* Add the layer to the song */
+                                        if (noteSheet.Layers.ContainsKey(layerAbsolutePosition))
+                                            noteSheet.Layers[layerAbsolutePosition].Add(posSheetPair.Value);
+                                        else
+                                        {
+                                            newLayerList = new SheetSet
+                                            {
+                                                posSheetPair.Value
+                                            };
+
+                                            noteSheet.Layers.Add(layerAbsolutePosition, newLayerList);
+                                        }
+
+                                        /* Add the absolute position and layer sheet to the layer position sheet pair structure */
+                                        layerPositionSheetPairs.Add(new PositionSheetPair(layerAbsolutePosition, posSheetPair.Value));
+                                    }
+                                }
                                 break;
 
                             case CallbackType.ACCOMPANIMENT_SHEET:
                                 returnValue.AddRange(noteSheet.Accompaniments[idName].Sheet);
+
+                                /* Add layers to layer dictionary */
+                                if (noteSheet.Accompaniments[idName].Layers.Count > 0)
+                                {
+                                    foreach (KeyValuePair<int, SheetSet> posSheetSetPair in noteSheet.Accompaniments[idName].Layers)
+                                    {
+                                        foreach (Sheet layerSheet in posSheetSetPair.Value)
+                                        {
+                                            /* Compute the layer's absolute position based off of its relative position in the pattern */
+                                            layerAbsolutePosition = GetNoteCountTrackerNoteCount() + currentNoteCount + posSheetSetPair.Key;
+
+                                            /* Add the layer to the song */
+                                            if (noteSheet.Layers.ContainsKey(layerAbsolutePosition))
+                                                noteSheet.Layers[layerAbsolutePosition].Add(layerSheet);
+                                            else
+                                            {
+                                                newLayerList = new SheetSet
+                                                {
+                                                    layerSheet
+                                                };
+
+                                                noteSheet.Layers.Add(layerAbsolutePosition, newLayerList);
+                                            }
+
+                                            /* Add the absolute position and layer sheet to the layer position sheet pair structure */
+                                            layerPositionSheetPairs.Add(new PositionSheetPair(layerAbsolutePosition, layerSheet));
+                                        }
+                                    }
+                                }
                                 break;
 
                             default:
                                 throw new ContextError(ContextError.PC_REFERENCE_ERROR);
-                        }
-
-                        /* Add the pattern's layers to the layer dictionary */
-                        if (noteSheet.RelativeLayerPositions.ContainsKey(idName))
-                        {
-                            foreach (PositionSheetPair posSheetPair in noteSheet.RelativeLayerPositions[idName])
-                            {
-                                /* Compute the layer's absolute position based off of its relative position in the pattern */
-                                layerAbsolutePosition = GetNoteCountTrackerNoteCount() + currentNoteCount + posSheetPair.Key;
-
-                                /* Add the layer to the song */
-                                if (noteSheet.Layers.ContainsKey(layerAbsolutePosition))
-                                    noteSheet.Layers[layerAbsolutePosition].Add(posSheetPair.Value);
-                                else
-                                {
-                                    newLayerList = new SheetSet
-                                    {
-                                        posSheetPair.Value
-                                    };
-
-                                    noteSheet.Layers.Add(layerAbsolutePosition, newLayerList);
-                                }
-
-                                /* Add the absolute position and layer sheet to the layer position sheet pair structure */
-                                layerPositionSheetPairs.Add(new PositionSheetPair(layerAbsolutePosition, posSheetPair.Value));
-                            }
                         }
                     }
                 }

@@ -1,0 +1,139 @@
+title: "powerchords"
+author: "Musika Standard Library"
+key: Cmaj
+time: common
+tempo: 4 = 120
+octave: 0
+---
+& C Power Chords
+chord CP_0 is C;G;C'
+chord CP_1 is C';G';C''
+chord CP_2 is C'';G'';C'''
+chord CP_3 is C''';G''';C''''
+chord CP_4 is C'''';G'''';C'''''
+chord CP_5 is C''''';G''''';C''''''
+chord CP_6 is C'''''';G'''''';C'''''''
+chord CP_7 is C''''''';G''''''';C''''''''
+
+& G Power Chords
+chord GP_0 is G;D';G'
+chord GP_1 is G';D'';G''
+chord GP_2 is G'';D''';G'''
+chord GP_3 is G''';D'''';G''''
+chord GP_4 is G'''';D''''';G'''''
+chord GP_5 is G''''';D'''''';G''''''
+chord GP_6 is G'''''';D''''''';G'''''''
+chord GP_7 is G''''''';D'''''''';G''''''''
+
+& D Power Chords
+chord DP_0 is D;A;D'
+chord DP_1 is D';A';D''
+chord DP_2 is D'';A'';D'''
+chord DP_3 is D''';A''';D''''
+chord DP_4 is D'''';A'''';D'''''
+chord DP_5 is D''''';A''''';D''''''
+chord DP_6 is D'''''';A'''''';D'''''''
+chord DP_7 is D''''''';A''''''';D''''''''
+
+& A Power Chords
+chord AP_0 is A;E';A'
+chord AP_1 is A';E'';A''
+chord AP_2 is A'';E''';A'''
+chord AP_3 is A''';E'''';A''''
+chord AP_4 is A'''';E''''';A'''''
+chord AP_5 is A''''';E'''''';A''''''
+chord AP_6 is A'''''';E''''''';A'''''''
+chord AP_7 is A''''''';E'''''''';A''''''''
+
+& E Power Chords
+chord EP_0 is E;B;E'
+chord EP_1 is E';B';E''
+chord EP_2 is E'';B'';E'''
+chord EP_3 is E''';B''';E''''
+chord EP_4 is E'''';B'''';E'''''
+chord EP_5 is E''''';B''''';E''''''
+chord EP_6 is E'''''';B'''''';E'''''''
+chord EP_7 is E''''''';B''''''';E''''''''
+
+& B Power Chords
+chord BP_0 is B;F#';B'
+chord BP_1 is B';F#'';B''
+chord BP_2 is B'';F#''';B'''
+chord BP_3 is B''';F#'''';B''''
+chord BP_4 is B'''';F#''''';B'''''
+chord BP_5 is B''''';F#'''''';B''''''
+chord BP_6 is B'''''';F#''''''';B'''''''
+chord BP_7 is B''''''';F#'''''''';B''''''''
+
+& F# Power Chords
+chord FsP_0 is F#;C#';F#'
+chord FsP_1 is F#';C#'';F#''
+chord FsP_2 is F#'';C#''';F#'''
+chord FsP_3 is F#''';C#'''';F#''''
+chord FsP_4 is F#'''';C#''''';F#'''''
+chord FsP_5 is F#''''';C#'''''';F#''''''
+chord FsP_6 is F#'''''';C#''''''';F#'''''''
+chord FsP_7 is F#''''''';C#'''''''';F#''''''''
+
+& C# Power Chords
+chord CsP_0 is C#;G#;C#'
+chord CsP_1 is C#';G#';C#''
+chord CsP_2 is C#'';G#'';C#'''
+chord CsP_3 is C#''';G#''';C#''''
+chord CsP_4 is C#'''';G#'''';C#'''''
+chord CsP_5 is C#''''';G#''''';C#''''''
+chord CsP_6 is C#'''''';G#'''''';C#'''''''
+chord CsP_7 is C#''''''';G#''''''';C#''''''''
+
+& G# Power Chords
+chord GsP_0 is G#;D#';G#'
+chord GsP_1 is G#';D#'';G#''
+chord GsP_2 is G#'';D#''';G#'''
+chord GsP_3 is G#''';D#'''';G#''''
+chord GsP_4 is G#'''';D#''''';G#'''''
+chord GsP_5 is G#''''';D#'''''';G#''''''
+chord GsP_6 is G#'''''';D#''''''';G#'''''''
+chord GsP_7 is G#''''''';D#'''''''';G#''''''''
+
+& Ab Power Chords
+chord AbP_0 is Ab;Eb';Ab'
+chord AbP_1 is Ab';Eb'';Ab''
+chord AbP_2 is Ab'';Eb''';Ab'''
+chord AbP_3 is Ab''';Eb'''';Ab''''
+chord AbP_4 is Ab'''';Eb''''';Ab'''''
+chord AbP_5 is Ab''''';Eb'''''';Ab''''''
+chord AbP_6 is Ab'''''';Eb''''''';Ab'''''''
+chord AbP_7 is Ab''''''';Eb'''''''';Ab''''''''
+
+& Eb Power Chords
+chord EbP_0 is Eb;Bb;Eb'
+chord EbP_1 is Eb';Bb';Eb''
+chord EbP_2 is Eb'';Bb'';Eb'''
+chord EbP_3 is Eb''';Bb''';Eb''''
+chord EbP_4 is Eb'''';Bb'''';Eb'''''
+chord EbP_5 is Eb''''';Bb''''';Eb''''''
+chord EbP_6 is Eb'''''';Bb'''''';Eb'''''''
+chord EbP_7 is Eb''''''';Bb''''''';Eb''''''''
+
+& Bb Power Chords
+chord BbP_0 is Bb;F';Bb'
+chord BbP_1 is Bb';F'';Bb''
+chord BbP_2 is Bb'';F''';Bb'''
+chord BbP_3 is Bb''';F'''';Bb''''
+chord BbP_4 is Bb'''';F''''';Bb'''''
+chord BbP_5 is Bb''''';F'''''';Bb''''''
+chord BbP_6 is Bb'''''';F''''''';Bb'''''''
+chord BbP_7 is Bb''''''';F'''''''';Bb''''''''
+
+& F Power Chords
+chord FP_0 is F;C';F'
+chord FP_1 is F';C'';F''
+chord FP_2 is F'';C''';F'''
+chord FP_3 is F''';C'''';F''''
+chord FP_4 is F'''';C''''';F'''''
+chord FP_5 is F''''';C'''''';F''''''
+chord FP_6 is F'''''';C''''''';F'''''''
+chord FP_7 is F''''''';C'''''''';F''''''''
+---
+
+---

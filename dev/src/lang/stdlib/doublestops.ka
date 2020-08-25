@@ -1,0 +1,1581 @@
+title: "doublestops"
+author: "Musika Standard Library"
+key: Cmaj
+time: common
+tempo: 4 = 120
+octave: 0
+---
+& Key of C
+
+& Minor 2nds
+chord Cm2_0 is C;Db
+chord Cm2_1 is C';Db'
+chord Cm2_2 is C'';Db''
+chord Cm2_3 is C''';Db'''
+chord Cm2_4 is C'''';Db''''
+chord Cm2_5 is C''''';Db'''''
+chord Cm2_6 is C'''''';Db''''''
+chord Cm2_7 is C''''''';Db'''''''
+chord Cm2_8 is C'''''''';Db''''''''
+
+& Major 2nds
+chord CM2_0 is C;D
+chord CM2_1 is C';D'
+chord CM2_2 is C'';D''
+chord CM2_3 is C''';D'''
+chord CM2_4 is C'''';D''''
+chord CM2_5 is C''''';D'''''
+chord CM2_6 is C'''''';D''''''
+chord CM2_7 is C''''''';D'''''''
+chord CM2_8 is C'''''''';D''''''''
+
+& Minor 3rd
+chord Cm3_0 is C;Eb
+chord Cm3_1 is C';Eb'
+chord Cm3_2 is C'';Eb''
+chord Cm3_3 is C''';Eb'''
+chord Cm3_4 is C'''';Eb''''
+chord Cm3_5 is C''''';Eb'''''
+chord Cm3_6 is C'''''';Eb''''''
+chord Cm3_7 is C''''''';Eb'''''''
+chord Cm3_8 is C'''''''';Eb''''''''
+
+& Major 3rd
+chord CM3_0 is C;E
+chord CM3_1 is C';E'
+chord CM3_2 is C'';E''
+chord CM3_3 is C''';E'''
+chord CM3_4 is C'''';E''''
+chord CM3_5 is C''''';E'''''
+chord CM3_6 is C'''''';E''''''
+chord CM3_7 is C''''''';E'''''''
+chord CM3_8 is C'''''''';E''''''''
+
+& Perfect 4th
+chord C4_0 is C;F
+chord C4_1 is C';F'
+chord C4_2 is C'';F''
+chord C4_3 is C''';F'''
+chord C4_4 is C'''';F''''
+chord C4_5 is C''''';F'''''
+chord C4_6 is C'''''';F''''''
+chord C4_7 is C''''''';F'''''''
+chord C4_8 is C'''''''';F''''''''
+
+& Tritone
+chord CT_0 is C;Gb
+chord CT_1 is C';Gb'
+chord CT_2 is C'';Gb''
+chord CT_3 is C''';Gb'''
+chord CT_4 is C'''';Gb''''
+chord CT_5 is C''''';Gb'''''
+chord CT_6 is C'''''';Gb''''''
+chord CT_7 is C''''''';Gb'''''''
+chord CT_8 is C'''''''';Gb''''''''
+
+& Perfect 5th
+chord C5_0 is C;G
+chord C5_1 is C';G'
+chord C5_2 is C'';G''
+chord C5_3 is C''';G'''
+chord C5_4 is C'''';G''''
+chord C5_5 is C''''';G'''''
+chord C5_6 is C'''''';G''''''
+chord C5_7 is C''''''';G'''''''
+chord C5_8 is C'''''''';G''''''''
+
+& Minor 6th
+chord Cm6_0 is C;Ab
+chord Cm6_1 is C';Ab'
+chord Cm6_2 is C'';Ab''
+chord Cm6_3 is C''';Ab'''
+chord Cm6_4 is C'''';Ab''''
+chord Cm6_5 is C''''';Ab'''''
+chord Cm6_6 is C'''''';Ab''''''
+chord Cm6_7 is C''''''';Ab'''''''
+chord Cm6_8 is C'''''''';Ab''''''''
+
+& Major 6th
+chord CM6_0 is C;A
+chord CM6_1 is C';A'
+chord CM6_2 is C'';A''
+chord CM6_3 is C''';A'''
+chord CM6_4 is C'''';A''''
+chord CM6_5 is C''''';A'''''
+chord CM6_6 is C'''''';A''''''
+chord CM6_7 is C''''''';A'''''''
+chord CM6_8 is C'''''''';A''''''''
+
+& Minor 7th
+chord Cm7_0 is C;Bb
+chord Cm7_1 is C';Bb'
+chord Cm7_2 is C'';Bb''
+chord Cm7_3 is C''';Bb'''
+chord Cm7_4 is C'''';Bb''''
+chord Cm7_5 is C''''';Bb'''''
+chord Cm7_6 is C'''''';Bb''''''
+chord Cm7_7 is C''''''';Bb'''''''
+chord Cm7_8 is C'''''''';Bb''''''''
+
+& Major 7th
+chord CM7_0 is C;B
+chord CM7_1 is C';B'
+chord CM7_2 is C'';B''
+chord CM7_3 is C''';B'''
+chord CM7_4 is C'''';B''''
+chord CM7_5 is C''''';B'''''
+chord CM7_6 is C'''''';B''''''
+chord CM7_7 is C''''''';B'''''''
+chord CM7_8 is C'''''''';B''''''''
+
+& Octave
+chord C8_0 is C;C'
+chord C8_1 is C';C''
+chord C8_2 is C'';C'''
+chord C8_3 is C''';C''''
+chord C8_4 is C'''';C'''''
+chord C8_5 is C''''';C''''''
+chord C8_6 is C'''''';C'''''''
+chord C8_7 is C''''''';C''''''''
+
+& Key of G
+
+& Minor 2nds
+chord Gm2_0 is G;Ab
+chord Gm2_1 is G';Ab'
+chord Gm2_2 is G'';Ab''
+chord Gm2_3 is G''';Ab'''
+chord Gm2_4 is G'''';Ab''''
+chord Gm2_5 is G''''';Ab'''''
+chord Gm2_6 is G'''''';Ab''''''
+chord Gm2_7 is G''''''';Ab'''''''
+chord Gm2_8 is G'''''''';Ab''''''''
+
+& Major 2nds
+chord GM2_0 is G;A
+chord GM2_1 is G';A'
+chord GM2_2 is G'';A''
+chord GM2_3 is G''';A'''
+chord GM2_4 is G'''';A''''
+chord GM2_5 is G''''';A'''''
+chord GM2_6 is G'''''';A''''''
+chord GM2_7 is G''''''';A'''''''
+chord GM2_8 is G'''''''';A''''''''
+
+& Minor 3rd
+chord Gm3_0 is G;Bb
+chord Gm3_1 is G';Bb'
+chord Gm3_2 is G'';Bb''
+chord Gm3_3 is G''';Bb'''
+chord Gm3_4 is G'''';Bb''''
+chord Gm3_5 is G''''';Bb'''''
+chord Gm3_6 is G'''''';Bb''''''
+chord Gm3_7 is G''''''';Bb'''''''
+chord Gm3_8 is G'''''''';Bb''''''''
+
+& Major 3rd
+chord GM3_0 is G;B
+chord GM3_1 is G';B'
+chord GM3_2 is G'';B''
+chord GM3_3 is G''';B'''
+chord GM3_4 is G'''';B''''
+chord GM3_5 is G''''';B'''''
+chord GM3_6 is G'''''';B''''''
+chord GM3_7 is G''''''';B'''''''
+chord GM3_8 is G'''''''';B''''''''
+
+& Perfect 4th
+chord G4_0 is G;C'
+chord G4_1 is G';C''
+chord G4_2 is G'';C'''
+chord G4_3 is G''';C''''
+chord G4_4 is G'''';C'''''
+chord G4_5 is G''''';C''''''
+chord G4_6 is G'''''';C'''''''
+chord G4_7 is G''''''';C''''''''
+
+& Tritone
+chord GT_0 is G;C#'
+chord GT_1 is G';C#''
+chord GT_2 is G'';C#'''
+chord GT_3 is G''';C#''''
+chord GT_4 is G'''';C#'''''
+chord GT_5 is G''''';C#''''''
+chord GT_6 is G'''''';C#'''''''
+chord GT_7 is G''''''';C#''''''''
+
+& Perfect 5th
+chord G5_0 is G;D'
+chord G5_1 is G';D''
+chord G5_2 is G'';D'''
+chord G5_3 is G''';D''''
+chord G5_4 is G'''';D'''''
+chord G5_5 is G''''';D''''''
+chord G5_6 is G'''''';D'''''''
+chord G5_7 is G''''''';D''''''''
+
+& Minor 6th
+chord Gm6_0 is G;Eb'
+chord Gm6_1 is G';Eb''
+chord Gm6_2 is G'';Eb'''
+chord Gm6_3 is G''';Eb''''
+chord Gm6_4 is G'''';Eb'''''
+chord Gm6_5 is G''''';Eb''''''
+chord Gm6_6 is G'''''';Eb'''''''
+chord Gm6_7 is G''''''';Eb''''''''
+
+& Major 6th
+chord GM6_0 is G;E'
+chord GM6_1 is G';E''
+chord GM6_2 is G'';E'''
+chord GM6_3 is G''';E''''
+chord GM6_4 is G'''';E'''''
+chord GM6_5 is G''''';E''''''
+chord GM6_6 is G'''''';E'''''''
+chord GM6_7 is G''''''';E''''''''
+
+& Minor 7th
+chord Gm7_0 is G;F'
+chord Gm7_1 is G';F''
+chord Gm7_2 is G'';F'''
+chord Gm7_3 is G''';F''''
+chord Gm7_4 is G'''';F'''''
+chord Gm7_5 is G''''';F''''''
+chord Gm7_6 is G'''''';F'''''''
+chord Gm7_7 is G''''''';F''''''''
+
+& Major 7th
+chord GM7_0 is G;F#'
+chord GM7_1 is G';F#''
+chord GM7_2 is G'';F#'''
+chord GM7_3 is G''';F#''''
+chord GM7_4 is G'''';F#'''''
+chord GM7_5 is G''''';F#''''''
+chord GM7_6 is G'''''';F#'''''''
+chord GM7_7 is G''''''';F#''''''''
+
+& Octave
+chord G8_0 is G;G'
+chord G8_1 is G';G''
+chord G8_2 is G'';G'''
+chord G8_3 is G''';G''''
+chord G8_4 is G'''';G'''''
+chord G8_5 is G''''';G''''''
+chord G8_6 is G'''''';G'''''''
+chord G8_7 is G''''''';G''''''''
+
+& Key of D
+
+& Minor 2nds
+chord Dm2_0 is D;Eb
+chord Dm2_1 is D';Eb'
+chord Dm2_2 is D'';Eb''
+chord Dm2_3 is D''';Eb'''
+chord Dm2_4 is D'''';Eb''''
+chord Dm2_5 is D''''';Eb'''''
+chord Dm2_6 is D'''''';Eb''''''
+chord Dm2_7 is D''''''';Eb'''''''
+chord Dm2_8 is D'''''''';Eb''''''''
+
+& Major 2nds
+chord DM2_0 is D;E
+chord DM2_1 is D';E'
+chord DM2_2 is D'';E''
+chord DM2_3 is D''';E'''
+chord DM2_4 is D'''';E''''
+chord DM2_5 is D''''';E'''''
+chord DM2_6 is D'''''';E''''''
+chord DM2_7 is D''''''';E'''''''
+chord DM2_8 is D'''''''';E''''''''
+
+& Minor 3rd
+chord Dm3_0 is D;F
+chord Dm3_1 is D';F'
+chord Dm3_2 is D'';F''
+chord Dm3_3 is D''';F'''
+chord Dm3_4 is D'''';F''''
+chord Dm3_5 is D''''';F'''''
+chord Dm3_6 is D'''''';F''''''
+chord Dm3_7 is D''''''';F'''''''
+chord Dm3_8 is D'''''''';F''''''''
+
+& Major 3rd
+chord DM3_0 is D;F#
+chord DM3_1 is D';F#'
+chord DM3_2 is D'';F#''
+chord DM3_3 is D''';F#'''
+chord DM3_4 is D'''';F#''''
+chord DM3_5 is D''''';F#'''''
+chord DM3_6 is D'''''';F#''''''
+chord DM3_7 is D''''''';F#'''''''
+chord DM3_8 is D'''''''';F#''''''''
+
+& Perfect 4th
+chord D4_0 is D;G
+chord D4_1 is D';G'
+chord D4_2 is D'';G''
+chord D4_3 is D''';G'''
+chord D4_4 is D'''';G''''
+chord D4_5 is D''''';G'''''
+chord D4_6 is D'''''';G''''''
+chord D4_7 is D''''''';G'''''''
+chord D4_8 is D'''''''';G''''''''
+
+& Tritone
+chord DT_0 is D;G#
+chord DT_1 is D';G#'
+chord DT_2 is D'';G#''
+chord DT_3 is D''';G#'''
+chord DT_4 is D'''';G#''''
+chord DT_5 is D''''';G#'''''
+chord DT_6 is D'''''';G#''''''
+chord DT_7 is D''''''';G#'''''''
+chord DT_8 is D'''''''';G#''''''''
+
+& Perfect 5th
+chord D5_0 is D;A
+chord D5_1 is D';A'
+chord D5_2 is D'';A''
+chord D5_3 is D''';A'''
+chord D5_4 is D'''';A''''
+chord D5_5 is D''''';A'''''
+chord D5_6 is D'''''';A''''''
+chord D5_7 is D''''''';A'''''''
+chord D5_8 is D'''''''';A''''''''
+
+& Minor 6th
+chord Dm6_0 is D;Bb
+chord Dm6_1 is D';Bb'
+chord Dm6_2 is D'';Bb''
+chord Dm6_3 is D''';Bb'''
+chord Dm6_4 is D'''';Bb''''
+chord Dm6_5 is D''''';Bb'''''
+chord Dm6_6 is D'''''';Bb''''''
+chord Dm6_7 is D''''''';Bb'''''''
+chord Dm6_8 is D'''''''';Bb''''''''
+
+& Major 6th
+chord DM6_0 is D;B
+chord DM6_1 is D';B'
+chord DM6_2 is D'';B''
+chord DM6_3 is D''';B'''
+chord DM6_4 is D'''';B''''
+chord DM6_5 is D''''';B'''''
+chord DM6_6 is D'''''';B''''''
+chord DM6_7 is D''''''';B'''''''
+chord DM6_8 is D'''''''';B''''''''
+
+& Minor 7th
+chord Dm7_0 is D;C'
+chord Dm7_1 is D';C''
+chord Dm7_2 is D'';C'''
+chord Dm7_3 is D''';C''''
+chord Dm7_4 is D'''';C'''''
+chord Dm7_5 is D''''';C''''''
+chord Dm7_6 is D'''''';C'''''''
+chord Dm7_7 is D''''''';C''''''''
+
+& Major 7th
+chord DM7_0 is D;C#'
+chord DM7_1 is D';C#''
+chord DM7_2 is D'';C#'''
+chord DM7_3 is D''';C#''''
+chord DM7_4 is D'''';C#'''''
+chord DM7_5 is D''''';C#''''''
+chord DM7_6 is D'''''';C#'''''''
+chord DM7_7 is D''''''';C#''''''''
+
+& Octave
+chord D8_0 is D;D'
+chord D8_1 is D';D''
+chord D8_2 is D'';D'''
+chord D8_3 is D''';D''''
+chord D8_4 is D'''';D'''''
+chord D8_5 is D''''';D''''''
+chord D8_6 is D'''''';D'''''''
+chord D8_7 is D''''''';D''''''''
+
+& Key of A
+
+& Minor 2nds
+chord Am2_0 is A;Bb
+chord Am2_1 is A';Bb'
+chord Am2_2 is A'';Bb''
+chord Am2_3 is A''';Bb'''
+chord Am2_4 is A'''';Bb''''
+chord Am2_5 is A''''';Bb'''''
+chord Am2_6 is A'''''';Bb''''''
+chord Am2_7 is A''''''';Bb'''''''
+chord Am2_8 is A'''''''';Bb''''''''
+
+& Major 2nds
+chord AM2_0 is A;B
+chord AM2_1 is A';B'
+chord AM2_2 is A'';B''
+chord AM2_3 is A''';B'''
+chord AM2_4 is A'''';B''''
+chord AM2_5 is A''''';B'''''
+chord AM2_6 is A'''''';B''''''
+chord AM2_7 is A''''''';B'''''''
+chord AM2_8 is A'''''''';B''''''''
+
+& Minor 3rd
+chord Am3_0 is A;C'
+chord Am3_1 is A';C''
+chord Am3_2 is A'';C'''
+chord Am3_3 is A''';C''''
+chord Am3_4 is A'''';C'''''
+chord Am3_5 is A''''';C''''''
+chord Am3_6 is A'''''';C'''''''
+chord Am3_7 is A''''''';C''''''''
+
+& Major 3rd
+chord AM3_0 is A;C#'
+chord AM3_1 is A';C#''
+chord AM3_2 is A'';C#'''
+chord AM3_3 is A''';C#''''
+chord AM3_4 is A'''';C#'''''
+chord AM3_5 is A''''';C#''''''
+chord AM3_6 is A'''''';C#'''''''
+chord AM3_7 is A''''''';C#''''''''
+
+& Perfect 4th
+chord A4_0 is A;D'
+chord A4_1 is A';D''
+chord A4_2 is A'';D'''
+chord A4_3 is A''';D''''
+chord A4_4 is A'''';D'''''
+chord A4_5 is A''''';D''''''
+chord A4_6 is A'''''';D'''''''
+chord A4_7 is A''''''';D''''''''
+
+& Tritone
+chord AT_0 is A;D#'
+chord AT_1 is A';D#''
+chord AT_2 is A'';D#'''
+chord AT_3 is A''';D#''''
+chord AT_4 is A'''';D#'''''
+chord AT_5 is A''''';D#''''''
+chord AT_6 is A'''''';D#'''''''
+chord AT_7 is A''''''';D#''''''''
+
+& Perfect 5th
+chord A5_0 is A;E'
+chord A5_1 is A';E''
+chord A5_2 is A'';E'''
+chord A5_3 is A''';E''''
+chord A5_4 is A'''';E'''''
+chord A5_5 is A''''';E''''''
+chord A5_6 is A'''''';E'''''''
+chord A5_7 is A''''''';E''''''''
+
+& Minor 6th
+chord Am6_0 is A;F'
+chord Am6_1 is A';F''
+chord Am6_2 is A'';F'''
+chord Am6_3 is A''';F''''
+chord Am6_4 is A'''';F'''''
+chord Am6_5 is A''''';F''''''
+chord Am6_6 is A'''''';F'''''''
+chord Am6_7 is A''''''';F''''''''
+
+& Major 6th
+chord AM6_0 is A;F#'
+chord AM6_1 is A';F#''
+chord AM6_2 is A'';F#'''
+chord AM6_3 is A''';F#''''
+chord AM6_4 is A'''';F#'''''
+chord AM6_5 is A''''';F#''''''
+chord AM6_6 is A'''''';F#'''''''
+chord AM6_7 is A''''''';F#''''''''
+
+& Minor 7th
+chord Am7_0 is A;G'
+chord Am7_1 is A';G''
+chord Am7_2 is A'';G'''
+chord Am7_3 is A''';G''''
+chord Am7_4 is A'''';G'''''
+chord Am7_5 is A''''';G''''''
+chord Am7_6 is A'''''';G'''''''
+chord Am7_7 is A''''''';G''''''''
+
+& Major 7th
+chord AM7_0 is A;G#'
+chord AM7_1 is A';G#''
+chord AM7_2 is A'';G#'''
+chord AM7_3 is A''';G#''''
+chord AM7_4 is A'''';G#'''''
+chord AM7_5 is A''''';G#''''''
+chord AM7_6 is A'''''';G#'''''''
+chord AM7_7 is A''''''';G#''''''''
+
+& Octave
+chord A8_0 is A;A'
+chord A8_1 is A';A''
+chord A8_2 is A'';A'''
+chord A8_3 is A''';A''''
+chord A8_4 is A'''';A'''''
+chord A8_5 is A''''';A''''''
+chord A8_6 is A'''''';A'''''''
+chord A8_7 is A''''''';A''''''''
+
+& Key of E
+
+& Minor 2nds
+chord Em2_0 is E;F
+chord Em2_1 is E';F'
+chord Em2_2 is E'';F''
+chord Em2_3 is E''';F'''
+chord Em2_4 is E'''';F''''
+chord Em2_5 is E''''';F'''''
+chord Em2_6 is E'''''';F''''''
+chord Em2_7 is E''''''';F'''''''
+chord Em2_8 is E'''''''';F''''''''
+
+& Major 2nds
+chord EM2_0 is E;F#
+chord EM2_1 is E';F#'
+chord EM2_2 is E'';F#''
+chord EM2_3 is E''';F#'''
+chord EM2_4 is E'''';F#''''
+chord EM2_5 is E''''';F#'''''
+chord EM2_6 is E'''''';F#''''''
+chord EM2_7 is E''''''';F#'''''''
+chord EM2_8 is E'''''''';F#''''''''
+
+& Minor 3rd
+chord Em3_0 is E;G
+chord Em3_1 is E';G'
+chord Em3_2 is E'';G''
+chord Em3_3 is E''';G'''
+chord Em3_4 is E'''';G''''
+chord Em3_5 is E''''';G'''''
+chord Em3_6 is E'''''';G''''''
+chord Em3_7 is E''''''';G'''''''
+chord Em3_8 is E'''''''';G''''''''
+
+& Major 3rd
+chord EM3_0 is E;G#
+chord EM3_1 is E';G#'
+chord EM3_2 is E'';G#''
+chord EM3_3 is E''';G#'''
+chord EM3_4 is E'''';G#''''
+chord EM3_5 is E''''';G#'''''
+chord EM3_6 is E'''''';G#''''''
+chord EM3_7 is E''''''';G#'''''''
+chord EM3_8 is E'''''''';G#''''''''
+
+& Perfect 4th
+chord E4_0 is E;A
+chord E4_1 is E';A'
+chord E4_2 is E'';A''
+chord E4_3 is E''';A'''
+chord E4_4 is E'''';A''''
+chord E4_5 is E''''';A'''''
+chord E4_6 is E'''''';A''''''
+chord E4_7 is E''''''';A'''''''
+chord E4_8 is E'''''''';A''''''''
+
+& Tritone
+chord ET_0 is E;A#
+chord ET_1 is E';A#'
+chord ET_2 is E'';A#''
+chord ET_3 is E''';A#'''
+chord ET_4 is E'''';A#''''
+chord ET_5 is E''''';A#'''''
+chord ET_6 is E'''''';A#''''''
+chord ET_7 is E''''''';A#'''''''
+chord ET_8 is E'''''''';A#''''''''
+
+& Perfect 5th
+chord E5_0 is E;B
+chord E5_1 is E';B'
+chord E5_2 is E'';B''
+chord E5_3 is E''';B'''
+chord E5_4 is E'''';B''''
+chord E5_5 is E''''';B'''''
+chord E5_6 is E'''''';B''''''
+chord E5_7 is E''''''';B'''''''
+chord E5_8 is E'''''''';B''''''''
+
+& Minor 6th
+chord Em6_0 is E;C'
+chord Em6_1 is E';C''
+chord Em6_2 is E'';C'''
+chord Em6_3 is E''';C''''
+chord Em6_4 is E'''';C'''''
+chord Em6_5 is E''''';C''''''
+chord Em6_6 is E'''''';C'''''''
+chord Em6_7 is E''''''';C''''''''
+
+& Major 6th
+chord EM6_0 is E;C#'
+chord EM6_1 is E';C#''
+chord EM6_2 is E'';C#'''
+chord EM6_3 is E''';C#''''
+chord EM6_4 is E'''';C#'''''
+chord EM6_5 is E''''';C#''''''
+chord EM6_6 is E'''''';C#'''''''
+chord EM6_7 is E''''''';C#''''''''
+
+& Minor 7th
+chord Em7_0 is E;D'
+chord Em7_1 is E';D''
+chord Em7_2 is E'';D'''
+chord Em7_3 is E''';D''''
+chord Em7_4 is E'''';D'''''
+chord Em7_5 is E''''';D''''''
+chord Em7_6 is E'''''';D'''''''
+chord Em7_7 is E''''''';D''''''''
+
+& Major 7th
+chord EM7_0 is E;D#'
+chord EM7_1 is E';D#''
+chord EM7_2 is E'';D#'''
+chord EM7_3 is E''';D#''''
+chord EM7_4 is E'''';D#'''''
+chord EM7_5 is E''''';D#''''''
+chord EM7_6 is E'''''';D#'''''''
+chord EM7_7 is E''''''';D#''''''''
+
+& Octave
+chord E8_0 is E;E'
+chord E8_1 is E';E''
+chord E8_2 is E'';E'''
+chord E8_3 is E''';E''''
+chord E8_4 is E'''';E'''''
+chord E8_5 is E''''';E''''''
+chord E8_6 is E'''''';E'''''''
+chord E8_7 is E''''''';E''''''''
+
+& Key of B
+
+& Minor 2nds
+chord Bm2_0 is B;C'
+chord Bm2_1 is B';C''
+chord Bm2_2 is B'';C'''
+chord Bm2_3 is B''';C''''
+chord Bm2_4 is B'''';C'''''
+chord Bm2_5 is B''''';C''''''
+chord Bm2_6 is B'''''';C'''''''
+chord Bm2_7 is B''''''';C''''''''
+
+& Major 2nds
+chord BM2_0 is B;C#'
+chord BM2_1 is B';C#''
+chord BM2_2 is B'';C#'''
+chord BM2_3 is B''';C#''''
+chord BM2_4 is B'''';C#'''''
+chord BM2_5 is B''''';C#''''''
+chord BM2_6 is B'''''';C#'''''''
+chord BM2_7 is B''''''';C#''''''''
+
+& Minor 3rd
+chord Bm3_0 is B;D'
+chord Bm3_1 is B';D''
+chord Bm3_2 is B'';D'''
+chord Bm3_3 is B''';D''''
+chord Bm3_4 is B'''';D'''''
+chord Bm3_5 is B''''';D''''''
+chord Bm3_6 is B'''''';D'''''''
+chord Bm3_7 is B''''''';D''''''''
+
+& Major 3rd
+chord BM3_0 is B;D#'
+chord BM3_1 is B';D#''
+chord BM3_2 is B'';D#'''
+chord BM3_3 is B''';D#''''
+chord BM3_4 is B'''';D#'''''
+chord BM3_5 is B''''';D#''''''
+chord BM3_6 is B'''''';D#'''''''
+chord BM3_7 is B''''''';D#''''''''
+
+& Perfect 4th
+chord B4_0 is B;E'
+chord B4_1 is B';E''
+chord B4_2 is B'';E'''
+chord B4_3 is B''';E''''
+chord B4_4 is B'''';E'''''
+chord B4_5 is B''''';E''''''
+chord B4_6 is B'''''';E'''''''
+chord B4_7 is B''''''';E''''''''
+
+& Tritone
+chord BT_0 is B;F'
+chord BT_1 is B';F''
+chord BT_2 is B'';F'''
+chord BT_3 is B''';F''''
+chord BT_4 is B'''';F'''''
+chord BT_5 is B''''';F''''''
+chord BT_6 is B'''''';F'''''''
+chord BT_7 is B''''''';F''''''''
+
+& Perfect 5th
+chord B5_0 is B;F#'
+chord B5_1 is B';F#''
+chord B5_2 is B'';F#'''
+chord B5_3 is B''';F#''''
+chord B5_4 is B'''';F#'''''
+chord B5_5 is B''''';F#''''''
+chord B5_6 is B'''''';F#'''''''
+chord B5_7 is B''''''';F#''''''''
+
+& Minor 6th
+chord Bm6_0 is B;G'
+chord Bm6_1 is B';G''
+chord Bm6_2 is B'';G'''
+chord Bm6_3 is B''';G''''
+chord Bm6_4 is B'''';G'''''
+chord Bm6_5 is B''''';G''''''
+chord Bm6_6 is B'''''';G'''''''
+chord Bm6_7 is B''''''';G''''''''
+
+& Major 6th
+chord BM6_0 is B;G#'
+chord BM6_1 is B';G#''
+chord BM6_2 is B'';G#'''
+chord BM6_3 is B''';G#''''
+chord BM6_4 is B'''';G#'''''
+chord BM6_5 is B''''';G#''''''
+chord BM6_6 is B'''''';G#'''''''
+chord BM6_7 is B''''''';G#''''''''
+
+& Minor 7th
+chord Bm7_0 is B;A'
+chord Bm7_1 is B';A''
+chord Bm7_2 is B'';A'''
+chord Bm7_3 is B''';A''''
+chord Bm7_4 is B'''';A'''''
+chord Bm7_5 is B''''';A''''''
+chord Bm7_6 is B'''''';A'''''''
+chord Bm7_7 is B''''''';A''''''''
+
+& Major 7th
+chord BM7_0 is B;A#'
+chord BM7_1 is B';A#''
+chord BM7_2 is B'';A#'''
+chord BM7_3 is B''';A#''''
+chord BM7_4 is B'''';A#'''''
+chord BM7_5 is B''''';A#''''''
+chord BM7_6 is B'''''';A#'''''''
+chord BM7_7 is B''''''';A#''''''''
+
+& Octave
+chord B8_0 is B;B'
+chord B8_1 is B';B''
+chord B8_2 is B'';B'''
+chord B8_3 is B''';B''''
+chord B8_4 is B'''';B'''''
+chord B8_5 is B''''';B''''''
+chord B8_6 is B'''''';B'''''''
+chord B8_7 is B''''''';B''''''''
+
+& Key of F#
+
+& Minor 2nds
+chord Fsm2_0 is F#;G
+chord Fsm2_1 is F#';G'
+chord Fsm2_2 is F#'';G''
+chord Fsm2_3 is F#''';G'''
+chord Fsm2_4 is F#'''';G''''
+chord Fsm2_5 is F#''''';G'''''
+chord Fsm2_6 is F#'''''';G''''''
+chord Fsm2_7 is F#''''''';G'''''''
+chord Fsm2_8 is F#'''''''';G''''''''
+
+& Major 2nds
+chord FsM2_0 is F#;G#
+chord FsM2_1 is F#';G#'
+chord FsM2_2 is F#'';G#''
+chord FsM2_3 is F#''';G#'''
+chord FsM2_4 is F#'''';G#''''
+chord FsM2_5 is F#''''';G#'''''
+chord FsM2_6 is F#'''''';G#''''''
+chord FsM2_7 is F#''''''';G#'''''''
+chord FsM2_8 is F#'''''''';G#''''''''
+
+& Minor 3rd
+chord Fsm3_0 is F#;A
+chord Fsm3_1 is F#';A'
+chord Fsm3_2 is F#'';A''
+chord Fsm3_3 is F#''';A'''
+chord Fsm3_4 is F#'''';A''''
+chord Fsm3_5 is F#''''';A'''''
+chord Fsm3_6 is F#'''''';A''''''
+chord Fsm3_7 is F#''''''';A'''''''
+chord Fsm3_8 is F#'''''''';A''''''''
+
+& Major 3rd
+chord FsM3_0 is F#;A#
+chord FsM3_1 is F#';A#'
+chord FsM3_2 is F#'';A#''
+chord FsM3_3 is F#''';A#'''
+chord FsM3_4 is F#'''';A#''''
+chord FsM3_5 is F#''''';A#'''''
+chord FsM3_6 is F#'''''';A#''''''
+chord FsM3_7 is F#''''''';A#'''''''
+chord FsM3_8 is F#'''''''';A#''''''''
+
+& Perfect 4th
+chord Fs4_0 is F#;B
+chord Fs4_1 is F#';B'
+chord Fs4_2 is F#'';B''
+chord Fs4_3 is F#''';B'''
+chord Fs4_4 is F#'''';B''''
+chord Fs4_5 is F#''''';B'''''
+chord Fs4_6 is F#'''''';B''''''
+chord Fs4_7 is F#''''''';B'''''''
+chord Fs4_8 is F#'''''''';B''''''''
+
+& Tritone
+chord FsT_0 is F#;C'
+chord FsT_1 is F#';C''
+chord FsT_2 is F#'';C'''
+chord FsT_3 is F#''';C''''
+chord FsT_4 is F#'''';C'''''
+chord FsT_5 is F#''''';C''''''
+chord FsT_6 is F#'''''';C'''''''
+chord FsT_7 is F#''''''';C''''''''
+
+& Perfect 5th
+chord Fs5_0 is F#;C#'
+chord Fs5_1 is F#';C#''
+chord Fs5_2 is F#'';C#'''
+chord Fs5_3 is F#''';C#''''
+chord Fs5_4 is F#'''';C#'''''
+chord Fs5_5 is F#''''';C#''''''
+chord Fs5_6 is F#'''''';C#'''''''
+chord Fs5_7 is F#''''''';C#''''''''
+
+& Minor 6th
+chord Fsm6_0 is F#;D'
+chord Fsm6_1 is F#';D''
+chord Fsm6_2 is F#'';D'''
+chord Fsm6_3 is F#''';D''''
+chord Fsm6_4 is F#'''';D'''''
+chord Fsm6_5 is F#''''';D''''''
+chord Fsm6_6 is F#'''''';D'''''''
+chord Fsm6_7 is F#''''''';D''''''''
+
+& Major 6th
+chord FsM6_0 is F#;D#'
+chord FsM6_1 is F#';D#''
+chord FsM6_2 is F#'';D#'''
+chord FsM6_3 is F#''';D#''''
+chord FsM6_4 is F#'''';D#'''''
+chord FsM6_5 is F#''''';D#''''''
+chord FsM6_6 is F#'''''';D#'''''''
+chord FsM6_7 is F#''''''';D#''''''''
+
+& Minor 7th
+chord Fsm7_0 is F#;E'
+chord Fsm7_1 is F#';E''
+chord Fsm7_2 is F#'';E'''
+chord Fsm7_3 is F#''';E''''
+chord Fsm7_4 is F#'''';E'''''
+chord Fsm7_5 is F#''''';E''''''
+chord Fsm7_6 is F#'''''';E'''''''
+chord Fsm7_7 is F#''''''';E''''''''
+
+& Major 7th
+chord FsM7_0 is F#;E#'
+chord FsM7_1 is F#';E#''
+chord FsM7_2 is F#'';E#'''
+chord FsM7_3 is F#''';E#''''
+chord FsM7_4 is F#'''';E#'''''
+chord FsM7_5 is F#''''';E#''''''
+chord FsM7_6 is F#'''''';E#'''''''
+chord FsM7_7 is F#''''''';E#''''''''
+
+& Octave
+chord Fs8_0 is F#;F#'
+chord Fs8_1 is F#';F#''
+chord Fs8_2 is F#'';F#'''
+chord Fs8_3 is F#''';F#''''
+chord Fs8_4 is F#'''';F#'''''
+chord Fs8_5 is F#''''';F#''''''
+chord Fs8_6 is F#'''''';F#'''''''
+chord Fs8_7 is F#''''''';F#''''''''
+
+& Key of C#
+
+& Minor 2nds
+chord Csm2_0 is C#;D
+chord Csm2_1 is C#';D'
+chord Csm2_2 is C#'';D''
+chord Csm2_3 is C#''';D'''
+chord Csm2_4 is C#'''';D''''
+chord Csm2_5 is C#''''';D'''''
+chord Csm2_6 is C#'''''';D''''''
+chord Csm2_7 is C#''''''';D'''''''
+chord Csm2_8 is C#'''''''';D''''''''
+
+& Major 2nds
+chord CsM2_0 is C#;D#
+chord CsM2_1 is C#';D#'
+chord CsM2_2 is C#'';D#''
+chord CsM2_3 is C#''';D#'''
+chord CsM2_4 is C#'''';D#''''
+chord CsM2_5 is C#''''';D#'''''
+chord CsM2_6 is C#'''''';D#''''''
+chord CsM2_7 is C#''''''';D#'''''''
+chord CsM2_8 is C#'''''''';D#''''''''
+
+& Minor 3rd
+chord Csm3_0 is C#;E
+chord Csm3_1 is C#';E'
+chord Csm3_2 is C#'';E''
+chord Csm3_3 is C#''';E'''
+chord Csm3_4 is C#'''';E''''
+chord Csm3_5 is C#''''';E'''''
+chord Csm3_6 is C#'''''';E''''''
+chord Csm3_7 is C#''''''';E'''''''
+chord Csm3_8 is C#'''''''';E''''''''
+
+& Major 3rd
+chord CsM3_0 is C#;E#
+chord CsM3_1 is C#';E#'
+chord CsM3_2 is C#'';E#''
+chord CsM3_3 is C#''';E#'''
+chord CsM3_4 is C#'''';E#''''
+chord CsM3_5 is C#''''';E#'''''
+chord CsM3_6 is C#'''''';E#''''''
+chord CsM3_7 is C#''''''';E#'''''''
+chord CsM3_8 is C#'''''''';E#''''''''
+
+& Perfect 4th
+chord Cs4_0 is C#;F#
+chord Cs4_1 is C#';F#'
+chord Cs4_2 is C#'';F#''
+chord Cs4_3 is C#''';F#'''
+chord Cs4_4 is C#'''';F#''''
+chord Cs4_5 is C#''''';F#'''''
+chord Cs4_6 is C#'''''';F#''''''
+chord Cs4_7 is C#''''''';F#'''''''
+chord Cs4_8 is C#'''''''';F#''''''''
+
+& Tritone
+chord CsT_0 is C#;G
+chord CsT_1 is C#';G'
+chord CsT_2 is C#'';G''
+chord CsT_3 is C#''';G'''
+chord CsT_4 is C#'''';G''''
+chord CsT_5 is C#''''';G'''''
+chord CsT_6 is C#'''''';G''''''
+chord CsT_7 is C#''''''';G'''''''
+chord CsT_8 is C#'''''''';G''''''''
+
+& Perfect 5th
+chord Cs5_0 is C#;G#
+chord Cs5_1 is C#';G#'
+chord Cs5_2 is C#'';G#''
+chord Cs5_3 is C#''';G#'''
+chord Cs5_4 is C#'''';G#''''
+chord Cs5_5 is C#''''';G#'''''
+chord Cs5_6 is C#'''''';G#''''''
+chord Cs5_7 is C#''''''';G#'''''''
+chord Cs5_8 is C#'''''''';G#''''''''
+
+& Minor 6th
+chord Csm6_0 is C#;A
+chord Csm6_1 is C#';A'
+chord Csm6_2 is C#'';A''
+chord Csm6_3 is C#''';A'''
+chord Csm6_4 is C#'''';A''''
+chord Csm6_5 is C#''''';A'''''
+chord Csm6_6 is C#'''''';A''''''
+chord Csm6_7 is C#''''''';A'''''''
+chord Csm6_8 is C#'''''''';A''''''''
+
+& Major 6th
+chord CsM6_0 is C#;A#
+chord CsM6_1 is C#';A#'
+chord CsM6_2 is C#'';A#''
+chord CsM6_3 is C#''';A#'''
+chord CsM6_4 is C#'''';A#''''
+chord CsM6_5 is C#''''';A#'''''
+chord CsM6_6 is C#'''''';A#''''''
+chord CsM6_7 is C#''''''';A#'''''''
+chord CsM6_8 is C#'''''''';A#''''''''
+
+& Minor 7th
+chord Csm7_0 is C#;B
+chord Csm7_1 is C#';B'
+chord Csm7_2 is C#'';B''
+chord Csm7_3 is C#''';B'''
+chord Csm7_4 is C#'''';B''''
+chord Csm7_5 is C#''''';B'''''
+chord Csm7_6 is C#'''''';B''''''
+chord Csm7_7 is C#''''''';B'''''''
+chord Csm7_8 is C#'''''''';B''''''''
+
+& Major 7th
+chord CsM7_0 is C#;B#'
+chord CsM7_1 is C#';B#''
+chord CsM7_2 is C#'';B#'''
+chord CsM7_3 is C#''';B#''''
+chord CsM7_4 is C#'''';B#'''''
+chord CsM7_5 is C#''''';B#''''''
+chord CsM7_6 is C#'''''';B#'''''''
+chord CsM7_7 is C#''''''';B#''''''''
+
+& Octave
+chord Cs8_0 is C#;C#'
+chord Cs8_1 is C#';C#''
+chord Cs8_2 is C#'';C#'''
+chord Cs8_3 is C#''';C#''''
+chord Cs8_4 is C#'''';C#'''''
+chord Cs8_5 is C#''''';C#''''''
+chord Cs8_6 is C#'''''';C#'''''''
+chord Cs8_7 is C#''''''';C#''''''''
+
+& Key of Ab/G#
+
+& Minor 2nds
+chord Gsm2_0 is G#;A
+chord Gsm2_1 is G#';A'
+chord Gsm2_2 is G#'';A''
+chord Gsm2_3 is G#''';A'''
+chord Gsm2_4 is G#'''';A''''
+chord Gsm2_5 is G#''''';A'''''
+chord Gsm2_6 is G#'''''';A''''''
+chord Gsm2_7 is G#''''''';A'''''''
+chord Gsm2_8 is G#'''''''';A''''''''
+
+& Major 2nds
+chord AbM2_0 is Ab;Bb
+chord AbM2_1 is Ab';Bb
+chord AbM2_2 is Ab'';Bb'
+chord AbM2_3 is Ab''';Bb''
+chord AbM2_4 is Ab'''';Bb'''
+chord AbM2_5 is Ab''''';Bb''''
+chord AbM2_6 is Ab'''''';Bb'''''
+chord AbM2_7 is Ab''''''';Bb''''''
+chord AbM2_8 is Ab'''''''';Bb'''''''
+
+& Minor 3rd
+chord Gsm3_0 is G#;B
+chord Gsm3_1 is G#';B'
+chord Gsm3_2 is G#'';B''
+chord Gsm3_3 is G#''';B'''
+chord Gsm3_4 is G#'''';B''''
+chord Gsm3_5 is G#''''';B'''''
+chord Gsm3_6 is G#'''''';B''''''
+chord Gsm3_7 is G#''''''';B'''''''
+chord Gsm3_8 is G#'''''''';B''''''''
+
+& Major 3rd
+chord AbM3_0 is Ab;C'
+chord AbM3_1 is Ab';C''
+chord AbM3_2 is Ab'';C'''
+chord AbM3_3 is Ab''';C''''
+chord AbM3_4 is Ab'''';C'''''
+chord AbM3_5 is Ab''''';C''''''
+chord AbM3_6 is Ab'''''';C'''''''
+chord AbM3_7 is Ab''''''';C''''''''
+
+& Perfect 4th (G#)
+chord Gs4_0 is G#;C#'
+chord Gs4_1 is G#';C#''
+chord Gs4_2 is G#'';C#'''
+chord Gs4_3 is G#''';C#''''
+chord Gs4_4 is G#'''';C#'''''
+chord Gs4_5 is G#''''';C#''''''
+chord Gs4_6 is G#'''''';C#'''''''
+chord Gs4_7 is G#''''''';C#''''''''
+
+& Perfect 4th (Ab)
+chord Ab4_0 is Ab;Db'
+chord Ab4_1 is Ab';Db''
+chord Ab4_2 is Ab'';Db'''
+chord Ab4_3 is Ab''';Db''''
+chord Ab4_4 is Ab'''';Db'''''
+chord Ab4_5 is Ab''''';Db''''''
+chord Ab4_6 is Ab'''''';Db'''''''
+chord Ab4_7 is Ab''''''';Db''''''''
+
+& Tritone (G#)
+chord GsT_0 is G#;D'
+chord GsT_1 is G#';D''
+chord GsT_2 is G#'';D'''
+chord GsT_3 is G#''';D''''
+chord GsT_4 is G#'''';D'''''
+chord GsT_5 is G#''''';D''''''
+chord GsT_6 is G#'''''';D'''''''
+chord GsT_7 is G#''''''';D''''''''
+
+& Tritone (Ab)
+chord AbT_0 is Ab;D'
+chord AbT_1 is Ab';D''
+chord AbT_2 is Ab'';D'''
+chord AbT_3 is Ab''';D''''
+chord AbT_4 is Ab'''';D'''''
+chord AbT_5 is Ab''''';D''''''
+chord AbT_6 is Ab'''''';D'''''''
+chord AbT_7 is Ab''''''';D''''''''
+
+& Perfect 5th (G#)
+chord Gs5_0 is G#;D#'
+chord Gs5_1 is G#';D#''
+chord Gs5_2 is G#'';D#'''
+chord Gs5_3 is G#''';D#''''
+chord Gs5_4 is G#'''';D#'''''
+chord Gs5_5 is G#''''';D#''''''
+chord Gs5_6 is G#'''''';D#'''''''
+chord Gs5_7 is G#''''''';D#''''''''
+
+& Perfect 5th (Ab)
+chord Ab5_0 is Ab;Eb'
+chord Ab5_1 is Ab';Eb''
+chord Ab5_2 is Ab'';Eb'''
+chord Ab5_3 is Ab''';Eb''''
+chord Ab5_4 is Ab'''';Eb'''''
+chord Ab5_5 is Ab''''';Eb''''''
+chord Ab5_6 is Ab'''''';Eb'''''''
+chord Ab5_7 is Ab''''''';Eb''''''''
+
+& Minor 6th
+chord Gsm6_0 is G#;E'
+chord Gsm6_1 is G#';E''
+chord Gsm6_2 is G#'';E'''
+chord Gsm6_3 is G#''';E''''
+chord Gsm6_4 is G#'''';E'''''
+chord Gsm6_5 is G#''''';E''''''
+chord Gsm6_6 is G#'''''';E'''''''
+chord Gsm6_7 is G#''''''';E''''''''
+
+& Major 6th
+chord AbM6_0 is Ab;F'
+chord AbM6_1 is Ab';F''
+chord AbM6_2 is Ab'';F'''
+chord AbM6_3 is Ab''';F''''
+chord AbM6_4 is Ab'''';F'''''
+chord AbM6_5 is Ab''''';F''''''
+chord AbM6_6 is Ab'''''';F'''''''
+chord AbM6_7 is Ab''''''';F''''''''
+
+& Minor 7th
+chord Gsm7_0 is G#;F#'
+chord Gsm7_1 is G#';F#''
+chord Gsm7_2 is G#'';F#'''
+chord Gsm7_3 is G#''';F#''''
+chord Gsm7_4 is G#'''';F#'''''
+chord Gsm7_5 is G#''''';F#''''''
+chord Gsm7_6 is G#'''''';F#'''''''
+chord Gsm7_7 is G#''''''';F#''''''''
+
+& Major 7th
+chord AbM7_0 is Ab;G'
+chord AbM7_1 is Ab';G''
+chord AbM7_2 is Ab'';G'''
+chord AbM7_3 is Ab''';G''''
+chord AbM7_4 is Ab'''';G'''''
+chord AbM7_5 is Ab''''';G''''''
+chord AbM7_6 is Ab'''''';G'''''''
+chord AbM7_7 is Ab''''''';G''''''''
+
+& Octave (G#)
+chord Gs8_0 is G#;G#'
+chord Gs8_1 is G#';G#''
+chord Gs8_2 is G#'';G#'''
+chord Gs8_3 is G#''';G#''''
+chord Gs8_4 is G#'''';G#'''''
+chord Gs8_5 is G#''''';G#''''''
+chord Gs8_6 is G#'''''';G#'''''''
+chord Gs8_7 is G#''''''';G#''''''''
+
+& Octave (Ab)
+chord Ab8_0 is Ab;Ab'
+chord Ab8_1 is Ab';Ab''
+chord Ab8_2 is Ab'';Ab'''
+chord Ab8_3 is Ab''';Ab''''
+chord Ab8_4 is Ab'''';Ab'''''
+chord Ab8_5 is Ab''''';Ab''''''
+chord Ab8_6 is Ab'''''';Ab'''''''
+chord Ab8_7 is Ab''''''';Ab''''''''
+
+& Key of Eb
+
+& Minor 2nds
+chord Ebm2_0 is Eb;E
+chord Ebm2_1 is Eb';E'
+chord Ebm2_2 is Eb'';E''
+chord Ebm2_3 is Eb''';E'''
+chord Ebm2_4 is Eb'''';E''''
+chord Ebm2_5 is Eb''''';E'''''
+chord Ebm2_6 is Eb'''''';E''''''
+chord Ebm2_7 is Eb''''''';E'''''''
+chord Ebm2_8 is Eb'''''''';E''''''''
+
+& Major 2nds
+chord EbM2_0 is Eb;F
+chord EbM2_1 is Eb';F'
+chord EbM2_2 is Eb'';F''
+chord EbM2_3 is Eb''';F'''
+chord EbM2_4 is Eb'''';F''''
+chord EbM2_5 is Eb''''';F'''''
+chord EbM2_6 is Eb'''''';F''''''
+chord EbM2_7 is Eb''''''';F'''''''
+chord EbM2_8 is Eb'''''''';F''''''''
+
+& Minor 3rd
+chord Ebm3_0 is E;Gb
+chord Ebm3_1 is Eb';Gb'
+chord Ebm3_2 is Eb'';Gb''
+chord Ebm3_3 is Eb''';Gb'''
+chord Ebm3_4 is Eb'''';Gb''''
+chord Ebm3_5 is Eb''''';Gb'''''
+chord Ebm3_6 is Eb'''''';Gb''''''
+chord Ebm3_7 is Eb''''''';Gb'''''''
+chord Ebm3_8 is Eb'''''''';Gb''''''''
+
+& Major 3rd
+chord EbM3_0 is Eb;G
+chord EbM3_1 is Eb';G'
+chord EbM3_2 is Eb'';G''
+chord EbM3_3 is Eb''';G'''
+chord EbM3_4 is Eb'''';G''''
+chord EbM3_5 is Eb''''';G'''''
+chord EbM3_6 is Eb'''''';G''''''
+chord EbM3_7 is Eb''''''';G'''''''
+chord EbM3_8 is Eb'''''''';G''''''''
+
+& Perfect 4th
+chord Eb4_0 is Eb;Ab
+chord Eb4_1 is Eb';Ab'
+chord Eb4_2 is Eb'';Ab''
+chord Eb4_3 is Eb''';Ab'''
+chord Eb4_4 is Eb'''';Ab''''
+chord Eb4_5 is Eb''''';Ab'''''
+chord Eb4_6 is Eb'''''';Ab''''''
+chord Eb4_7 is Eb''''''';Ab'''''''
+chord Eb4_8 is Eb'''''''';Ab''''''''
+
+& Tritone
+chord EbT_0 is Eb;A
+chord EbT_1 is Eb';A'
+chord EbT_2 is Eb'';A''
+chord EbT_3 is Eb''';A'''
+chord EbT_4 is Eb'''';A''''
+chord EbT_5 is Eb''''';A'''''
+chord EbT_6 is Eb'''''';A''''''
+chord EbT_7 is Eb''''''';A'''''''
+chord EbT_8 is Eb'''''''';A''''''''
+
+& Perfect 5th
+chord Eb5_0 is Eb;Bb
+chord Eb5_1 is Eb';Bb'
+chord Eb5_2 is Eb'';Bb''
+chord Eb5_3 is Eb''';Bb'''
+chord Eb5_4 is Eb'''';Bb''''
+chord Eb5_5 is Eb''''';Bb'''''
+chord Eb5_6 is Eb'''''';Bb''''''
+chord Eb5_7 is Eb''''''';Bb'''''''
+chord Eb5_8 is Eb'''''''';Bb''''''''
+
+& Minor 6th
+chord Ebm6_0 is Eb;Cb
+chord Ebm6_1 is Eb';Cb'
+chord Ebm6_2 is Eb'';Cb''
+chord Ebm6_3 is Eb''';Cb'''
+chord Ebm6_4 is Eb'''';Cb''''
+chord Ebm6_5 is Eb''''';Cb'''''
+chord Ebm6_6 is Eb'''''';Cb''''''
+chord Ebm6_7 is Eb''''''';Cb'''''''
+chord Ebm6_8 is Eb'''''''';Cb''''''''
+
+& Major 6th
+chord EbM6_0 is Eb;C'
+chord EbM6_1 is Eb';C''
+chord EbM6_2 is Eb'';C'''
+chord EbM6_3 is Eb''';C''''
+chord EbM6_4 is Eb'''';C'''''
+chord EbM6_5 is Eb''''';C''''''
+chord EbM6_6 is Eb'''''';C'''''''
+chord EbM6_7 is Eb''''''';C''''''''
+
+& Minor 7th
+chord Ebm7_0 is Eb;Db'
+chord Ebm7_1 is Eb';Db''
+chord Ebm7_2 is Eb'';Db'''
+chord Ebm7_3 is Eb''';Db''''
+chord Ebm7_4 is Eb'''';Db'''''
+chord Ebm7_5 is Eb''''';Db''''''
+chord Ebm7_6 is Eb'''''';Db'''''''
+chord Ebm7_7 is Eb''''''';Db''''''''
+
+& Major 7th
+chord EbM7_0 is Eb;D'
+chord EbM7_1 is Eb';D''
+chord EbM7_2 is Eb'';D'''
+chord EbM7_3 is Eb''';D''''
+chord EbM7_4 is Eb'''';D'''''
+chord EbM7_5 is Eb''''';D''''''
+chord EbM7_6 is Eb'''''';D'''''''
+chord EbM7_7 is Eb''''''';D''''''''
+
+& Octave
+chord Eb8_0 is Eb;Eb'
+chord Eb8_1 is Eb';Eb''
+chord Eb8_2 is Eb'';Eb'''
+chord Eb8_3 is Eb''';Eb''''
+chord Eb8_4 is Eb'''';Eb'''''
+chord Eb8_5 is Eb''''';Eb''''''
+chord Eb8_6 is Eb'''''';Eb'''''''
+chord Eb8_7 is Eb''''''';Eb''''''''
+
+& Key of Bb
+
+& Minor 2nd
+chord Bbm2_0 is Bb;Cb
+chord Bbm2_1 is Bb';Cb'
+chord Bbm2_2 is Bb'';Cb''
+chord Bbm2_3 is Bb''';Cb'''
+chord Bbm2_4 is Bb'''';Cb''''
+chord Bbm2_5 is Bb''''';Cb'''''
+chord Bbm2_6 is Bb'''''';Cb''''''
+chord Bbm2_7 is Bb''''''';Cb'''''''
+chord Bbm2_8 is Bb'''''''';Cb''''''''
+
+& Major 2nd
+chord BbM2_0 is Bb;C'
+chord BbM2_1 is Bb';C''
+chord BbM2_2 is Bb'';C'''
+chord BbM2_3 is Bb''';C''''
+chord BbM2_4 is Bb'''';C'''''
+chord BbM2_5 is Bb''''';C''''''
+chord BbM2_6 is Bb'''''';C'''''''
+chord BbM2_7 is Bb''''''';C''''''''
+
+& Minor 3rd
+chord Bbm3_0 is Bb;Db'
+chord Bbm3_1 is Bb';Db''
+chord Bbm3_2 is Bb'';Db'''
+chord Bbm3_3 is Bb''';Db''''
+chord Bbm3_4 is Bb'''';Db'''''
+chord Bbm3_5 is Bb''''';Db''''''
+chord Bbm3_6 is Bb'''''';Db'''''''
+chord Bbm3_7 is Bb''''''';Db''''''''
+
+& Major 3rd
+chord BbM3_0 is Bb;D'
+chord BbM3_1 is Bb';D''
+chord BbM3_2 is Bb'';D'''
+chord BbM3_3 is Bb''';D''''
+chord BbM3_4 is Bb'''';D'''''
+chord BbM3_5 is Bb''''';D''''''
+chord BbM3_6 is Bb'''''';D'''''''
+chord BbM3_7 is Bb''''''';D''''''''
+
+& Perfect 4th
+chord Bb4_0 is Bb;Eb'
+chord Bb4_1 is Bb';Eb''
+chord Bb4_2 is Bb'';Eb'''
+chord Bb4_3 is Bb''';Eb''''
+chord Bb4_4 is Bb'''';Eb'''''
+chord Bb4_5 is Bb''''';Eb''''''
+chord Bb4_6 is Bb'''''';Eb'''''''
+chord Bb4_7 is Bb''''''';Eb''''''''
+
+& Tritone
+chord BbT_0 is Bb;E'
+chord BbT_1 is Bb';E''
+chord BbT_2 is Bb'';E'''
+chord BbT_3 is Bb''';E''''
+chord BbT_4 is Bb'''';E'''''
+chord BbT_5 is Bb''''';E''''''
+chord BbT_6 is Bb'''''';E'''''''
+chord BbT_7 is Bb''''''';E''''''''
+
+& Perfect 5th
+chord Bb5_0 is Bb;F'
+chord Bb5_1 is Bb';F''
+chord Bb5_2 is Bb'';F'''
+chord Bb5_3 is Bb''';F''''
+chord Bb5_4 is Bb'''';F'''''
+chord Bb5_5 is Bb''''';F''''''
+chord Bb5_6 is Bb'''''';F'''''''
+chord Bb5_7 is Bb''''''';F''''''''
+
+& Minor 6th
+chord Bbm6_0 is Bb;Gb'
+chord Bbm6_1 is Bb';Gb''
+chord Bbm6_2 is Bb'';Gb'''
+chord Bbm6_3 is Bb''';Gb''''
+chord Bbm6_4 is Bb'''';Gb'''''
+chord Bbm6_5 is Bb''''';Gb''''''
+chord Bbm6_6 is Bb'''''';Gb'''''''
+chord Bbm6_7 is Bb''''''';Gb''''''''
+
+& Major 6th
+chord BbM6_0 is Bb;G'
+chord BbM6_1 is Bb';G''
+chord BbM6_2 is Bb'';G'''
+chord BbM6_3 is Bb''';G''''
+chord BbM6_4 is Bb'''';G'''''
+chord BbM6_5 is Bb''''';G''''''
+chord BbM6_6 is Bb'''''';G'''''''
+chord BbM6_7 is Bb''''''';G''''''''
+
+& Minor 7th
+chord Bbm7_0 is Bb;Ab'
+chord Bbm7_1 is Bb';Ab''
+chord Bbm7_2 is Bb'';Ab'''
+chord Bbm7_3 is Bb''';Ab''''
+chord Bbm7_4 is Bb'''';Ab'''''
+chord Bbm7_5 is Bb''''';Ab''''''
+chord Bbm7_6 is Bb'''''';Ab'''''''
+chord Bbm7_7 is Bb''''''';Ab''''''''
+
+& Major 7th
+chord BbM7_0 is Bb;A'
+chord BbM7_1 is Bb';A''
+chord BbM7_2 is Bb'';A'''
+chord BbM7_3 is Bb''';A''''
+chord BbM7_4 is Bb'''';A'''''
+chord BbM7_5 is Bb''''';A''''''
+chord BbM7_6 is Bb'''''';A'''''''
+chord BbM7_7 is Bb''''''';A''''''''
+
+& Octave
+chord Bb8_0 is Bb;Bb'
+chord Bb8_1 is Bb';Bb''
+chord Bb8_2 is Bb'';Bb'''
+chord Bb8_3 is Bb''';Bb''''
+chord Bb8_4 is Bb'''';Bb'''''
+chord Bb8_5 is Bb''''';Bb''''''
+chord Bb8_6 is Bb'''''';Bb'''''''
+chord Bb8_7 is Bb''''''';Bb''''''''
+
+& Key of F
+
+& Minor 2nds
+chord Fm2_0 is F;Gb
+chord Fm2_1 is F';Gb'
+chord Fm2_2 is F'';Gb''
+chord Fm2_3 is F''';Gb'''
+chord Fm2_4 is F'''';Gb''''
+chord Fm2_5 is F''''';Gb'''''
+chord Fm2_6 is F'''''';Gb''''''
+chord Fm2_7 is F''''''';Gb'''''''
+chord Fm2_8 is F'''''''';Gb''''''''
+
+& Major 2nds
+chord FM2_0 is F;G
+chord FM2_1 is F';G'
+chord FM2_2 is F'';G''
+chord FM2_3 is F''';G'''
+chord FM2_4 is F'''';G''''
+chord FM2_5 is F''''';G'''''
+chord FM2_6 is F'''''';G''''''
+chord FM2_7 is F''''''';G'''''''
+chord FM2_8 is F'''''''';G''''''''
+
+& Minor 3rd
+chord Fm3_0 is F;Ab
+chord Fm3_1 is F';Ab'
+chord Fm3_2 is F'';Ab''
+chord Fm3_3 is F''';Ab'''
+chord Fm3_4 is F'''';Ab''''
+chord Fm3_5 is F''''';Ab'''''
+chord Fm3_6 is F'''''';Ab''''''
+chord Fm3_7 is F''''''';Ab'''''''
+chord Fm3_8 is F'''''''';Ab''''''''
+
+& Major 3rd
+chord FM3_0 is F;A
+chord FM3_1 is F';A'
+chord FM3_2 is F'';A''
+chord FM3_3 is F''';A'''
+chord FM3_4 is F'''';A''''
+chord FM3_5 is F''''';A'''''
+chord FM3_6 is F'''''';A''''''
+chord FM3_7 is F''''''';A'''''''
+chord FM3_8 is F'''''''';A''''''''
+
+& Perfect 4th
+chord F4_0 is F;Bb
+chord F4_1 is F';Bb'
+chord F4_2 is F'';Bb''
+chord F4_3 is F''';Bb'''
+chord F4_4 is F'''';Bb''''
+chord F4_5 is F''''';Bb'''''
+chord F4_6 is F'''''';Bb''''''
+chord F4_7 is F''''''';Bb'''''''
+chord F4_8 is F'''''''';Bb''''''''
+
+& Tritone
+chord FT_0 is F;B
+chord FT_1 is F';B'
+chord FT_2 is F'';B''
+chord FT_3 is F''';B'''
+chord FT_4 is F'''';B''''
+chord FT_5 is F''''';B'''''
+chord FT_6 is F'''''';B''''''
+chord FT_7 is F''''''';B'''''''
+chord FT_8 is F'''''''';B''''''''
+
+& Perfect 5th
+chord F5_0 is F;C'
+chord F5_1 is F';C''
+chord F5_2 is F'';C'''
+chord F5_3 is F''';C''''
+chord F5_4 is F'''';C'''''
+chord F5_5 is F''''';C''''''
+chord F5_6 is F'''''';C'''''''
+chord F5_7 is F''''''';C''''''''
+
+& Minor 6th
+chord Fm6_0 is F;Db'
+chord Fm6_1 is F';Db''
+chord Fm6_2 is F'';Db'''
+chord Fm6_3 is F''';Db''''
+chord Fm6_4 is F'''';Db'''''
+chord Fm6_5 is F''''';Db''''''
+chord Fm6_6 is F'''''';Db'''''''
+chord Fm6_7 is F''''''';Db''''''''
+
+& Major 6th
+chord FM6_0 is F;D'
+chord FM6_1 is F';D''
+chord FM6_2 is F'';D'''
+chord FM6_3 is F''';D''''
+chord FM6_4 is F'''';D'''''
+chord FM6_5 is F''''';D''''''
+chord FM6_6 is F'''''';D'''''''
+chord FM6_7 is F''''''';D''''''''
+
+& Minor 7th
+chord Fm7_0 is F;Eb'
+chord Fm7_1 is F';Eb''
+chord Fm7_2 is F'';Eb'''
+chord Fm7_3 is F''';Eb''''
+chord Fm7_4 is F'''';Eb'''''
+chord Fm7_5 is F''''';Eb''''''
+chord Fm7_6 is F'''''';Eb'''''''
+chord Fm7_7 is F''''''';Eb''''''''
+
+& Major 7th
+chord FM7_0 is F;E'
+chord FM7_1 is F';E''
+chord FM7_2 is F'';E'''
+chord FM7_3 is F''';E''''
+chord FM7_4 is F'''';E'''''
+chord FM7_5 is F''''';E''''''
+chord FM7_6 is F'''''';E'''''''
+chord FM7_7 is F''''''';E''''''''
+
+& Octave
+chord F8_0 is F;F'
+chord F8_1 is F';F''
+chord F8_2 is F'';F'''
+chord F8_3 is F''';F''''
+chord F8_4 is F'''';F'''''
+chord F8_5 is F''''';F''''''
+chord F8_6 is F'''''';F'''''''
+chord F8_7 is F''''''';F''''''''
+---
+
+---
+
+

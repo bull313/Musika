@@ -352,9 +352,10 @@ namespace MusikaIDE
             }
         }
 
-        private string GetProgramText()
+        private string GetProgramText() /* Get the text currently in the editor */
         {
-            return new TextRange(Editor.Document.ContentStart, Editor.Document.ContentEnd).Text;
+            string text = new TextRange(Editor.Document.ContentStart, Editor.Document.ContentEnd).Text;
+            return text.Substring(0, text.Length - 2); /* Remove final added whitespace character */
         }
 
         private void ClearDocumentFormatting() /* Remove all current formatting properties */

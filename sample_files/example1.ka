@@ -1,27 +1,35 @@
-accompany [example2] name rhythm
-accompany [example3] name pattern_lib
+title: "Example 1"
+author: "Musika"
+key: Cmaj
+time: common
+tempo: 4 = 144
+octave: 4
 ---
-title: "High Noon Chorus Lead"
-author: pattern_lib
-coauthors: pattern_lib
-key: pattern_lib
-time: pattern_lib
-tempo: pattern_lib
-octave: 5
-=>
-Any notes on the piece can be written here in a multi-line comment
-<=
+& Simple song: no patterns needed!
 ---
-& this is a single-line comment
-pattern [chorus1]:
 ! time: 8 !
-E....A..G..F.G.D,..A..G.F. & this is the lead pattern for high noon
-& this is another comment
----
-layer(rhythm)
 repeat(2) {
-	chorus1
-	pattern_lib>chorus2
-	pattern_lib>chorus_end
+ C. E. G. C'. G. E. C. G,.
 }
+
+! octave: -1 !
+repeat(2) {
+ A. C'. E'. A'. E'. C'. A. E.
+}
+
+! octave: +1 !
+! key: Gmaj !
+G. A. B. ! octave: +1 ! C. D. E. F. G. B. G. D. G. B,. D. B,. G,.
+
+! key: Fmaj !
+! octave: -1 !
+F. A. C'. F'. C'. A. F. D.
+
+! key: Emaj !
+E. G. B. E'. B. G. E. B,.
+
+! key: Am !
+! time: 1 !
+! octave: -1 !
+A.
 ---

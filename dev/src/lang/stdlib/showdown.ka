@@ -1,0 +1,95 @@
+accompany [_powerchords_] name pc
+---
+title: "The Ultimate Showdown of Ultimate Destiny"
+author: "Lemon Demon"
+key: Gm
+time: common
+tempo: 4 = 111
+octave: 4
+---
+pattern [chords_main]:
+! time: 2 !
+pc>BbP_2.
+pc>FP_2.
+pc>GP_2.
+pc>DP_2.
+
+pattern [chords]:
+! time: 2 !
+repeat(2) { chords_main }
+
+pc>BbP_2.
+pc>AP_2.
+pc>GP_2.
+pc>FsP_2.
+
+chords_main
+
+pattern [lead_main]:
+! time: 8 !
+B. B. B. A. A. A. A.. B..
+
+! time: 16 !
+|.
+
+pattern [lead]:
+! time: 8 !
+|.
+
+lead_main
+
+! time: 16 !
+C. D. C. D. |. D. |. F. D...
+
+lead_main
+
+! time: 16 !
+C. D. C. C. D.. F.. D...
+
+! time: 8 !
+B. B. B. A. A. A. A. G.
+G. G. G. F#. G. A. B. |.
+
+lead_main
+
+! time: 16 !
+B,. C. B,. C. |. C. |. A,. B,...
+
+pattern [harmony_main]:
+! time: 8 !
+D'. D'. D'. C'. C'. C'. C'.. D'..
+
+! time: 16 !
+|.
+
+pattern [harmony]:
+! time: 8 !
+|.
+
+harmony_main
+
+! time: 16 !
+|...........
+
+harmony_main
+
+! time: 16 !
+|...........
+
+! time: 8 !
+D'. D'. D'. C'. C'. C'. C'. B.
+B. B. B. A. B. C'. D'. |.
+
+harmony_main
+
+! time: 16 !
+|...........
+
+pattern [main]:
+ layer(chords)
+ layer(harmony)
+ lead
+
+---
+main
+---

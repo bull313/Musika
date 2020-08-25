@@ -1,21 +1,37 @@
-accompany [example3] name lib
-accompany [chords] name c
+accompany [_powerchords_] name pc
 ---
-title: "High Noon Chorus Rhythm"
-author: lib
-coauthors: lib
-key: lib
-time: lib
-tempo: lib
-octave: 2
+title: "Example 2"
+author: "Musika"
+coauthors: "Coauth1, coauth2, coauth3"
+key: Cmaj
+time: common
+tempo: 4 = 120
+octave: 4
 =>
-	This is the rhythm part of High Noon
+	This is a collection of patterns. No main music here, so it is used for accompaniments!
 <=
 ---
-pattern [chorus]:
-! time: 8 !
-c>E5...c>B5..c>B5.c>B5.c>B5.
+pattern [scale_chords]:
+! time: 1 !
+pc>CP_3.
+pc>GP_3.
+pc>CP_4.
+pc>GP_4.
+pc>CP_5.
+pc>GP_4.
+pc>CP_4.
+pc>GP_3.
+pc>CP_3.
+
+pattern [scale_harmony]:
+E.. F. G. A. B. C'. D'.
+
+! octave: +1 !
+E.. F. G. A. B. C'. D'. E'..
+D'. C'. B. A. G. F. E.. D. C.
+
+! octave: -1 !
+B. A. G. F. E..
 ---
-chorus^2^3
-c>E8.^4 c>B8.^4 c>C8.^4 c>D8.^4
+
 ---

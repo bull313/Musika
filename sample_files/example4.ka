@@ -1,0 +1,48 @@
+title: "Example 4"
+author: "Musika"
+key: Cmaj
+time: common
+tempo: 4 = 90
+octave: 4
+---
+chord Cmajguitar is C,;E,;G,;C;E
+chord Dmajguitar is D,;A,;D;F#
+chord Gmajguitar is G,,;B,,;D,;G,;B,;G
+
+pattern [rhythm]:
+! time: 8 !
+Cmajguitar. ^ 8
+
+! time: 8 !
+Gmajguitar. ^ 8
+
+! time: 8 !
+Dmajguitar. ^ 8
+
+! time: 1 !
+Cmajguitar.
+
+pattern [lead]:
+! time: 16 !
+! octave: +1 !
+C. D. E. F. G. C'. E. C'. E. C'. D. B. A. B. C'. F'.
+
+! key: Gmaj !
+G'. B. D'. B. A. B. E. F. G. F. G. D,. E. F. G. F.
+
+! key: Dmaj !
+D. A,. D. A,. F. A,. E. A,. D. C,. D. F. D. A. F,. A. 
+
+! key: Cmaj !
+C. E. G. E. C. E. G. C'. E'. G'. E'. B. D'. C'. A. B.
+
+! time: 1 !
+C.
+
+pattern [main]:
+layer(rhythm)
+lead
+
+---
+main main
+---

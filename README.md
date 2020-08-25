@@ -58,9 +58,197 @@ The following is an example of an accompaniment (another Musika file):
 <b>accompany</b> [musika_file] <b>name</b> new_accompaniment
 </pre>
 
-You specify a Musika file within your directory (or as a part of the Musika library) solely by the name and/or relative path (NO FILE EXTENSION)
+You specify a Musika file within your directory (or as a part of the Musika library) solely by the name and/or relative path (NO FILE EXTENSION).
+
+To accompany any created Musika files, specify the filename/relative path in between brackets (\[\]). Note that relative paths can only go forward, not backward (e.g. \[dir1/file\] is okay, but \[../file\] is NOT accepted).
+
+To accompany a file from Musika's standard library, specify the standard library name in between brackets AND underscores (e.g. \[\_)filename\_\]). This means that any custom Musika files which begin AND end in underscores cannot be accompanied in other files, as they will be mistaken for standard library files.
 
 This statement will import the specified Musika file and it can be referenced later in the file using the name specified after the **name** keyword.
+
+### Musika Standard Library
+The following files are supported for the Musika standard library:
+
+#### scale
+<pre>
+<b>accompany</b> [_scale_] <b>name</b> scale
+---
+<b>title</b>: scale             <i>& You can put your own title, author, and other metadata in here instead of referencing the library for that information,</i>
+<b>author</b>: scale            <i>& but keep in mind that the core metadata that plays the notes (key signature, time, tempo, and octave) will not affect the output of the actual pattern.</i>
+<b>coauthors</b>: scale
+<b>key</b>: scale
+<b>time</b>: scale
+<b>tempo</b>: scale
+<b>octave</b>: scale
+---
+</pre>
+_note that "scale" does not have to the be the name of the accompaniment; this is an example_
+
+This library only contains the C major scale. Use it as a pattern if you want to!
+
+#### doublestops
+<pre>
+<b>accompany</b> [_doublestops_] <b>name</b> ds
+</pre>
+_note that "ds" does not have to the be the name of the accompaniment; this is an example_
+
+This file contains typical double stops formed as Musika chords. It supports the following base notes from the Circle of Fifths:
+* C
+* G
+* D
+* A
+* E
+* B
+* Fs (F#)
+* Cs (C#)
+* Ab/Gs (Ab/G#)
+* Eb
+* Bb
+* F
+
+The following types of double stops are supported for each of these notes:
+* m2 - minor 2nd
+* M2 - major 2nd
+* m3 - minor 3rd
+* M3 - major 3rd
+* 4 - perfect 4th 
+* T - triad
+* 5 - perfect 5th
+* m6 - minor 6th
+* M6 - major 6th
+* m7 - minor 7th
+* M7 - major 7th
+* 8 - octave 
+
+To specify an octave, use an underscore and an octave value (supported 0 - 8). Keep in mind that 8 is the highest octave supported in the language, so if a doublestop requires an octave value higher than 8, it is not supported. For example, C major 8 at octave 8 is NOT supported because it requires C9, which is not a supported frequency.
+
+Examples:
+* Dm2_4 - D minor 2nd at octave 4
+* EbT_6 - Eb triad at octave 6
+* Cs8_1 - C# octave double stop at octave 1 (i.e. C1 and C2)
+
+_Note: Ab and G# are paired together. Ab double stops are supported for major intervals and G# is supported for minor intervals. For example, AbM6_5 is supported by Abm6_5 is not supported. Conversely, Gsm7_4 is supported by GsM7_4 is not supported. Perfect, octave, and triad intervals are supported for both notes._
+
+#### powerchords
+<pre>
+<b>accompany</b> [_powerchords_] <b>name</b> pc
+</pre>
+_note that "pc" does not have to the be the name of the accompaniment; this is an example_
+
+This file contains "power chords" in the form of Musika chords. "Power chords" for the sake of this library is defined as the root note, perfect 5th, and octave (e.g. C 4 power chord is C4, G4, C5). It supports the following base notes from the Circle of Fifths:
+* C
+* G
+* D
+* A
+* E
+* B
+* Fs (F#)
+* Cs (C#)
+* Ab
+* Gs (G#)
+* Eb
+* Bb
+* F
+
+Examples:
+* CP_3 - C3 power chord (C3, G3, C4)
+* EbP_6 - Eb6 power chord (Eb6, Bb6, Eb7)
+* GsP_1 - G#1 power chord (G#1, D#2, G#2)
+
+### x_chords
+<pre>
+<b>accompany</b> [_c_chords_] <b>name</b> c
+<b>accompany</b> [_gsab_chords_] <b>name</b> gsab
+<b>accompany</b> [_bb_chords_] <b>name</b> bb
+<b>accompany</b> [_a_chords_] <b>name</b> a
+</pre>
+_note that each of the names do not have to the be the names of the accompaniments; these are examples_
+
+These library files are used to add more complex chords to the song.
+
+Supported files:
+* \_c_chords\_ - C chords
+* \_cs_chords\_ - C# chords
+* \_d_chords\_ - D chords
+* \_eb_chords\_ - Eb chords
+* \_e_chords\_ - E chords
+* \_f_chords\_ - F chords
+* \_fs_chords\_ - F# chords
+* \_g_chords\_ - G chords
+* \_gsab_chords\_ - G# and Ab chords
+* \_a_chords\_ - A chords
+* \_bb_chords\_ - Bb chords
+* \_b_chords\_ - B chords
+
+The following chord types are supported for each of these files:
+* M - major (root, major 3rd, perfect 5th)
+* M6 - major 6th (root, major 3rd, perfect 5th, major 6th)
+* M7 - major 7th (root, major 3rd, perfect 5th, major 7th)
+* M8 - major with octave (root, major 3rd, perfect 5th, octave)
+* M9 - major 9th (root, major 3rd, perfect 5th, major 7th, major 9th)
+* M11 - major 11th (root, major 3rd, perfect 5th, major 7th, major 9th, perfect 11th)
+* M13 - major 13th (root, major 3rd, perfect 5th, major 7th, major 9th, perfect 11th, major 13th)
+* m - minor (root, minor 3rd, perfect 5th)
+* m6 - minor 6th (root, minor 3rd, perfect 5th, major 6th)
+* m7 - minor 7th (root, minor 3rd, perfect 5th, minor 7th)
+* m8 - minor with octave (root, minor 3rd, perfect 5th, octave)
+* m9 - minor 9th (root, minor 3rd, perfect 5th, minor 7th, major 9th)
+* m11 - minor 11th (root, minor 3rd, perfect 5th, minor 7th, major 9th, perfect 11th)
+* m13 - minor 13th (root, minor 3rd, perfect 5th, minor 7th, major 9th, perfect 11th, minor 13th)
+* aug - augmented (root, major 3rd, sharp 5th)
+* dim - diminished (root, minor 3rd, flat 5th)
+* dom7 - dominant 7th (root, major 3rd, perfect 5th, minor 7th)
+* dim7 - diminished 7th (root, minor 3rd, flat 5th, flat minor 7th)
+* hdim7 - half diminished 7th (root, minor 3rd, flat 5th, minor 7th)
+* sus2 - suspended 2nd (root, major 2nd, perfect 5th)
+* sus2_8 - suspended 2nd (root, major 2nd, perfect 5th, octave)
+* sus4 - suspended 4th (root, perfect 4th, perfect 5th)
+* sus4_8 - suspended 4th (root, perfect 4th, perfect 5th, octave)
+
+_Note that G# and Ab chords are in the same file._
+
+Add octave modifiers (this is _required_) to specify the base octave of each chord with an underscore (\_) and an octave number.
+
+The following examples comply with this accompaniment section:
+<pre>
+<b>accompany</b> [_c_chords_] <b>name</b> c
+<b>accompany</b> [_cs_chords_] <b>name</b> cs
+<b>accompany</b> [_d_chords_] <b>name</b> d
+<b>accompany</b> [_eb_chords_] <b>name</b> eb
+<b>accompany</b> [_e_chords_] <b>name</b> e
+<b>accompany</b> [_f_chords_] <b>name</b> f
+<b>accompany</b> [_fs_chords_] <b>name</b> fs
+<b>accompany</b> [_g_chords_] <b>name</b> g
+<b>accompany</b> [_gsab_chords_] <b>name</b> gsab
+<b>accompany</b> [_a_chords_] <b>name</b> a
+<b>accompany</b> [_bb_chords_] <b>name</b> bb
+<b>accompany</b> [_b_chords_] <b>name</b> b
+</pre>
+
+Examples:
+* c>M_7 - C major (C7, E7, G7)
+* cs>M6_2 - C# major 6th (C#2, E#2, G#2, A#2)
+* d>M7_3 - D major 7th (D3, F#3, A3, C#4)
+* eb>M8_4 - Eb major with octave (Eb4, G4, Bb4, Eb5)
+* e>M9_5 - E major 9th (E5, G#5, B5, D#6, F#6)
+* f>M11_6 - F major 11th (F6, A6, C7, E7, G7)
+* fs>M13_5 - F# major 13th (F#5, A#5, C#6, E#6, G#6, B6)
+* g>m_7 - G minor (G7, Bb7, D8)
+* gsab>m6_0 - G# minor 6th (G#0, B0, D#1, F1)
+* a>m7_1 - A minor 7th (A1, C2, E2, G2)
+* bb>m8_2 - Bb minor with octave (Bb2, Db3, F3, Bb3)
+* b>m9_3 - B minor 9th (B3, D4, F#4, A4, C#5)
+* c>m11_4 - C minor 11th (C4, Eb4, G4, Bb4, D5, F5)
+* cs>m13_5 - C# minor 13th (C#5, E5, G#5, B4, D6, F#6, A6)
+* d>aug_6 - D augmented (D6, F#6, A#6)
+* eb>dim_6 - Eb diminished (Eb6, Gb6, Bbb6)
+* e>dom7_7 - E dominant 7th (E7, G#7, B7, D8)
+* f>dim7_1 - F diminished 7th (F1, Ab1, Cb1, Ebb2)
+* fs>hdim7_2 - F# half diminished 7th (F#2, A2, C2, E2)
+* g>sus2_3 - G suspended 2nd (G3, A3, D4)
+* gsab>sus2_8_4 - Ab suspended 2nd with octave (Ab4, Bb4, Eb5, Ab5)
+* a>sus4_5 - A suspended 4th (A5, D6, E6)
+* bb>sus4_8_6 - Bb suspended 4th with octave (Bb6, Eb7, F7, Bb7)
 
 #### name Convention
 * The name must be a minimum of 1 character in length and has no set maximum
@@ -217,6 +405,7 @@ or
     <i>& octave: 4</i>
     A. B. C'. D'. E'. F'. G'. A'.
 </pre>
+Octave values are supported from 0 to 8 inclusive.
 
 _Details on note specification later_
 
@@ -534,7 +723,7 @@ Changing the octave can be done just like setting it in the first place:
 This will change the octave from the current one to 4.
 
 On top of this, the octave can be changed relatively ot the original octave by inputting a single integer with a preceding sign:
-<pre><b>!</b> <b>octave: </b> <i>-1</i> <b>!</b></pre>
+<pre><b>!</b> <b>octave:</b> <i>-1</i> <b>!</b></pre>
 
 This statement will decrement the current octave by 1. Setting it to +1 will increase the current octave by 1.
 
@@ -546,84 +735,164 @@ There you have it! A Musika program is simply a collection of these components. 
 ### Sample Programs
 
 #### example1.ka
-
 <pre>
-<b>accompany</b> [example2] <b>name</b> rhythm
-<b>accompany</b> [example3] <b>name</b> pattern_lib
+<b>title</b>: "Example 1"
+<b>author</b>: "Musika"
+<b>key</b>: Cmaj
+<b>time</b>: common
+<b>tempo</b>: 4 = 144
+<b>octave</b>: 4
 <b>---</b>
-<b>title</b>: "High Noon Chorus Lead"
-<b>author</b>: pattern_lib
-<b>coauthors</b>: pattern_lib
-<b>key</b>: pattern_lib
-<b>time</b>: pattern_lib
-<b>tempo</b>: pattern_lib
-<b>octave</b>: 5
-<i>=&gt;</i>
-<i>Any notes on the piece can be written here in a multi-line comment</i>
-<i>&lt;=</i>
+<i>& Simple song: no patterns needed!</i>
 <b>---</b>
-<i>& this is a single-line comment</i>
-<b>pattern</b> [chorus1]:
-E....A..G..F.G.D,..A..G.F. <i>& this is the lead pattern for high noon</i>
-<i>& this is another comment</i>
-<b>---</b>
-<b>layer</b>(rhythm)
+! <b>time</b>: 8 !
 <b>repeat</b>(2) {
-    chorus1
-    pattern_lib>chorus2
-    pattern_lib&gt;chorus_end
+ C. E. G. C'. G. E. C. G,.
 }
-<b>---</b>
 
+! <b>octave</b>: -1 !
+repeat(2) {
+ A. C'. E'. A'. E'. C'. A. E.
+}
+
+! <b>octave</b>: +1 !
+! <b>key</b>: Gmaj !
+G. A. B. ! octave: +1 ! C. D. E. F. G. B. G. D. G. B,. D. B,. G,.
+
+! <b>key</b>: Fmaj !
+! <b>octave</b>: -1 !
+F. A. C'. F'. C'. A. F. D.
+
+! <b>key</b>: Emaj !
+E. G. B. E'. B. G. E. B,.
+
+! <b>key</b>: Am !
+! <b>time</b>: 1 !
+! <b>octave</b>: -1 !
+A.
+<b>---</b>
 </pre>
 
 #### example2.ka
 
 <pre>
-<b>accompany</b> [example3] <b>name</b> lib
-<b>accompany</b> [chords] <b>name</b> c
+<b>accompany</b> [_powerchords_] <b>name</b> pc
 <b>---</b>
-<b>title</b>: "High Noon Chorus Rhythm"
-<b>author</b>: lib
-<b>coauthors</b>: lib
-<b>key</b>: lib
-<b>time</b>: lib
-<b>tempo</b>: lib
-<b>octave</b>: 2
-<i>=&gt;</i>
-    <i>This is the rhythm part of High Noon</i>
-<i>&lt;=</i>
+<b>title</b>: "Example 2"
+<b>author</b>: "Musika"
+<b>coauthors</b>: "Coauth1, coauth2, coauth3"
+<b>key</b>: Cmaj
+<b>time</b>: common
+<b>tempo</b>: 4 = 120
+<b>octave</b>: 4
+<i>
+=>
+	This is a collection of patterns. No main music here, so it is used for accompaniments!
+<=
+</i>
 <b>---</b>
-<b>pattern</b> [chorus]:
-c>E5...c>B5..c>B5.c>B5.c>B5.
-<b>---</b>
-chorus^2^3
-c>E8.^4 c>B8.^4 c>C8.^4 c>D8.^4
+<b>pattern</b> [scale_chords]:
+! <b>time</b>: 1 !
+pc>CP_3.
+pc>GP_3.
+pc>CP_4.
+pc>GP_4.
+pc>CP_5.
+pc>GP_4.
+pc>CP_4.
+pc>GP_3.
+pc>CP_3.
+
+<b>pattern</b> [scale_harmony]:
+E.. F. G. A. B. C'. D'.
+
+! <b>octave</b>: +1 !
+E.. F. G. A. B. C'. D'. E'..
+D'. C'. B. A. G. F. E.. D. C.
+
+! <b>octave</b>: -1 !
+B. A. G. F. E..
 <b>---</b>
 
+<b>---</b>
 </pre>
 
 #### example3.ka
 
 <pre>
-<b>title</b>: "High Noon Chorus Patterns"
-<b>author</b>: "Benjamin Ladick"
-<b>coauthors</b>: "Masking The Fallen"
-<b>key</b>: Em
+<b>accompany</b> [_scale_] <b>name</b> scale
+<b>accompany</b> [example2] <b>name</b> ex2
+<b>---</b>
+<b>title</b>: "Example 3"
+<b>author</b>: "Musika"
+<b>key</b>: Cmaj
 <b>time</b>: common
-<b>tempo</b>: 4 = 144
+<b>tempo</b>: 4 = 120
 <b>octave</b>: 4
 <b>---</b>
-<b>pattern</b> [chorus2]:
-E.B,.D,.E.A..G..F.G.D..B.A.G.F.
-<b>pattern</b> [chorus_end]:
-G..F..F.G.D,.F.E.
-! octave: -1 !
-B.D.B.D.B.D.E'.
-<b>---</b>
 
 <b>---</b>
+scale <i>& This is the main music from the "scale" standard library file! Let's first play it by itself</i>
 
+layer(ex2>scale_chords) <i>& Play example 2's "scale_chords" pattern on top of the scale</i>
+scale
+
+layer(ex2>scale_harmony) <i>& Now let's play the scale again, but give it a harmony!</i>
+scale
+<b>---</b>
+</pre>
+
+#### example4.ka
+
+<pre>
+<b>title</b>: "Example 4"
+<b>author</b>: "Musika"
+<b>key</b>: Cmaj
+<b>time</b>: common
+<b>tempo</b>: 4 = 90
+<b>octave</b>: 4
+<b>---</b>
+<b>chord</b> Cmajguitar <b>is</b> C,;E,;G,;C;E
+<b>chord</b> Dmajguitar <b>is</b> D,;A,;D;F#
+<b>chord</b> Gmajguitar <b>is</b> G,,;B,,;D,;G,;B,;G
+
+<b>pattern</b> [rhythm]:
+! <b>time</b>: 8 !
+Cmajguitar. ^ 8
+
+! <b>time</b>: 8 !
+Gmajguitar. ^ 8
+
+! <b>time</b>: 8 !
+Dmajguitar. ^ 8
+
+! <b>time</b>: 1 !
+Cmajguitar.
+
+pattern [lead]:
+! <b>time</b>: 16 !
+! <b>octave</b>: +1 !
+C. D. E. F. G. C'. E. C'. E. C'. D. B. A. B. C'. F'.
+
+! <b>key</b>: Gmaj !
+G'. B. D'. B. A. B. E. F. G. F. G. D,. E. F. G. F.
+
+! key<b>key</b>: Dmaj !
+D. A,. D. A,. F. A,. E. A,. D. C,. D. F. D. A. F,. A. 
+
+! <b>key</b>: Cmaj !
+C. E. G. E. C. E. G. C'. E'. G'. E'. B. D'. C'. A. B.
+
+! <b>time</b>: 1 !
+C.
+
+<b>pattern</b> [main]:
+<b>layer</b>(rhythm)
+lead
+
+<b>---</b>
+main main
+<b>---</b>
 </pre>
 
 ### Happy Hacking!!!

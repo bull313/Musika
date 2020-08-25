@@ -1,0 +1,247 @@
+title: "Bb chords"
+author: "Musika Standard Library"
+key: Cmaj
+time: common
+tempo: 4 = 120
+octave: 0
+---
+& Bb Chords
+
+& Major
+chord M_0 is Bb;D';F'
+chord M_1 is Bb';D'';F''
+chord M_2 is Bb'';D''';F'''
+chord M_3 is Bb''';D'''';F''''
+chord M_4 is Bb'''';D''''';F'''''
+chord M_5 is Bb''''';D'''''';F''''''
+chord M_6 is Bb'''''';D''''''';F'''''''
+chord M_7 is Bb''''''';D'''''''';F''''''''
+
+& Major 6th
+chord M6_0 is Bb;D';F';G'
+chord M6_1 is Bb';D'';F'';G''
+chord M6_2 is Bb'';D''';F''';G'''
+chord M6_3 is Bb''';D'''';F'''';G''''
+chord M6_4 is Bb'''';D''''';F''''';G'''''
+chord M6_5 is Bb''''';D'''''';F'''''';G''''''
+chord M6_6 is Bb'''''';D''''''';F''''''';G'''''''
+chord M6_7 is Bb''''''';D'''''''';F'''''''';G''''''''
+
+& Major 7th
+chord M7_0 is Bb;D';F';A''
+chord M7_1 is Bb';D'';F'';A'''
+chord M7_2 is Bb'';D''';F''';A''''
+chord M7_3 is Bb''';D'''';F'''';A'''''
+chord M7_4 is Bb'''';D''''';F''''';A''''''
+chord M7_5 is Bb''''';D'''''';F'''''';A'''''''
+chord M7_6 is Bb'''''';D''''''';F''''''';A''''''''
+chord M7_7 is Bb''''''';D''''''';F'''''''';A'''''''''
+
+& Major with octave
+chord M8_0 is Bb;D';F';Bb'
+chord M8_1 is Bb';D'';F'';Bb''
+chord M8_2 is Bb'';D''';F''';Bb'''
+chord M8_3 is Bb''';D'''';F'''';Bb''''
+chord M8_4 is Bb'''';D''''';F''''';Bb'''''
+chord M8_5 is Bb''''';D'''''';F'''''';Bb''''''
+chord M8_6 is Bb'''''';D''''''';F''''''';Bb'''''''
+chord M8_7 is Bb''''''';D'''''''';F'''''''';Bb''''''''
+
+& Major 9th
+chord M9_0 is Bb;D';F';A';C''
+chord M9_1 is Bb';D'';F'';A'';C'''
+chord M9_2 is Bb'';D''';F''';A''';C''''
+chord M9_3 is Bb''';D'''';F'''';A'''';C'''''
+chord M9_4 is Bb'''';D''''';F''''';A''''';C''''''
+chord M9_5 is Bb''''';D'''''';F''''''';A'''''';C'''''''
+chord M9_6 is Bb'''''';D''''''';F''''''';A''''''';C''''''''
+
+& Major 11th
+chord M11_0 is Bb;D';F';A';C'';Eb''
+chord M11_1 is Bb';D'';F'';A'';C''';Eb'''
+chord M11_2 is Bb'';D''';F''';A''';C'''';Eb''''
+chord M11_3 is Bb''';D'''';F'''';A'''';C''''';Eb'''''
+chord M11_4 is Bb'''';D''''';F''''';A''''';C'''''';Eb''''''
+chord M11_5 is Bb''''';D'''''';F'''''';A'''''';C''''''';Eb'''''''
+chord M11_6 is Bb'''''';D''''''';F''''''';A''''''';C'''''''';Eb''''''''
+
+& Major 13th
+chord M13_0 is Bb;D';F';A';C'';Eb'';G''
+chord M13_1 is Bb';D'';F'';A'';C''';Eb''';G'''
+chord M13_2 is Bb'';D''';F''';A''';C'''';Eb'''';G''''
+chord M13_3 is Bb''';D'''';F'''';A'''';C''''';Eb''''';G'''''
+chord M13_4 is Bb'''';D''''';F''''';A''''';C'''''';Eb'''''';G''''''
+chord M13_5 is Bb''''';D'''''';F'''''';A'''''';C''''''';Eb''''''';G'''''''
+chord M13_6 is Bb'''''';D''''''';F''''''';A''''''';C'''''''';Eb'''''''';G''''''''
+
+& Minor
+chord m_0 is Bb;Db';F'
+chord m_1 is Bb';Db'';F''
+chord m_2 is Bb'';Db''';F'''
+chord m_3 is Bb''';Db'''';F''''
+chord m_4 is Bb'''';Db''''';F'''''
+chord m_5 is Bb''''';Db'''''';F''''''
+chord m_6 is Bb'''''';Db''''''';F'''''''
+chord m_7 is Bb''''''';Db'''''''';F''''''''
+
+& Minor 6th
+chord m6_0 is Bb;Db';F';G'
+chord m6_1 is Bb';Db'';F'';G''
+chord m6_2 is Bb'';Db''';F''';G'''
+chord m6_3 is Bb''';Db'''';F'''';G''''
+chord m6_4 is Bb'''';Db''''';F''''';G'''''
+chord m6_5 is Bb''''';Db'''''';F'''''';G''''''
+chord m6_6 is Bb'''''';Db''''''';F''''''';G'''''''
+chord m6_7 is Bb''''''';Db'''''''';F'''''''';G''''''''
+
+& Minor 7th
+chord m7_0 is Bb;Db';F';Ab'
+chord m7_1 is Bb';Db'';F'';Ab''
+chord m7_2 is Bb'';Db''';F''';Ab'''
+chord m7_3 is Bb''';Db'''';F'''';Ab''''
+chord m7_4 is Bb'''';Db''''';F''''';Ab'''''
+chord m7_5 is Bb''''';Db'''''';F'''''';Ab''''''
+chord m7_6 is Bb'''''';Db''''''';F''''''';Ab'''''''
+chord m7_7 is Bb''''''';Db'''''''';F'''''''';Ab''''''''
+
+& Minor with octave
+chord m8_0 is Bb;Db';F';Bb'
+chord m8_1 is Bb';Db'';F'';Bb''
+chord m8_2 is Bb'';Db''';F''';Bb'''
+chord m8_3 is Bb''';Db'''';F'''';Bb''''
+chord m8_4 is Bb'''';Db''''';F''''';Bb'''''
+chord m8_5 is Bb''''';Db'''''';F'''''';Bb''''''
+chord m8_6 is Bb'''''';Db''''''';F''''''';Bb'''''''
+chord m8_7 is Bb''''''';Db'''''''';F'''''''';Bb''''''''
+
+& Minor 9th
+chord m9_0 is Bb;Db';F';Ab';C''
+chord m9_1 is Bb';Db'';F'';Ab'';C'''
+chord m9_2 is Bb'';Db''';F''';Ab''';C''''
+chord m9_3 is Bb''';Db'''';F'''';Ab'''';C'''''
+chord m9_4 is Bb'''';Db''''';F''''';Ab''''';C''''''
+chord m9_5 is Bb''''';Db'''''';F'''''';Ab'''''';C'''''''
+chord m9_6 is Bb'''''';Db''''''';F''''''';Ab''''''';C''''''''
+
+& Minor 11th
+chord m11_0 is Bb;Db';F';Ab';C'';Eb''
+chord m11_1 is Bb';Db'';F'';Ab'';C''';Eb'''
+chord m11_2 is Bb'';Db''';F''';Ab''';C'''';Eb''''
+chord m11_3 is Bb''';Db'''';F'''';Ab'''';C''''';Eb'''''
+chord m11_4 is Bb'''';Db''''';F''''';Ab''''';C'''''';Eb''''''
+chord m11_5 is Bb''''';Db'''''';F'''''';Ab'''''';C''''''';Eb'''''''
+chord m11_6 is Bb'''''';Db''''''';F''''''';Ab''''''';C'''''''';Eb''''''''
+
+& Minor 13th
+chord m13_0 is Bb;Db';F';Ab';C'';Eb'';Gb''
+chord m13_1 is Bb';Db'';F'';Ab'';C''';Eb''';Gb'''
+chord m13_2 is Bb'';Db''';F''';Ab''';C'''';Eb'''';Gb''''
+chord m13_3 is Bb''';Db'''';F'''';Ab'''';C''''';Eb''''';Gb'''''
+chord m13_4 is Bb'''';Db''''';F''''';Ab''''';C'''''';Eb'''''';Gb''''''
+chord m13_5 is Bb''''';Db'''''';F'''''';Ab'''''';C''''''';Eb''''''';Gb'''''''
+chord m13_6 is Bb'''''';Db''''''';F''''''';Ab''''''';C'''''''';Eb'''''''';Gb''''''''
+
+& Augmented
+chord aug_0 is Bb;D';F#'
+chord aug_1 is Bb';D'';F#''
+chord aug_2 is Bb'';D''';F#'''
+chord aug_3 is Bb''';D'''';F#''''
+chord aug_4 is Bb'''';D''''';F#'''''
+chord aug_5 is Bb''''';D'''''';F#''''''
+chord aug_6 is Bb'''''';D''''''';F#'''''''
+chord aug_7 is Bb''''''';D'''''''';F#''''''''
+
+& Diminished
+chord dim_0 is Bb;Db';Fb'
+chord dim_1 is Bb';Db'';Fb''
+chord dim_2 is Bb'';Db''';Fb'''
+chord dim_3 is Bb''';Db'''';Fb''''
+chord dim_4 is Bb'''';Db''''';Fb'''''
+chord dim_5 is Bb''''';Db'''''';Fb''''''
+chord dim_6 is Bb'''''';Db''''''';Fb'''''''
+chord dim_7 is Bb''''''';Db'''''''';Fb''''''''
+
+& Dominant 7th
+chord dom7_0 is Bb;D';F';Ab
+chord dom7_1 is Bb';D';F'';Ab'
+chord dom7_2 is Bb'';D'';F''';Ab''
+chord dom7_3 is Bb''';D''';F'''';Ab'''
+chord dom7_4 is Bb'''';D'''';F''''';Ab''''
+chord dom7_5 is Bb''''';D''''';F'''''';Ab'''''
+chord dom7_6 is Bb'''''';D'''''';F''''''';Ab''''''
+chord dom7_7 is Bb''''''';D''''''';F'''''''';Ab'''''''
+chord dom7_8 is Bb'''''''';D'''''''';F''''''''';Ab''''''''
+
+& Diminished 7th
+chord dim7_0 is Bb;Db';Fb';Abb'
+chord dim7_1 is Bb';Db'';Fb'';Abb''
+chord dim7_2 is Bb'';Db''';Fb''';Abb'''
+chord dim7_3 is Bb''';Db'''';Fb'''';Abb''''
+chord dim7_4 is Bb'''';Db''''';Fb''''';Abb'''''
+chord dim7_5 is Bb''''';Db'''''';Fb'''''';Abb''''''
+chord dim7_6 is Bb'''''';Db''''''';Fb''''''';Abb'''''''
+chord dim7_7 is Bb''''''';Db'''''''';Fb'''''''';Abb''''''''
+
+& Half Diminished 7th
+chord hdim7_0 is Bb;Db';Fb';Ab'
+chord hdim7_1 is Bb';Db'';Fb'';Ab''
+chord hdim7_2 is Bb'';Db''';Fb''';Ab'''
+chord hdim7_3 is Bb''';Db'''';Fb'''';Ab''''
+chord hdim7_4 is Bb'''';Db''''';Fb''''';Ab'''''
+chord hdim7_5 is Bb''''';Db'''''';Fb'''''';Ab''''''
+chord hdim7_6 is Bb'''''';Db''''''';Fb''''''';Ab'''''''
+chord hdim7_7 is Bb''''''';Db'''''''';Fb'''''''';Ab''''''''
+
+& Suspended 2
+chord sus2_0 is Bb;C';F'
+chord sus2_1 is Bb';C'';F''
+chord sus2_2 is Bb'';C''';F'''
+chord sus2_3 is Bb''';C'''';F''''
+chord sus2_4 is Bb'''';C''''';F'''''
+chord sus2_5 is Bb''''';C'''''';F''''''
+chord sus2_6 is Bb'''''';C''''''';F'''''''
+chord sus2_7 is Bb''''''';C'''''''';F''''''''
+
+& Suspended 2 with octave
+chord sus2_8_0 is Bb;C';F';Bb'
+chord sus2_8_1 is Bb';C'';F'';Bb''
+chord sus2_8_2 is Bb'';C''';F''';Bb'''
+chord sus2_8_3 is Bb''';C'''';F'''';Bb''''
+chord sus2_8_4 is Bb'''';C''''';F''''';Bb'''''
+chord sus2_8_5 is Bb''''';C'''''';F'''''';Bb''''''
+chord sus2_8_6 is Bb'''''';C''''''';F''''''';Bb'''''''
+chord sus2_8_7 is Bb''''''';C'''''''';F'''''''';Bb''''''''
+
+& Suspended 4
+chord sus4_0 is Bb;Eb';F'
+chord sus4_1 is Bb';Eb'';F''
+chord sus4_2 is Bb'';Eb''';F'''
+chord sus4_3 is Bb''';Eb'''';F''''
+chord sus4_4 is Bb'''';Eb''''';F'''''
+chord sus4_5 is Bb''''';Eb'''''';F''''''
+chord sus4_6 is Bb'''''';Eb''''''';F'''''''
+chord sus4_7 is Bb''''''';Eb'''''''';F''''''''
+chord sus4_8 is Bb'''''''';Eb''''''''';F'''''''''
+
+& Suspended 4 with octave
+chord sus4_8_0 is Bb;Eb';F';Bb'
+chord sus4_8_1 is Bb';Eb'';F'';Bb''
+chord sus4_8_2 is Bb'';Eb''';F''';Bb'''
+chord sus4_8_3 is Bb''';Eb'''';F'''';Bb''''
+chord sus4_8_4 is Bb'''';Eb''''';F''''';Bb'''''
+chord sus4_8_5 is Bb''''';Eb'''''';F'''''';Bb''''''
+chord sus4_8_6 is Bb'''''';Eb''''''';F''''''';Bb'''''''
+chord sus4_8_7 is Bb''''''';Eb'''''''';F'''''''';Bb''''''''
+
+& 69
+chord _69_0 is Bb;D';F';G';C''
+chord _69_1 is Bb';D'';F'';G'';C'''
+chord _69_2 is Bb'';D''';F''';G''';C''''
+chord _69_3 is Bb''';D'''';F'''';G'''';C'''''
+chord _69_4 is Bb'''';D''''';F''''';G''''';C''''''
+chord _69_5 is Bb''''';D'''''';F'''''';G'''''';C'''''''
+chord _69_6 is Bb'''''';D''''''';F''''''';G''''''';C''''''''
+---
+
+---
+
