@@ -158,7 +158,7 @@ namespace Musika
                 case '/' :  return new Token(char.ToString(nextChar), TokenType.SLASH);
                 case ':' :  return new Token(char.ToString(nextChar), TokenType.COLON);
                 case ';' :  return new Token(char.ToString(nextChar), TokenType.SEMICOLON);
-                case '^' :  return new Token(char.ToString(nextChar), TokenType.CARROT);
+                case '^' :  return new Token(char.ToString(nextChar), TokenType.CARET);
                 case '+':   return new Token(char.ToString(nextChar), TokenType.PLUS);
                 case '\0':  return new Token(char.ToString(nextChar), TokenType.EOF);
             }

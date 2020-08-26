@@ -16,7 +16,7 @@ namespace Musika
 
         public static readonly HashSet<TokenType> musicFirstSet = new HashSet<TokenType>()                      /* First set of "music" grammar rule */
         {
-            TokenType.REPEAT, TokenType.LAYER, TokenType.NOTE, TokenType.ID, TokenType.CARROT, TokenType.BANG
+            TokenType.REPEAT, TokenType.LAYER, TokenType.NOTE, TokenType.ID, TokenType.CARET, TokenType.BANG
         };
 
         public static readonly HashSet<TokenType> pcDefFirstSet = new HashSet<TokenType>()                      /* First set of "pattern-chord definition" grammar rule */
@@ -26,12 +26,12 @@ namespace Musika
 
         public static readonly HashSet<TokenType> riffFirstSet = new HashSet<TokenType>()                       /* First set of "riff" grammar rule */
         {
-            TokenType.NOTE, TokenType.ID, TokenType.CARROT, TokenType.BANG
+            TokenType.NOTE, TokenType.ID, TokenType.CARET, TokenType.BANG
         };
 
         public static readonly HashSet<TokenType> riffElementFirstSet = new HashSet<TokenType>()                /* First set of "riff element" grammar rule */
         {
-            TokenType.NOTE, TokenType.ID, TokenType.CARROT, TokenType.BANG
+            TokenType.NOTE, TokenType.ID, TokenType.CARET, TokenType.BANG
         };
 
         public static readonly HashSet<TokenType> octaveChangeFirstSet = new HashSet<TokenType>()               /* First set of "octave change" grammar rule */
@@ -1025,7 +1025,7 @@ namespace Musika
                 return ParseRiff(layerPositionSheetPairs);
 
             /* If the next token was not in the function or riff first set, throw a syntax error */
-            else throw new SyntaxError(next.Type, TokenType.REPEAT, TokenType.LAYER, TokenType.NOTE, TokenType.ID, TokenType.CARROT, TokenType.BANG);
+            else throw new SyntaxError(next.Type, TokenType.REPEAT, TokenType.LAYER, TokenType.NOTE, TokenType.ID, TokenType.CARET, TokenType.BANG);
         }
 
         private Sheet ParseFunction(List<PositionSheetPair> layerPositionSheetPairs, string patternName = null) /* function -> repeat | layer */
@@ -1516,7 +1516,7 @@ namespace Musika
             }
 
             /* If the element is shorthand repeat, return the integer value */
-            else if (next.Type == TokenType.CARROT)
+            else if (next.Type == TokenType.CARET)
             {
                 numberToken = Expect(TokenType.NUMBER);
                 returnValue = int.Parse(numberToken.Content);
@@ -1552,7 +1552,7 @@ namespace Musika
                 /* Finish parsing */
                 Expect(TokenType.BANG);
             }
-            else throw new SyntaxError(next.Type, TokenType.NOTE, TokenType.ID, TokenType.CARROT, TokenType.BANG);
+            else throw new SyntaxError(next.Type, TokenType.NOTE, TokenType.ID, TokenType.CARET, TokenType.BANG);
 
             return returnValue;
         }

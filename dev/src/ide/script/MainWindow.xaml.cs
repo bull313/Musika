@@ -131,7 +131,7 @@ namespace MusikaIDE
                 { TokenType.COMMA, octaveModifierStyle }, { TokenType.APOS, octaveModifierStyle },
 
                 /* Individual Styles */
-                {TokenType.BANG, bangStyle},        {TokenType.BREAK, breakStyle},                  {TokenType.CARROT, caretStyle},
+                {TokenType.BANG, bangStyle},        {TokenType.BREAK, breakStyle},                  {TokenType.CARET, caretStyle},
                 {TokenType.DOT, dotStyle},          {TokenType.GREATER, greaterThanStyle},          {TokenType.SIGN,  keySignStyle},
                 {TokenType.NOTE,   noteStyle},      {TokenType.NUMBER, numberStyle},                {TokenType.STRING, stringStyle }
             };

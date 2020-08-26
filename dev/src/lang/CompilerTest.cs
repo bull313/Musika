@@ -1074,7 +1074,7 @@ namespace Musika
                 VerifyNextToken("{", TokenType.LBRACE);
                 VerifyNextToken("\n", TokenType.NEWLINE);
                 VerifyNextToken("A", TokenType.NOTE);
-                VerifyNextToken("^", TokenType.CARROT);
+                VerifyNextToken("^", TokenType.CARET);
                 VerifyNextToken("4", TokenType.NUMBER);
                 VerifyNextToken("_", TokenType.ID);
                 VerifyNextToken("\n", TokenType.NEWLINE);

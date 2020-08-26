@@ -10,7 +10,7 @@ namespace Musika
           TokenType.NEWLINE,   TokenType.LBRACKET, TokenType.RBRACKET, TokenType.BANG,  TokenType.LPAREN,
           TokenType.RPAREN,    TokenType.LBRACE,   TokenType.RBRACE,   TokenType.DOT,   TokenType.APOS,
           TokenType.COMMA,     TokenType.EQUAL,    TokenType.GREATER,  TokenType.SLASH, TokenType.COLON,
-          TokenType.SEMICOLON, TokenType.CARROT
+          TokenType.SEMICOLON, TokenType.CARET
         };
 
         public static readonly HashSet<TokenType> CompoundLexicons = new HashSet<TokenType>()
