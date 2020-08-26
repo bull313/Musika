@@ -877,7 +877,7 @@ C. D. E. F. G. C'. E. C'. E. C'. D. B. A. B. C'. F'.
 ! <b>key</b>: Gmaj !
 G'. B. D'. B. A. B. E. F. G. F. G. D,. E. F. G. F.
 
-! key<b>key</b>: Dmaj !
+! <b>key</b>: Dmaj !
 D. A,. D. A,. F. A,. E. A,. D. C,. D. F. D. A. F,. A. 
 
 ! <b>key</b>: Cmaj !
