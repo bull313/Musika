@@ -1176,20 +1176,6 @@ namespace Musika
                 /* If parsing a pattern, add layer to relative position map */
                 if (patternName != null)
                 {
-                    if (noteSheet.Layers.ContainsKey(position))
-                    {
-                        noteSheet.Layers[position].Add(pattern);
-                    }
-                    else
-                    {
-                        newLayerList = new SheetSet
-                        {
-                            pattern
-                        };
-
-                        noteSheet.Layers.Add(position, newLayerList);
-                    }
-
                     if (noteSheet.RelativeLayerPositions.ContainsKey(patternName))
                     {
                         noteSheet.RelativeLayerPositions[patternName].Add(new PositionSheetPair(position, pattern));

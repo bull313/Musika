@@ -177,7 +177,7 @@
     <h2>Comments (Ignored By Lexer)</h2>
       <dl>
           <dt>Single-line comment</dt> <dd> &amp;(content)NEWLINE</dd>
-          <dt>Multi-line comment</dt>  <dd>=&gt;(content NEWLINE*) &lt;=</dd>
+          <dt>Multi-line comment</dt>  <dd>=&gt;( (content NEWLINE* content)* ) &lt;=</dd>
       </dl>
   </section>
 </body>
