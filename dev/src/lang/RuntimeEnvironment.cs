@@ -1,6 +1,8 @@
 using System.IO;
 using System.Media;
 
+using Musika.WAV;
+
 namespace Musika
 {
     /* Stores and runs (plays) compiled music */

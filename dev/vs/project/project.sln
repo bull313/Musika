@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29920.165
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ide", "ide\ide.csproj", "{0A9C2BB8-271E-43AD-B2C3-44E3AFC60838}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusikaIDE", "ide\MusikaIDE.csproj", "{0A9C2BB8-271E-43AD-B2C3-44E3AFC60838}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "compiler", "compiler\compiler.csproj", "{408EB31C-1BEF-4320-9914-7EA21197B1F7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Musika", "compiler\Musika.csproj", "{408EB31C-1BEF-4320-9914-7EA21197B1F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

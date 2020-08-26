@@ -1,7 +1,8 @@
 using System;
 using System.IO;
-
+using Musika.TypeNames;
 using MusikaTest;
+using Musika.WAV;
 
 namespace Musika
 {
@@ -859,7 +860,7 @@ namespace Musika
                 TestParse("Example 1",          GetSampleFile("example1.ka"), "");
                 TestParse("Example 2",          GetSampleFile("example2.ka"), "");
                 TestParse("Example 3",          GetSampleFile("example3.ka"), "");
-                TestParse("Chords",             GetSampleFile("chords.ka"), "");
+                TestParse("Chords",             GetSampleFile("example4.ka"), "");
                 TestParse("Base Test 5",        GetParseFile("b_parse_test5.ka"), "");
                 TestParse("Note Sheet Test 1",  GetParseFile("note_sheet_test1.ka"), "");
                 TestParse("Note Sheet Test 2",  GetParseFile("note_sheet_test2.ka"), "");

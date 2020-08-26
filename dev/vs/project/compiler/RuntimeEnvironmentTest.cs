@@ -2,6 +2,7 @@
 using System.IO;
 
 using MusikaTest;
+using Musika.WAV;
 
 namespace Musika
 {
