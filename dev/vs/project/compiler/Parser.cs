@@ -1304,7 +1304,7 @@ namespace Musika
         }
 
         private dynamic ParseRiffElement(List<PositionSheetPair> layerPositionSheetPairs, int currentNoteCount)     /* riff_element -> NOTE dot_set | NOTE octave_change dot_set | callback | callback dot_set */
-                                                                                                                    /* | CARROT NUMBER | BANG key \ NEWLINE BANG | BANG time \ NEWLINE BANG                    */
+                                                                                                                    /* | CARET NUMBER | BANG key \ NEWLINE BANG | BANG time \ NEWLINE BANG                    */
         {
             /* Constants */
             const bool NO_END_NEWLINE = false; /* Do not expect a newline */
