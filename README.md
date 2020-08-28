@@ -2,6 +2,56 @@
 
 The purpose of the Musika programming language is to provide a quick and easy way of writing music ideas and listening to them. Musika takes a file containing Musika code in the form of text (".ka" file extension) and uses a 2-step conversion process to turn code into an audible sound file (".wav"), playable in any audio player that accepts ".wav".
 
+## Table of Contents
+* Musika Features
+* Musika Programming Guide
+    * Comments
+    * Basic Musika Anatomy
+    * The Accompaniment Section
+        * **name** Convention
+    * The Info Section
+        * title:
+        * author: 
+        * coauthors: 
+        * key: 
+        * time: 
+        * tempo: 
+        * octave: 
+    * The Pattern Section
+        * Chord Definition
+    * The Music Section
+        * Music Elements
+            * Functions
+                * repeat
+                * layer
+            * Riffs
+                * Note
+                * Callback
+                * Caret
+            * Change In Music Info
+                * Key
+                * Time
+                * Tempo
+                * Octave
+    * Musika Standard Library
+        * scale
+        * doublestops
+        * powerchords
+        * x_chords
+    * Closing
+    * Sample Programs
+        * example_1.ka
+        * example_2.ka
+        * example_3.ka
+        * example_4.ka
+* Musika IDE Guide
+    * Musika IDE as an Editor
+    * Syntax Highlighting
+    * Musika Compilation
+    * Building a Musika File
+    * From Binary to Audible WAV
+    * Bypassing the "Build Note Sheet" Option
+
 ## Musika Features
 
 The following indicate the key features of the Musika programming language:
@@ -22,7 +72,7 @@ The following indicate the key features of the Musika programming language:
 *   Write comments in the code to make developer/composer notes
 *   Import other Musika files to utilize their patterns/music in a file (custom or from standard library)
 
-## How to program in Musika
+## Musika Programming Guide
 
 ### Comments
 Single-line comments are specified with an _&_ and multi-line comments begin with a _=>_ and end with _<=_
@@ -479,7 +529,7 @@ Finally, the song's "song_chord" chord is referenced using the _>_ operator. Thi
 
 In the above example, if the __time__ is set to _cut_, then the _chord\_name_ chord will be played for 4 half notes.
 
-###### caret
+###### Caret
 
 The caret (^) is a shorthand repeat symbol. It _cannot_ be the first riff element of _any_ music section (including patterns).
 The caret is followed by an integer, and it repeats the most recently played note that number of times.
@@ -508,7 +558,7 @@ d_minor_chord..^2
 
 ... or any other spacing format is valid.
 
-###### Change In Music Info
+##### Change In Music Info
 Within a riff, you can change the base music information that was specified in the __info__ section.
 
 To do this, begin with a bang symbol (!). Then enter the name of the info to change followed by a colon (:):
@@ -913,5 +963,37 @@ lead
 main main
 <b>---</b>
 </pre>
+
+### Musika IDE Guide
+
+The following shows the basic features of the Musika IDE and how it can be used to create and manage Musika files.
+
+#### Musika IDE as an Editor
+At its core, the Musika IDE behaves as a basic editor specific for Musika files. The "File" menu item provides basic features including:
+* New - Clear the editor and start an unsaved session
+* Open - Open an existing Musika file
+* Save - Save the current Musika file as it is
+* Save As - Save a copy the current Musika file with a new name
+* Exit - Quit the IDE
+
+#### Syntax Highlighting
+By default, the Musika IDE does not do any kind of styling to Musika code. However, syntax highlighting can be toggled on and off using _View -> Toggle Syntax Highlighting_. It should be noted, however, that syntax highlighting takes a significant performance drain on the editor, and it is recommended to avoid use of this feature for any file that is not small.
+
+#### Musika Code Compilation
+Musika code undergoes a 2-step compilation process:
+1. Musika text is saved in a *.ka file
+2. The contents of a *.ka file is built into a "note sheet" binary representation of the code. This is stored in a *.mkc (compiled Musika) file.
+3. The binary data in a *.mkc file is converted into a *.wav file. This is the final form of the program and it can be played on any media player that supports *.wav
+
+In order to turn Musika code into a playable *.wav file, it must first be saved and stored somewhere in a *.ka file. You can use the IDE to create, edit, and save a .ka file or you can use a separate text editor.
+
+#### Building a Note Sheet Binary
+To build a Musika file, it must first be opened in the Musika IDE. The _Build -> Build Note Sheet_ menu item will compile the file into a note sheet binary. A file with an identical name and an extension of *.mkc will be created and stored in the same directory as your *.ka file. This will only happen if the code is free of any syntax or contextual errors. If there are any present, you must fix them before a note sheet can be generated.
+
+#### From Binary to Audible WAV
+To turn a note sheet binary into a playable *.wav file, first make sure you have the corresponding *.ka file open in the Musika IDE if it is not already open. Then the _Build -> Build WAV File_ menu item will convert that note sheet binary into an audible *.wav file. This file can be opened in any media player that supports *.wav. However, you can also play the song directly in the Musika IDE using the _Play -> Play Song_ menu item. This will play the *.wav representation of the *.ka file you are currently viewing in the editor, if there is one. You can stop playing a song that is playing using the _Play -> Stop Song_ menu item; and _Play Song_ will play the song back from the beginning.
+
+#### Bypassing the "Build Note Sheet" Option
+Note that if you select _Build -> Build WAV File_ before _Build -> Build Note Sheet_, the build wave file operation will build the note sheet binary first, and then build the *.wav file; but it will cancel the process if there are any syntax or contextual errors in the Musika code. Be careful bypassing the _Build Note Sheet_ option though; because if a *.mkc file corresponding to your *.ka file is present, the _Build WAV File_ will create a *.wav file based on that binary without rebuilding it, potentially using an out-of-date binary (i.e. it only builds a note sheet binary if there is not one already present). If you have a note sheet binary present, but you've updated your Musika code, be sure to either delete the existing binary or use the _Build -> Build Note Sheet_ option first before building the *.wav file.
 
 ### Happy Hacking!!!
