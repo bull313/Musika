@@ -51,7 +51,6 @@ namespace Musika
         private LexicalAnalyzer lexer;                                          /* Token manager                                                    */
         private List<int>       noteCountTracker;                               /* Tracks the current note count for layering position purposes     */
         private NoteSheet       noteSheet;                                      /* Intermediate representation of the compiled Musika file          */
-        private bool            ignoreContext;                                  /* Flag marked true if only syntax is checked                       */
 
         /* / PROPERTIES */
 
@@ -89,12 +88,6 @@ namespace Musika
         /* / CONSTRUCTOR */
 
         /* HELPER METHODS */
-
-        public void IgnoreContext() /* Sets parser to only check for syntax: this will NOT generate a NoteSheet instance */
-        {
-            ignoreContext = true;
-            noteSheet     = null;
-        }
 
         public void Reset() /* Restore the program and refresh/restart the lexical analyzer and notesheet */
         {
@@ -236,16 +229,15 @@ namespace Musika
                 filename = Path.ChangeExtension(fileNameToken.Content.Substring(1, fileNameToken.Content.Length - 2), Serializer.SERIALIZE_EXT); /* Remove stdlib indicators and look for binary file */
                 file = Path.Combine(STDLIB_FILEPATH, filename);
 
-                if (!ignoreContext)
+                /* Load standard library binary */
+                if (File.Exists(file))
                 {
-                    /* Load standard library binary */
-                    if (File.Exists(file))
-                    {
-                        accSheet = Serializer.Deserialize(STDLIB_FILEPATH, filename);
-                        noteSheet.Accompaniments.Add(nameToken.Content, accSheet);
-                    }
-                    else if (!ignoreContext)
-                        throw new ContextError(ContextError.INVALID_FILENAME_ERROR, nameToken);
+                    accSheet = Serializer.Deserialize(STDLIB_FILEPATH, filename);
+                    noteSheet.Accompaniments.Add(nameToken.Content, accSheet);
+                }
+                else
+                {
+                    throw new ContextError(ContextError.INVALID_FILENAME_ERROR, nameToken);
                 }
             }
             else
@@ -253,35 +245,32 @@ namespace Musika
                 filename = Path.ChangeExtension(fileNameToken.Content, Compiler.MUSIKA_FILE_EXT);
                 file = Path.Combine(filepath, filename);
 
-                if (!ignoreContext)
+                /* File is not in the do-not-compile list */
+                if (!doNotCompileSet.Contains(file))
                 {
-                    /* File is not in the do-not-compile list */
-                    if (!doNotCompileSet.Contains(file))
+                    /* Compile the referenced file and add its notesheet to the accompaniments dictionary */
+                    if (File.Exists(file))
                     {
-                        /* Compile the referenced file and add its notesheet to the accompaniments dictionary */
-                        if (File.Exists(file))
-                        {
-                            accProgram = File.ReadAllText(file);
-                            accParser = new Parser(accProgram, filename, filepath: filepath, ignoreSet: doNotCompileSet);
-                            accSheet = accParser.ParseScore();
+                        accProgram = File.ReadAllText(file);
+                        accParser = new Parser(accProgram, filename, filepath: filepath, ignoreSet: doNotCompileSet);
+                        accSheet = accParser.ParseScore();
 
-                            noteSheet.Accompaniments.Add(nameToken.Content, accSheet);
-                        }
-                        else if (!ignoreContext)
-                            throw new ContextError(ContextError.INVALID_FILENAME_ERROR, nameToken);
+                        noteSheet.Accompaniments.Add(nameToken.Content, accSheet);
                     }
-
-                    /* File is in the do-not-compile list */
                     else
-                    {
-                        /* Check for self-reference and throw self-reference error if there is one */
-                        if (filename == this.filename)
-                            throw new ContextError(ContextError.SELF_REFERENCE_ERROR, nameToken);
+                        throw new ContextError(ContextError.INVALID_FILENAME_ERROR, nameToken);
+                }
 
-                        /* Throw a cross-reference error */
-                        else
-                            throw new ContextError(ContextError.CROSS_REFERENCE_ERROR, nameToken);
-                    }
+                /* File is in the do-not-compile list */
+                else
+                {
+                    /* Check for self-reference and throw self-reference error if there is one */
+                    if (filename == this.filename)
+                        throw new ContextError(ContextError.SELF_REFERENCE_ERROR, nameToken);
+
+                    /* Throw a cross-reference error */
+                    else
+                        throw new ContextError(ContextError.CROSS_REFERENCE_ERROR, nameToken);
                 }
             }
         }
@@ -448,17 +437,14 @@ namespace Musika
                 /* If the value is a refrence, search for the referred value */
                 else
                 {
-                    if (!ignoreContext)
-                    {
-                        /* Make sure the reference is a valid accompaniment name */
-                        idName = next.Content;
-                        if (!noteSheet.Accompaniments.ContainsKey(idName))
-                            throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
+                    /* Make sure the reference is a valid accompaniment name */
+                    idName = next.Content;
+                    if (!noteSheet.Accompaniments.ContainsKey(idName))
+                        throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
 
-                        /* Look up the referred value and set the title to it */
-                        referenceSheet = noteSheet.Accompaniments[idName];
-                        noteSheet.Title = referenceSheet.Title;
-                    }
+                    /* Look up the referred value and set the title to it */
+                    referenceSheet = noteSheet.Accompaniments[idName];
+                    noteSheet.Title = referenceSheet.Title;
                 }
 
                 /* Finish parsing */
@@ -515,17 +501,14 @@ namespace Musika
                 /* If the value is a refrence, search for the referred value */
                 else
                 {
-                    if (!ignoreContext)
-                    {
-                        /* Make sure the reference is a valid accompaniment name */
-                        idName = next.Content;
-                        if (!noteSheet.Accompaniments.ContainsKey(idName))
-                            throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
+                    /* Make sure the reference is a valid accompaniment name */
+                    idName = next.Content;
+                    if (!noteSheet.Accompaniments.ContainsKey(idName))
+                        throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
 
-                        /* Look up the referred value and set the author to it */
-                        referenceSheet = noteSheet.Accompaniments[idName];
-                        noteSheet.Author = referenceSheet.Author;
-                    }
+                    /* Look up the referred value and set the author to it */
+                    referenceSheet = noteSheet.Accompaniments[idName];
+                    noteSheet.Author = referenceSheet.Author;
                 }
 
                 /* Finish parsing */
@@ -559,17 +542,14 @@ namespace Musika
                 /* If the value is a refrence, search for the referred value */
                 else
                 {
-                    if (!ignoreContext)
-                    {
-                        /* Make sure the reference is a valid accompaniment name */
-                        idName = next.Content;
-                        if (!noteSheet.Accompaniments.ContainsKey(idName))
-                            throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
+                    /* Make sure the reference is a valid accompaniment name */
+                    idName = next.Content;
+                    if (!noteSheet.Accompaniments.ContainsKey(idName))
+                        throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
 
-                        /* Look up the referred value and set the coauthors to it */
-                        referenceSheet = noteSheet.Accompaniments[idName];
-                        noteSheet.Coauthors = referenceSheet.Coauthors;
-                    }
+                    /* Look up the referred value and set the coauthors to it */
+                    referenceSheet = noteSheet.Accompaniments[idName];
+                    noteSheet.Coauthors = referenceSheet.Coauthors;
                 }
 
                 /* Finish parsing */
@@ -597,7 +577,7 @@ namespace Musika
             if (next.Type == TokenType.SIGN || next.Type == TokenType.ID)
             {
                 /* If the vlaue is a literal, set the key to the literal value */
-                if (next.Type == TokenType.SIGN && !ignoreContext)
+                if (next.Type == TokenType.SIGN)
                     if (noteSheet.KeySignuatureExists(next.Content))
                         noteSheet.Key = NoteSheet.KeyConversion[next.Content];
                     else
@@ -606,17 +586,14 @@ namespace Musika
                 /* If the value is a refrence, search for the referred value */
                 else
                 {
-                    if (!ignoreContext)
-                    {
-                        /* Make sure the reference is a valid accompaniment name */
-                        idName = next.Content;
-                        if (!noteSheet.Accompaniments.ContainsKey(idName))
-                            throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
+                    /* Make sure the reference is a valid accompaniment name */
+                    idName = next.Content;
+                    if (!noteSheet.Accompaniments.ContainsKey(idName))
+                        throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
 
-                        /* Look up the referred value and set the key to it */
-                        referenceSheet = noteSheet.Accompaniments[idName];
-                        noteSheet.Key = referenceSheet.Key;
-                    }
+                    /* Look up the referred value and set the key to it */
+                    referenceSheet = noteSheet.Accompaniments[idName];
+                    noteSheet.Key = referenceSheet.Key;
                 }
 
                 /* Finish parsing */
@@ -668,7 +645,7 @@ namespace Musika
                 else
                 {
                     /* Check that the time signature was initialized (there must be an initial value before you can modify it) */
-                    if (noteSheet.Time.baseNote == 0 && noteSheet.Time.beatsPerMeasure == 0 && !ignoreContext)
+                    if (noteSheet.Time.baseNote == 0 && noteSheet.Time.beatsPerMeasure == 0)
                         throw new ContextError(ContextError.TIME_ERROR, next);
                     else
                     {
@@ -702,17 +679,14 @@ namespace Musika
             /* If the value is a refrence, search for the referred value */
             else if (next.Type == TokenType.ID)
             {
-                if (!ignoreContext)
-                {
-                    /* Make sure the reference is a valid accompaniment name */
-                    idName = next.Content;
-                    if (!noteSheet.Accompaniments.ContainsKey(idName))
-                        throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
+                /* Make sure the reference is a valid accompaniment name */
+                idName = next.Content;
+                if (!noteSheet.Accompaniments.ContainsKey(idName))
+                    throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
 
-                    /* Look up the referred value and set the time to it */
-                    referenceSheet = noteSheet.Accompaniments[idName];
-                    noteSheet.Time = referenceSheet.Time;
-                }
+                /* Look up the referred value and set the time to it */
+                referenceSheet = noteSheet.Accompaniments[idName];
+                noteSheet.Time = referenceSheet.Time;
             }
 
             /* Invalid token */
@@ -785,20 +759,17 @@ namespace Musika
             /* If the value is a refrence, search for the referred value */
             else if (next.Type == TokenType.ID)
             {
-                if (!ignoreContext)
-                {
-                    /* Make sure the reference is a valid accompaniment name */
-                    idName = next.Content;
-                    if (!noteSheet.Accompaniments.ContainsKey(idName)) /* Make sure accompaniment exists */
-                        throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
+                /* Make sure the reference is a valid accompaniment name */
+                idName = next.Content;
+                if (!noteSheet.Accompaniments.ContainsKey(idName)) /* Make sure accompaniment exists */
+                    throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
 
-                    /* Look up the referred value and set the tempo to it */
-                    referenceSheet = noteSheet.Accompaniments[idName];
-                    noteSheet.Tempo = referenceSheet.Tempo;
+                /* Look up the referred value and set the tempo to it */
+                referenceSheet = noteSheet.Accompaniments[idName];
+                noteSheet.Tempo = referenceSheet.Tempo;
 
-                    if (noteSheet.Time.baseNote != referenceSheet.Time.baseNote) /* Adjust tempo for accompaniment sheet's different time signature */
-                        noteSheet.Tempo *= referenceSheet.Time.baseNote / noteSheet.Time.baseNote;
-                }
+                if (noteSheet.Time.baseNote != referenceSheet.Time.baseNote) /* Adjust tempo for accompaniment sheet's different time signature */
+                    noteSheet.Tempo *= referenceSheet.Time.baseNote / noteSheet.Time.baseNote;
             }
 
             else throw new SyntaxError(next, TokenType.NUMBER, TokenType.ID);
@@ -839,7 +810,7 @@ namespace Musika
                     noteSheet.Octave += newOctave;
 
                     /* Throw an error if the new octave is below 0 */
-                    if (noteSheet.Octave < 0 && !ignoreContext)
+                    if (noteSheet.Octave < 0)
                         throw new ContextError(ContextError.OCTAVE_ERROR, next);
                 }
 
@@ -858,24 +829,21 @@ namespace Musika
                 else if (newOctave < 0) /* Value is negative or has a plus sign, so add the current octave by the specified value  */
                     noteSheet.Octave += newOctave;
 
-                if (noteSheet.Octave < 0 && !ignoreContext)
+                if (noteSheet.Octave < 0)
                     throw new ContextError(ContextError.OCTAVE_ERROR, next);
             }
 
             /* If the value is a refrence, search for the referred value */
             else if (next.Type == TokenType.ID)
             {
-                if (!ignoreContext)
-                {
-                    /* Make sure the reference is a valid accompaniment name */
-                    idName = next.Content;
-                    if (!noteSheet.Accompaniments.ContainsKey(idName))
-                        throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
+                /* Make sure the reference is a valid accompaniment name */
+                idName = next.Content;
+                if (!noteSheet.Accompaniments.ContainsKey(idName))
+                    throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
 
-                    /* Look up the referred value and set the octave to it */
-                    referenceSheet = noteSheet.Accompaniments[idName];
-                    noteSheet.Octave = referenceSheet.Octave;
-                }
+                /* Look up the referred value and set the octave to it */
+                referenceSheet = noteSheet.Accompaniments[idName];
+                noteSheet.Octave = referenceSheet.Octave;
             }
 
             else throw new SyntaxError(next, TokenType.NUMBER, TokenType.ID);
@@ -1137,118 +1105,108 @@ namespace Musika
             layerTok = Expect(TokenType.LAYER);
             Expect(TokenType.LPAREN);
 
-            if (!ignoreContext)
+            /* Parse the reference, store the name, and store the name of the accompaniment if there is one */
+            idPatternRef = ParseCallback(out string accname, out string name);
+
+            /* Get the pattern based off of the reference */
+            switch (idPatternRef)
             {
-                /* Parse the reference, store the name, and store the name of the accompaniment if there is one */
-                idPatternRef = ParseCallback(out string accname, out string name);
+                case CallbackType.ACCOMPANIMENT_SHEET:
+                    pattern = noteSheet.Accompaniments[name].Sheet;
+                    break;
+                case CallbackType.ACCOMPANIMENT_PATTERN:
+                    pattern = noteSheet.Accompaniments[accname].Patterns[name];
+                    break;
+                case CallbackType.LOCAL_PATTERN:
+                    pattern = noteSheet.Patterns[name];
+                    break;
 
-                /* Get the pattern based off of the reference */
-                switch (idPatternRef)
+                /* Cannot use a chord or invalid callback for a layer */
+                case CallbackType.INVALID_CALLBACK:
+                case CallbackType.ACCOMPANIMENT_CHORD:
+                case CallbackType.LOCAL_CHORD:
+                    throw new ContextError(ContextError.LAYER_NO_PATTERN_ERROR, layerTok);
+
+                /* THIS SHOULD NEVER HAPPEN SINCE ALL CALLBACK TYPES SHOULD BE COVERED */
+                default:
+                    throw new ContextError(ContextError.NULL_PATTERN_ERROR, layerTok);
+            }
+
+            /* Set the position to the current note count so that the layer begins when that many notes have passed */
+            position = GetNoteCountTrackerNoteCount();
+
+            /* If parsing a pattern, add layer to relative position map */
+            if (patternName != null)
+            {
+                if (noteSheet.RelativeLayerPositions.ContainsKey(patternName))
                 {
-                    case CallbackType.ACCOMPANIMENT_SHEET:
-                        pattern = noteSheet.Accompaniments[name].Sheet;
-                        break;
-                    case CallbackType.ACCOMPANIMENT_PATTERN:
-                        pattern = noteSheet.Accompaniments[accname].Patterns[name];
-                        break;
-                    case CallbackType.LOCAL_PATTERN:
-                        pattern = noteSheet.Patterns[name];
-                        break;
-
-                    /* Cannot use a chord or invalid callback for a layer */
-                    case CallbackType.INVALID_CALLBACK:
-                    case CallbackType.ACCOMPANIMENT_CHORD:
-                    case CallbackType.LOCAL_CHORD:
-                        throw new ContextError(ContextError.LAYER_NO_PATTERN_ERROR, layerTok);
-
-                    /* THIS SHOULD NEVER HAPPEN SINCE ALL CALLBACK TYPES SHOULD BE COVERED */
-                    default:
-                        throw new ContextError(ContextError.NULL_PATTERN_ERROR, layerTok);
-                }
-
-                /* Set the position to the current note count so that the layer begins when that many notes have passed */
-                position = GetNoteCountTrackerNoteCount();
-
-                /* If parsing a pattern, add layer to relative position map */
-                if (patternName != null)
-                {
-                    if (noteSheet.RelativeLayerPositions.ContainsKey(patternName))
-                    {
-                        noteSheet.RelativeLayerPositions[patternName].Add(new PositionSheetPair(position, pattern));
-                    }
-                    else
-                    {
-                        noteSheet.RelativeLayerPositions.Add(patternName, new PositionSheetMap()
-                        {
-                            new PositionSheetPair(position, pattern)
-                        });
-                    }
-
-                    /* Add any relative patterns from the layered pattern (nested layer call) */
-                    switch (idPatternRef)
-                    {
-                        case CallbackType.ACCOMPANIMENT_SHEET:
-                            foreach (KeyValuePair<int, SheetSet> posSheetSetPair in noteSheet.Accompaniments[name].Layers)
-                            {
-                                absolutePosition = position + posSheetSetPair.Key;
-
-                                foreach (Sheet sheet in posSheetSetPair.Value)
-                                {
-                                    noteSheet.RelativeLayerPositions[patternName].Add(new PositionSheetPair(absolutePosition, sheet));
-                                }
-                            }
-                            break;
-
-                        case CallbackType.ACCOMPANIMENT_PATTERN:
-                            if (noteSheet.Accompaniments[accname].RelativeLayerPositions.ContainsKey(name))
-                            {
-                                foreach (PositionSheetPair posSheetPair in noteSheet.RelativeLayerPositions[name])
-                                {
-                                    absolutePosition = position + posSheetPair.Key;
-                                    noteSheet.RelativeLayerPositions[patternName].Add(new PositionSheetPair(absolutePosition, posSheetPair.Value));
-                                }
-                            }
-                            break;
-
-                        case CallbackType.LOCAL_PATTERN:
-                            if (noteSheet.RelativeLayerPositions.ContainsKey(name))
-                            {
-                                foreach (PositionSheetPair posSheetPair in noteSheet.RelativeLayerPositions[name])
-                                {
-                                    absolutePosition = position + posSheetPair.Key;
-                                    noteSheet.RelativeLayerPositions[patternName].Add(new PositionSheetPair(absolutePosition, posSheetPair.Value));
-                                }
-                            }
-                            break;
-                    }
-
-                    /* Do not return an explicit value: return empty pair */
-                    returnValue = new PositionSheetPair(-1, null);
+                    noteSheet.RelativeLayerPositions[patternName].Add(new PositionSheetPair(position, pattern));
                 }
                 else
                 {
-                    /* Add the pattern to the layer list at the stored position */
-                    if (noteSheet.Layers.ContainsKey(position))
-                        noteSheet.Layers[position].Add(pattern);
-                    else
+                    noteSheet.RelativeLayerPositions.Add(patternName, new PositionSheetMap()
                     {
-                        newLayerList = new SheetSet
-                        {
-                            pattern
-                        };
-                        noteSheet.Layers.Add(position, newLayerList);
-                    }
-
-                    /* Construct the position-pattern pair from the calculated position and received pattern */
-                    returnValue = new PositionSheetPair(position, pattern);
+                        new PositionSheetPair(position, pattern)
+                    });
                 }
-            }
 
-            /* If we are ignoring context, then all we need to do is parse the rest of the layer call and return an empty pair */
+                /* Add any relative patterns from the layered pattern (nested layer call) */
+                switch (idPatternRef)
+                {
+                    case CallbackType.ACCOMPANIMENT_SHEET:
+                        foreach (KeyValuePair<int, SheetSet> posSheetSetPair in noteSheet.Accompaniments[name].Layers)
+                        {
+                            absolutePosition = position + posSheetSetPair.Key;
+
+                            foreach (Sheet sheet in posSheetSetPair.Value)
+                            {
+                                noteSheet.RelativeLayerPositions[patternName].Add(new PositionSheetPair(absolutePosition, sheet));
+                            }
+                        }
+                        break;
+
+                    case CallbackType.ACCOMPANIMENT_PATTERN:
+                        if (noteSheet.Accompaniments[accname].RelativeLayerPositions.ContainsKey(name))
+                        {
+                            foreach (PositionSheetPair posSheetPair in noteSheet.RelativeLayerPositions[name])
+                            {
+                                absolutePosition = position + posSheetPair.Key;
+                                noteSheet.RelativeLayerPositions[patternName].Add(new PositionSheetPair(absolutePosition, posSheetPair.Value));
+                            }
+                        }
+                        break;
+
+                    case CallbackType.LOCAL_PATTERN:
+                        if (noteSheet.RelativeLayerPositions.ContainsKey(name))
+                        {
+                            foreach (PositionSheetPair posSheetPair in noteSheet.RelativeLayerPositions[name])
+                            {
+                                absolutePosition = position + posSheetPair.Key;
+                                noteSheet.RelativeLayerPositions[patternName].Add(new PositionSheetPair(absolutePosition, posSheetPair.Value));
+                            }
+                        }
+                        break;
+                }
+
+                /* Do not return an explicit value: return empty pair */
+                returnValue = new PositionSheetPair(-1, null);
+            }
             else
             {
-                ParseCallback(out _, out _);
-                returnValue = new PositionSheetPair(-1, null);
+                /* Add the pattern to the layer list at the stored position */
+                if (noteSheet.Layers.ContainsKey(position))
+                    noteSheet.Layers[position].Add(pattern);
+                else
+                {
+                    newLayerList = new SheetSet
+                    {
+                        pattern
+                    };
+                    noteSheet.Layers.Add(position, newLayerList);
+                }
+
+                /* Construct the position-pattern pair from the calculated position and received pattern */
+                returnValue = new PositionSheetPair(position, pattern);
             }
 
             /* Finish parsing and return */
@@ -1282,10 +1240,10 @@ namespace Musika
                 else if (elementReturn is int)
                 {
                     /* Make sure a last note exists */
-                    if (returnValue.Count == 0 && !ignoreContext)
+                    if (returnValue.Count == 0)
                         throw new ContextError(ContextError.REPEAT_NOTHING_ERROR, next);
 
-                    else if (!ignoreContext)
+                    else
                         for (i = 0; i < elementReturn - 1; ++i) /* subtract 1 because it is already in the list once */
                             returnValue.Add(returnValue[returnValue.Count - 1]);
                 }
@@ -1362,137 +1320,129 @@ namespace Musika
                 idRefPattern = ParseCallback(out string accName, out string idName);
                 next = lexer.PeekToken();
 
-                if (ignoreContext) /* Should only be used for testing and should never be run for release */
+                /* If the ID refers to a chord, store the chord in the return value */
+                if (idRefPattern == CallbackType.LOCAL_CHORD || idRefPattern == CallbackType.ACCOMPANIMENT_CHORD)
                 {
-                    if (next.Type == TokenType.DOT)
-                        _ = ParseDotSet();
-                }
-                else /* Should always run for release */
-                {
-                    /* If the ID refers to a chord, store the chord in the return value */
-                    if (idRefPattern == CallbackType.LOCAL_CHORD || idRefPattern == CallbackType.ACCOMPANIMENT_CHORD)
-                    {
-                        /* Find the length of the chord */
-                        numDots = ParseDotSet();
-                        duration = noteSheet.Tempo * numDots;
+                    /* Find the length of the chord */
+                    numDots = ParseDotSet();
+                    duration = noteSheet.Tempo * numDots;
 
-                        /* Find the chord reference from the notesheet */
-                        if (idRefPattern == CallbackType.LOCAL_CHORD)
-                            chordRef = noteSheet.Chords[idName];
-                        else
-                            chordRef = noteSheet.Accompaniments[accName].Chords[idName];
-
-                        /* Create a copy of the chord reference, settting the length of each note to the calculated length */
-                        chordCopy = new NoteSet();
-                        chordCopy.AddRange(chordRef);
-                        for (i = 0; i < chordCopy.Count; ++i)
-                            chordCopy[i] = new Note { note = chordCopy[i].note, frequency = chordCopy[i].frequency, length = duration }; ;
-
-                        /* Add chord to return value */
-                        returnValue.Add(chordCopy);
-                    }
-
-                    /* If the ID refers to a pattern, add the pattern sheet to the return value */
+                    /* Find the chord reference from the notesheet */
+                    if (idRefPattern == CallbackType.LOCAL_CHORD)
+                        chordRef = noteSheet.Chords[idName];
                     else
+                        chordRef = noteSheet.Accompaniments[accName].Chords[idName];
+
+                    /* Create a copy of the chord reference, settting the length of each note to the calculated length */
+                    chordCopy = new NoteSet();
+                    chordCopy.AddRange(chordRef);
+                    for (i = 0; i < chordCopy.Count; ++i)
+                        chordCopy[i] = new Note { note = chordCopy[i].note, frequency = chordCopy[i].frequency, length = duration }; ;
+
+                    /* Add chord to return value */
+                    returnValue.Add(chordCopy);
+                }
+
+                /* If the ID refers to a pattern, add the pattern sheet to the return value */
+                else
+                {
+                    switch (idRefPattern)
                     {
-                        switch (idRefPattern)
-                        {
-                            case CallbackType.LOCAL_PATTERN:
-                                returnValue.AddRange(noteSheet.Patterns[idName]);
+                        case CallbackType.LOCAL_PATTERN:
+                            returnValue.AddRange(noteSheet.Patterns[idName]);
 
-                                /* Add layers to layer dictionary */
-                                if (noteSheet.RelativeLayerPositions.ContainsKey(idName))
+                            /* Add layers to layer dictionary */
+                            if (noteSheet.RelativeLayerPositions.ContainsKey(idName))
+                            {
+                                foreach (PositionSheetPair posSheetPair in noteSheet.RelativeLayerPositions[idName])
                                 {
-                                    foreach (PositionSheetPair posSheetPair in noteSheet.RelativeLayerPositions[idName])
-                                    {
-                                        /* Compute the layer's absolute position based off of its relative position in the pattern */
-                                        layerAbsolutePosition = GetNoteCountTrackerNoteCount() + currentNoteCount + posSheetPair.Key;
+                                    /* Compute the layer's absolute position based off of its relative position in the pattern */
+                                    layerAbsolutePosition = GetNoteCountTrackerNoteCount() + currentNoteCount + posSheetPair.Key;
 
-                                        /* Add the layer to the song */
-                                        if (noteSheet.Layers.ContainsKey(layerAbsolutePosition))
-                                            noteSheet.Layers[layerAbsolutePosition].Add(posSheetPair.Value);
-                                        else
-                                        {
-                                            newLayerList = new SheetSet
+                                    /* Add the layer to the song */
+                                    if (noteSheet.Layers.ContainsKey(layerAbsolutePosition))
+                                        noteSheet.Layers[layerAbsolutePosition].Add(posSheetPair.Value);
+                                    else
+                                    {
+                                        newLayerList = new SheetSet
                                             {
                                                 posSheetPair.Value
                                             };
 
-                                            noteSheet.Layers.Add(layerAbsolutePosition, newLayerList);
-                                        }
-
-                                        /* Add the absolute position and layer sheet to the layer position sheet pair structure */
-                                        layerPositionSheetPairs.Add(new PositionSheetPair(layerAbsolutePosition, posSheetPair.Value));
+                                        noteSheet.Layers.Add(layerAbsolutePosition, newLayerList);
                                     }
+
+                                    /* Add the absolute position and layer sheet to the layer position sheet pair structure */
+                                    layerPositionSheetPairs.Add(new PositionSheetPair(layerAbsolutePosition, posSheetPair.Value));
                                 }
-                                break;
+                            }
+                            break;
 
-                            case CallbackType.ACCOMPANIMENT_PATTERN:
-                                returnValue.AddRange(noteSheet.Accompaniments[accName].Patterns[idName]);
+                        case CallbackType.ACCOMPANIMENT_PATTERN:
+                            returnValue.AddRange(noteSheet.Accompaniments[accName].Patterns[idName]);
 
-                                /* Add layers to layer dictionary */
-                                if (noteSheet.Accompaniments[accName].RelativeLayerPositions.ContainsKey(idName))
+                            /* Add layers to layer dictionary */
+                            if (noteSheet.Accompaniments[accName].RelativeLayerPositions.ContainsKey(idName))
+                            {
+                                foreach (PositionSheetPair posSheetPair in noteSheet.Accompaniments[accName].RelativeLayerPositions[idName])
                                 {
-                                    foreach (PositionSheetPair posSheetPair in noteSheet.Accompaniments[accName].RelativeLayerPositions[idName])
-                                    {
-                                        /* Compute the layer's absolute position based off of its relative position in the pattern */
-                                        layerAbsolutePosition = GetNoteCountTrackerNoteCount() + currentNoteCount + posSheetPair.Key;
+                                    /* Compute the layer's absolute position based off of its relative position in the pattern */
+                                    layerAbsolutePosition = GetNoteCountTrackerNoteCount() + currentNoteCount + posSheetPair.Key;
 
-                                        /* Add the layer to the song */
-                                        if (noteSheet.Layers.ContainsKey(layerAbsolutePosition))
-                                            noteSheet.Layers[layerAbsolutePosition].Add(posSheetPair.Value);
-                                        else
-                                        {
-                                            newLayerList = new SheetSet
+                                    /* Add the layer to the song */
+                                    if (noteSheet.Layers.ContainsKey(layerAbsolutePosition))
+                                        noteSheet.Layers[layerAbsolutePosition].Add(posSheetPair.Value);
+                                    else
+                                    {
+                                        newLayerList = new SheetSet
                                             {
                                                 posSheetPair.Value
                                             };
 
-                                            noteSheet.Layers.Add(layerAbsolutePosition, newLayerList);
-                                        }
-
-                                        /* Add the absolute position and layer sheet to the layer position sheet pair structure */
-                                        layerPositionSheetPairs.Add(new PositionSheetPair(layerAbsolutePosition, posSheetPair.Value));
+                                        noteSheet.Layers.Add(layerAbsolutePosition, newLayerList);
                                     }
+
+                                    /* Add the absolute position and layer sheet to the layer position sheet pair structure */
+                                    layerPositionSheetPairs.Add(new PositionSheetPair(layerAbsolutePosition, posSheetPair.Value));
                                 }
-                                break;
+                            }
+                            break;
 
-                            case CallbackType.ACCOMPANIMENT_SHEET:
-                                returnValue.AddRange(noteSheet.Accompaniments[idName].Sheet);
+                        case CallbackType.ACCOMPANIMENT_SHEET:
+                            returnValue.AddRange(noteSheet.Accompaniments[idName].Sheet);
 
-                                /* Add layers to layer dictionary */
-                                if (noteSheet.Accompaniments[idName].Layers.Count > 0)
+                            /* Add layers to layer dictionary */
+                            if (noteSheet.Accompaniments[idName].Layers.Count > 0)
+                            {
+                                foreach (KeyValuePair<int, SheetSet> posSheetSetPair in noteSheet.Accompaniments[idName].Layers)
                                 {
-                                    foreach (KeyValuePair<int, SheetSet> posSheetSetPair in noteSheet.Accompaniments[idName].Layers)
+                                    foreach (Sheet layerSheet in posSheetSetPair.Value)
                                     {
-                                        foreach (Sheet layerSheet in posSheetSetPair.Value)
-                                        {
-                                            /* Compute the layer's absolute position based off of its relative position in the pattern */
-                                            layerAbsolutePosition = GetNoteCountTrackerNoteCount() + currentNoteCount + posSheetSetPair.Key;
+                                        /* Compute the layer's absolute position based off of its relative position in the pattern */
+                                        layerAbsolutePosition = GetNoteCountTrackerNoteCount() + currentNoteCount + posSheetSetPair.Key;
 
-                                            /* Add the layer to the song */
-                                            if (noteSheet.Layers.ContainsKey(layerAbsolutePosition))
-                                                noteSheet.Layers[layerAbsolutePosition].Add(layerSheet);
-                                            else
-                                            {
-                                                newLayerList = new SheetSet
+                                        /* Add the layer to the song */
+                                        if (noteSheet.Layers.ContainsKey(layerAbsolutePosition))
+                                            noteSheet.Layers[layerAbsolutePosition].Add(layerSheet);
+                                        else
+                                        {
+                                            newLayerList = new SheetSet
                                                 {
                                                     layerSheet
                                                 };
 
-                                                noteSheet.Layers.Add(layerAbsolutePosition, newLayerList);
-                                            }
-
-                                            /* Add the absolute position and layer sheet to the layer position sheet pair structure */
-                                            layerPositionSheetPairs.Add(new PositionSheetPair(layerAbsolutePosition, layerSheet));
+                                            noteSheet.Layers.Add(layerAbsolutePosition, newLayerList);
                                         }
+
+                                        /* Add the absolute position and layer sheet to the layer position sheet pair structure */
+                                        layerPositionSheetPairs.Add(new PositionSheetPair(layerAbsolutePosition, layerSheet));
                                     }
                                 }
-                                break;
+                            }
+                            break;
 
-                            default:
-                                throw new ContextError(ContextError.PC_REFERENCE_ERROR, next);
-                        }
+                        default:
+                            throw new ContextError(ContextError.PC_REFERENCE_ERROR, next);
                     }
                 }
             }
@@ -1600,31 +1550,25 @@ namespace Musika
                 /* Parse the callee ID */
                 calleeToken = Expect(TokenType.ID);
 
-                if (!ignoreContext)
-                {
-                    calleeName = calleeToken.Content;
+                calleeName = calleeToken.Content;
 
-                    /* Check that the caller name is a valid accompaniment name */
-                    if (!noteSheet.Accompaniments.ContainsKey(name))
-                        return CallbackType.INVALID_CALLBACK;
+                /* Check that the caller name is a valid accompaniment name */
+                if (!noteSheet.Accompaniments.ContainsKey(name))
+                    return CallbackType.INVALID_CALLBACK;
 
-                    /* Check that the callee name is a valid chord or pattern in the referenced accompaniment sheet */
-                    if (!noteSheet.Accompaniments[name].Patterns.ContainsKey(calleeName) && !noteSheet.Accompaniments[name].Chords.ContainsKey(calleeName))
-                        return CallbackType.INVALID_CALLBACK;
+                /* Check that the callee name is a valid chord or pattern in the referenced accompaniment sheet */
+                if (!noteSheet.Accompaniments[name].Patterns.ContainsKey(calleeName) && !noteSheet.Accompaniments[name].Chords.ContainsKey(calleeName))
+                    return CallbackType.INVALID_CALLBACK;
 
-                    /* Names are valid, so store them in the appropriate return parameters */
-                    accname = name;
-                    name = calleeName;
+                /* Names are valid, so store them in the appropriate return parameters */
+                accname = name;
+                name = calleeName;
 
-                    /* Return the appropriate callback type */
-                    if (noteSheet.Accompaniments[accname].Patterns.ContainsKey(name))
-                        return CallbackType.ACCOMPANIMENT_PATTERN; /* Accompaniment pattern */
-                    else
-                        return CallbackType.ACCOMPANIMENT_CHORD; /* Accompaniment chord */
-                }
-
-                /* Only used when the parser ignores context -- should never happen in release */
-                else return CallbackType.INVALID_CALLBACK;
+                /* Return the appropriate callback type */
+                if (noteSheet.Accompaniments[accname].Patterns.ContainsKey(name))
+                    return CallbackType.ACCOMPANIMENT_PATTERN; /* Accompaniment pattern */
+                else
+                    return CallbackType.ACCOMPANIMENT_CHORD; /* Accompaniment chord */
             }
 
             /* Callback must be a local pattern, a local chord, or an accompaniment sheet */
