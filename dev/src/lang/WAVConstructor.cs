@@ -80,15 +80,15 @@ namespace Musika
 
                 /* Create a list for the first offset (where the main sheet will be placed) and add that buffer to the main map */
                 positionFrequencyDurationTable = new OffsetFrequencyDurationTableListMap
-            {
                 {
-                    0.0,
-                    new FrequencyDurationTableList
                     {
-                        new FrequencyDurationTable(frequencyTable, durationTable)
+                        0.0,
+                        new FrequencyDurationTableList
+                        {
+                            new FrequencyDurationTable(frequencyTable, durationTable)
+                        }
                     }
-                }
-            };
+                };
 
                 foreach (KeyValuePair<int, SheetSet> positionSheetSetPair in noteSheet.Layers)
                 {

@@ -66,7 +66,7 @@ namespace Musika
         */
         public void CompileToNoteSheet() /* Compile the code into a note sheet instance serialzed to the filepath and filename */
         {
-            Parser parser = new Parser(code, filepath, filename);
+            Parser parser = new Parser(code, filename, filepath: filepath);
             NoteSheet noteSheet = parser.ParseScore();
             Serializer.Serialize(noteSheet, filepath, filename);
         }

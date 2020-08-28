@@ -57,17 +57,13 @@ namespace Musika
 
         /* CONSTRUCTOR */
 
-        public Parser(string program, string filepath, string filename, HashSet<string> ignoreSet = null)
+        public Parser(string program, string filename, string filepath = null, HashSet<string> ignoreSet = null)
         {
             /* If filepath not set, set it to the default (current) directory (default directory: dev/vs/project/compiler/bin) */
             if (filepath == null)
                 filepath = Directory.GetCurrentDirectory();
             else
                 this.filepath = filepath;
-
-            /* Add a forward slash to the file directory if it is not already present */
-            if (filepath != "" && filepath[filepath.Length - 1] != '/')
-                filepath += '/';
 
             /* If the do-not-compile set is null, initialize */
             if (doNotCompileSet == null)
@@ -79,12 +75,11 @@ namespace Musika
                     doNotCompileSet.Add(file);
 
             /* Add the Musika file extension to the filename if not already present */
-            if (!filename.EndsWith(Compiler.MUSIKA_FILE_EXT))
-                filename += Compiler.MUSIKA_FILE_EXT;
+            Path.ChangeExtension(filename, Compiler.MUSIKA_FILE_EXT);
             this.filename = filename;
 
             /* Add the current file to the do-not-compile set */
-            doNotCompileSet.Add(filepath + filename);
+            doNotCompileSet.Add(Path.Combine(filepath, filename));
 
             /* Initialize other instance variables */
             this.program = program;
@@ -267,7 +262,7 @@ namespace Musika
                         if (File.Exists(file))
                         {
                             accProgram = File.ReadAllText(file);
-                            accParser = new Parser(accProgram, filepath, filename, doNotCompileSet);
+                            accParser = new Parser(accProgram, filename, filepath: filepath, ignoreSet: doNotCompileSet);
                             accSheet = accParser.ParseScore();
 
                             noteSheet.Accompaniments.Add(nameToken.Content, accSheet);
