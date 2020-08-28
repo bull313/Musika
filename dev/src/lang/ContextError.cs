@@ -8,7 +8,7 @@ namespace Musika
         /*
         *  ---------------- CONSTANTS ----------------
         */
-        private const string BASE_STRING                = "CONTEXT ERROR: ";
+        private const string BASE_STRING                = "CONTEXT ERROR at line number:";
 
         public const string CROSS_REFERENCE_ERROR       = "cross-referencing files is not allowed.";
         public const string DUPLICATE_NAME_ERROR        = "cannot have duplicate names for patterns, chords, or accompaniment names!";
@@ -34,7 +34,7 @@ namespace Musika
         /*
         *  ---------------- CONSTRUCTOR ----------------
         */
-        public ContextError(string text) : base(BASE_STRING + text) { }
+        public ContextError(string text, Token causingToken) : base($"{BASE_STRING} {causingToken.LineNumber}: {text} \"{causingToken.Content}\"") { }
         /*
         *  ---------------- / CONSTRUCTOR ----------------
         */

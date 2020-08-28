@@ -41,41 +41,79 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\src\lang\CallbackType.cs">
+      <Link>CallbackType.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\src\lang\Compiler.cs">
       <Link>Compiler.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\src\lang\CompilerTest.cs">
-      <Link>CompilerTest.cs</Link>
+    <Compile Include="..\..\..\src\lang\ContextError.cs">
+      <Link>ContextError.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\src\lang\InputBuffer.cs">
+      <Link>InputBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\src\lang\LexicalAnalyzer.cs">
+      <Link>LexicalAnalyzer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\src\lang\Main.cs">
+      <Link>Main.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\src\lang\Note.cs">
+      <Link>Note.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\src\lang\NoteFactory.cs">
+      <Link>NoteFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\src\lang\NoteSheet.cs">
+      <Link>NoteSheet.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\src\lang\Parser.cs">
+      <Link>Parser.cs</Link>
     </Compile>
     <Compile Include="..\..\..\src\lang\RuntimeEnvironment.cs">
       <Link>RuntimeEnvironment.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\src\lang\Test.cs">
-      <Link>Test.cs</Link>
+    <Compile Include="..\..\..\src\lang\Serializer.cs">
+      <Link>Serializer.cs</Link>
     </Compile>
-    <Compile Include="CallbackType.cs" />
-    <Compile Include="ContextError.cs" />
-    <Compile Include="InputBuffer.cs" />
-    <Compile Include="LexicalAnalyzer.cs" />
-    <Compile Include="Note.cs" />
-    <Compile Include="NoteFactory.cs" />
-    <Compile Include="NoteSheet.cs" />
-    <Compile Include="Parser.cs" />
+    <Compile Include="..\..\..\src\lang\SyntaxError.cs">
+      <Link>SyntaxError.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\src\lang\TimeSignature.cs">
+      <Link>TimeSignature.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\src\lang\Token.cs">
+      <Link>Token.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\src\lang\TokenType.cs">
+      <Link>TokenType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\src\lang\TokenTypeFactory.cs">
+      <Link>TokenTypeFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\src\lang\TypeNames.cs">
+      <Link>TypeNames.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\src\lang\WAVConstructionError.cs">
+      <Link>WAVConstructionError.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\src\lang\WAVConstructor.cs">
+      <Link>WAVConstructor.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\src\lang\WAVDataChunk.cs">
+      <Link>WAVDataChunk.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\src\lang\WAVFile.cs">
+      <Link>WAVFile.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\src\lang\WAVFormatChunk.cs">
+      <Link>WAVFormatChunk.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\src\lang\WAVHeader.cs">
+      <Link>WAVHeader.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RuntimeEnvironmentTest.cs" />
-    <Compile Include="Serializer.cs" />
-    <Compile Include="SyntaxError.cs" />
-    <Compile Include="TimeSignature.cs" />
-    <Compile Include="Token.cs" />
-    <Compile Include="TokenType.cs" />
-    <Compile Include="TokenTypeFactory.cs" />
-    <Compile Include="TypeNames.cs" />
-    <Compile Include="WAVConstructionError.cs" />
-    <Compile Include="WAVConstructor.cs" />
-    <Compile Include="WAVDataChunk.cs" />
-    <Compile Include="WAVFile.cs" />
-    <Compile Include="WAVFormatChunk.cs" />
-    <Compile Include="WAVHeader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

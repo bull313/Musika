@@ -128,7 +128,7 @@ namespace Musika
                     else
                     {
                         input.PutChar(nextChar); /* Put back the next char */
-                        return new Token("=", TokenType.EQUAL);
+                        return new Token("=", TokenType.EQUAL, input.LineNumber);
                     }
                 }
 
@@ -143,24 +143,24 @@ namespace Musika
             switch (nextChar)
             {
                 /* Single-character tokens */
-                case '[' :  return new Token(char.ToString(nextChar), TokenType.LBRACKET);
-                case ']' :  return new Token(char.ToString(nextChar), TokenType.RBRACKET);
-                case '!' :  return new Token(char.ToString(nextChar), TokenType.BANG);
-                case '(' :  return new Token(char.ToString(nextChar), TokenType.LPAREN);
-                case ')' :  return new Token(char.ToString(nextChar), TokenType.RPAREN);
-                case '{' :  return new Token(char.ToString(nextChar), TokenType.LBRACE);
-                case '}' :  return new Token(char.ToString(nextChar), TokenType.RBRACE);
-                case '.' :  return new Token(char.ToString(nextChar), TokenType.DOT);
-                case '\'':  return new Token(char.ToString(nextChar), TokenType.APOS);
-                case ',' :  return new Token(char.ToString(nextChar), TokenType.COMMA);
-                case '>' :  return new Token(char.ToString(nextChar), TokenType.GREATER);
-                case '|' :  return new Token(char.ToString(nextChar), TokenType.NOTE);
-                case '/' :  return new Token(char.ToString(nextChar), TokenType.SLASH);
-                case ':' :  return new Token(char.ToString(nextChar), TokenType.COLON);
-                case ';' :  return new Token(char.ToString(nextChar), TokenType.SEMICOLON);
-                case '^' :  return new Token(char.ToString(nextChar), TokenType.CARET);
-                case '+':   return new Token(char.ToString(nextChar), TokenType.PLUS);
-                case '\0':  return new Token(char.ToString(nextChar), TokenType.EOF);
+                case '[' :  return new Token(char.ToString(nextChar), TokenType.LBRACKET, input.LineNumber);
+                case ']' :  return new Token(char.ToString(nextChar), TokenType.RBRACKET, input.LineNumber);
+                case '!' :  return new Token(char.ToString(nextChar), TokenType.BANG, input.LineNumber);
+                case '(' :  return new Token(char.ToString(nextChar), TokenType.LPAREN, input.LineNumber);
+                case ')' :  return new Token(char.ToString(nextChar), TokenType.RPAREN, input.LineNumber);
+                case '{' :  return new Token(char.ToString(nextChar), TokenType.LBRACE, input.LineNumber);
+                case '}' :  return new Token(char.ToString(nextChar), TokenType.RBRACE, input.LineNumber);
+                case '.' :  return new Token(char.ToString(nextChar), TokenType.DOT, input.LineNumber);
+                case '\'':  return new Token(char.ToString(nextChar), TokenType.APOS, input.LineNumber);
+                case ',' :  return new Token(char.ToString(nextChar), TokenType.COMMA, input.LineNumber);
+                case '>' :  return new Token(char.ToString(nextChar), TokenType.GREATER, input.LineNumber);
+                case '|' :  return new Token(char.ToString(nextChar), TokenType.NOTE, input.LineNumber);
+                case '/' :  return new Token(char.ToString(nextChar), TokenType.SLASH, input.LineNumber);
+                case ':' :  return new Token(char.ToString(nextChar), TokenType.COLON, input.LineNumber);
+                case ';' :  return new Token(char.ToString(nextChar), TokenType.SEMICOLON, input.LineNumber);
+                case '^' :  return new Token(char.ToString(nextChar), TokenType.CARET, input.LineNumber);
+                case '+':   return new Token(char.ToString(nextChar), TokenType.PLUS, input.LineNumber);
+                case '\0':  return new Token(char.ToString(nextChar), TokenType.EOF, input.LineNumber);
             }
 
             string returnTokenString = "";
@@ -263,7 +263,7 @@ namespace Musika
                         {
                             /* Other character (non-whitespace) found. Therefore, BREAK token is not recognized */
                             returnTokenString += nextChar;
-                            return new Token(returnTokenString, type);
+                            return new Token(returnTokenString, type, input.LineNumber);
                         }
 
                         nextChar = input.GetChar();
@@ -296,7 +296,7 @@ namespace Musika
                         type = TokenType.BREAK;
                     }
 
-                    return new Token(returnTokenString, type);
+                    return new Token(returnTokenString, type, input.LineNumber);
                 }
 
                 /* Since there were too few dashes for a BREAK token, put the dashes away (if there were any) and return the initial newline as a NEWLINE token */
@@ -308,7 +308,7 @@ namespace Musika
                         input.PutChar(returnTokenString.Last());
                         returnTokenString = returnTokenString.Substring(0, returnTokenString.Length - 1); /* Remove last character */
                     }
-                    return new Token(returnTokenString, TokenType.NEWLINE);
+                    return new Token(returnTokenString, TokenType.NEWLINE, input.LineNumber);
                 }
             }
 
@@ -332,99 +332,99 @@ namespace Musika
                 switch (returnTokenString)
                 {
                     /* Keywords */
-                    case "accompany":   return new Token(returnTokenString, TokenType.ACCOMPANY);
-                    case "name":        return new Token(returnTokenString, TokenType.NAME);
-                    case "author":      return new Token(returnTokenString, TokenType.AUTHOR);
-                    case "coauthors":   return new Token(returnTokenString, TokenType.COAUTHORS);
-                    case "title":       return new Token(returnTokenString, TokenType.TITLE);
-                    case "key":         return new Token(returnTokenString, TokenType.KEY);
-                    case "time":        return new Token(returnTokenString, TokenType.TIME);
-                    case "tempo":       return new Token(returnTokenString, TokenType.TEMPO);
-                    case "octave":      return new Token(returnTokenString, TokenType.OCTAVE);
-                    case "pattern":     return new Token(returnTokenString, TokenType.PATTERN);
-                    case "chord":       return new Token(returnTokenString, TokenType.CHORD);
-                    case "is":          return new Token(returnTokenString, TokenType.IS);
-                    case "common":      return new Token(returnTokenString, TokenType.COMMON);
-                    case "cut":         return new Token(returnTokenString, TokenType.CUT);
-                    case "repeat":      return new Token(returnTokenString, TokenType.REPEAT);
-                    case "layer":       return new Token(returnTokenString, TokenType.LAYER);
+                    case "accompany":   return new Token(returnTokenString, TokenType.ACCOMPANY, input.LineNumber);
+                    case "name":        return new Token(returnTokenString, TokenType.NAME, input.LineNumber);
+                    case "author":      return new Token(returnTokenString, TokenType.AUTHOR, input.LineNumber);
+                    case "coauthors":   return new Token(returnTokenString, TokenType.COAUTHORS, input.LineNumber);
+                    case "title":       return new Token(returnTokenString, TokenType.TITLE, input.LineNumber);
+                    case "key":         return new Token(returnTokenString, TokenType.KEY, input.LineNumber);
+                    case "time":        return new Token(returnTokenString, TokenType.TIME, input.LineNumber);
+                    case "tempo":       return new Token(returnTokenString, TokenType.TEMPO, input.LineNumber);
+                    case "octave":      return new Token(returnTokenString, TokenType.OCTAVE, input.LineNumber);
+                    case "pattern":     return new Token(returnTokenString, TokenType.PATTERN, input.LineNumber);
+                    case "chord":       return new Token(returnTokenString, TokenType.CHORD, input.LineNumber);
+                    case "is":          return new Token(returnTokenString, TokenType.IS, input.LineNumber);
+                    case "common":      return new Token(returnTokenString, TokenType.COMMON, input.LineNumber);
+                    case "cut":         return new Token(returnTokenString, TokenType.CUT, input.LineNumber);
+                    case "repeat":      return new Token(returnTokenString, TokenType.REPEAT, input.LineNumber);
+                    case "layer":       return new Token(returnTokenString, TokenType.LAYER, input.LineNumber);
 
                     /* Signs */
-                    case "Cmaj":        return new Token(returnTokenString, TokenType.SIGN);
-                    case "Gmaj":        return new Token(returnTokenString, TokenType.SIGN);
-                    case "Dmaj":        return new Token(returnTokenString, TokenType.SIGN);
-                    case "Amaj":        return new Token(returnTokenString, TokenType.SIGN);
-                    case "Emaj":        return new Token(returnTokenString, TokenType.SIGN);
-                    case "Bmaj":        return new Token(returnTokenString, TokenType.SIGN);
-                    case "F#maj":       return new Token(returnTokenString, TokenType.SIGN);
-                    case "C#maj":       return new Token(returnTokenString, TokenType.SIGN);
-                    case "Fmaj":        return new Token(returnTokenString, TokenType.SIGN);
-                    case "Bbmaj":       return new Token(returnTokenString, TokenType.SIGN);
-                    case "Ebmaj":       return new Token(returnTokenString, TokenType.SIGN);
-                    case "Abmaj":       return new Token(returnTokenString, TokenType.SIGN);
-                    case "Cm":          return new Token(returnTokenString, TokenType.SIGN);
-                    case "Gm":          return new Token(returnTokenString, TokenType.SIGN);
-                    case "Dm":          return new Token(returnTokenString, TokenType.SIGN);
-                    case "Am":          return new Token(returnTokenString, TokenType.SIGN);
-                    case "Em":          return new Token(returnTokenString, TokenType.SIGN);
-                    case "Bm":          return new Token(returnTokenString, TokenType.SIGN);
-                    case "F#m":         return new Token(returnTokenString, TokenType.SIGN);
-                    case "C#m":         return new Token(returnTokenString, TokenType.SIGN);
-                    case "Fm":          return new Token(returnTokenString, TokenType.SIGN);
-                    case "Bbm":         return new Token(returnTokenString, TokenType.SIGN);
-                    case "Ebm":         return new Token(returnTokenString, TokenType.SIGN);
-                    case "Abm":         return new Token(returnTokenString, TokenType.SIGN);
+                    case "Cmaj":        return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "Gmaj":        return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "Dmaj":        return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "Amaj":        return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "Emaj":        return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "Bmaj":        return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "F#maj":       return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "C#maj":       return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "Fmaj":        return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "Bbmaj":       return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "Ebmaj":       return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "Abmaj":       return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "Cm":          return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "Gm":          return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "Dm":          return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "Am":          return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "Em":          return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "Bm":          return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "F#m":         return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "C#m":         return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "Fm":          return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "Bbm":         return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "Ebm":         return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
+                    case "Abm":         return new Token(returnTokenString, TokenType.SIGN, input.LineNumber);
 
                     /* Notes */
-                    case "A":           return new Token(returnTokenString, TokenType.NOTE);
-                    case "B":           return new Token(returnTokenString, TokenType.NOTE);
-                    case "C":           return new Token(returnTokenString, TokenType.NOTE);
-                    case "D":           return new Token(returnTokenString, TokenType.NOTE);
-                    case "E":           return new Token(returnTokenString, TokenType.NOTE);
-                    case "F":           return new Token(returnTokenString, TokenType.NOTE);
-                    case "G":           return new Token(returnTokenString, TokenType.NOTE);
-                    case "A$":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "B$":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "C$":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "D$":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "E$":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "F$":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "G$":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "A#":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "B#":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "C#":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "D#":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "E#":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "F#":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "G#":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "Ab":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "Bb":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "Cb":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "Db":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "Eb":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "Fb":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "Gb":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "A*":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "B*":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "C*":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "D*":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "E*":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "F*":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "G*":          return new Token(returnTokenString, TokenType.NOTE);
-                    case "Abb":         return new Token(returnTokenString, TokenType.NOTE);
-                    case "Bbb":         return new Token(returnTokenString, TokenType.NOTE);
-                    case "Cbb":         return new Token(returnTokenString, TokenType.NOTE);
-                    case "Dbb":         return new Token(returnTokenString, TokenType.NOTE);
-                    case "Ebb":         return new Token(returnTokenString, TokenType.NOTE);
-                    case "Fbb":         return new Token(returnTokenString, TokenType.NOTE);
-                    case "Gbb":         return new Token(returnTokenString, TokenType.NOTE);
+                    case "A":           return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "B":           return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "C":           return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "D":           return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "E":           return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "F":           return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "G":           return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "A$":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "B$":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "C$":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "D$":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "E$":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "F$":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "G$":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "A#":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "B#":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "C#":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "D#":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "E#":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "F#":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "G#":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "Ab":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "Bb":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "Cb":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "Db":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "Eb":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "Fb":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "Gb":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "A*":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "B*":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "C*":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "D*":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "E*":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "F*":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "G*":          return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "Abb":         return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "Bbb":         return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "Cbb":         return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "Dbb":         return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "Ebb":         return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "Fbb":         return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
+                    case "Gbb":         return new Token(returnTokenString, TokenType.NOTE, input.LineNumber);
 
                     /* If none of these, then it's an ID */
                     default:
                         type = TokenType.ID;
                         if (returnTokenString.Contains("#") || returnTokenString.Contains("*"))
                             type = TokenType.UNKNOWN; /* If this is an ID, make sure there's no # or * in it */
-                        return new Token(returnTokenString, type);
+                        return new Token(returnTokenString, type, input.LineNumber);
                 }
             }
 
@@ -449,7 +449,7 @@ namespace Musika
                     quoteClosed = false;
                 }
 
-                return new Token(returnTokenString, quoteClosed ? TokenType.STRING : TokenType.UNKNOWN);
+                return new Token(returnTokenString, quoteClosed ? TokenType.STRING : TokenType.UNKNOWN, input.LineNumber);
             }
 
             /* Number */
@@ -472,14 +472,14 @@ namespace Musika
                 input.PutChar(nextChar);
 
                 /* Return a number token iff the returns string is parseable as a number */
-                return new Token(returnTokenString, (int.TryParse( returnTokenString, out _ )) ? TokenType.NUMBER : TokenType.UNKNOWN);
+                return new Token(returnTokenString, (int.TryParse( returnTokenString, out _ )) ? TokenType.NUMBER : TokenType.UNKNOWN, input.LineNumber);
             }
 
             /* Else unknown token */
             else
             {
                 returnTokenString += nextChar;
-                return new Token(returnTokenString, TokenType.UNKNOWN);
+                return new Token(returnTokenString, TokenType.UNKNOWN, input.LineNumber);
             }
         }
 

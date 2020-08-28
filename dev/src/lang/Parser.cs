@@ -113,7 +113,7 @@ namespace Musika
             Token next = lexer.GetToken();
 
             if (next.Type != etype)
-                throw new SyntaxError(next.Type, etype);
+                throw new SyntaxError(next, etype);
 
             return next;
         }
@@ -250,7 +250,7 @@ namespace Musika
                         noteSheet.Accompaniments.Add(nameToken.Content, accSheet);
                     }
                     else if (!ignoreContext)
-                        throw new ContextError(ContextError.INVALID_FILENAME_ERROR);
+                        throw new ContextError(ContextError.INVALID_FILENAME_ERROR, nameToken);
                 }
             }
             else
@@ -273,7 +273,7 @@ namespace Musika
                             noteSheet.Accompaniments.Add(nameToken.Content, accSheet);
                         }
                         else if (!ignoreContext)
-                            throw new ContextError(ContextError.INVALID_FILENAME_ERROR);
+                            throw new ContextError(ContextError.INVALID_FILENAME_ERROR, nameToken);
                     }
 
                     /* File is in the do-not-compile list */
@@ -281,11 +281,11 @@ namespace Musika
                     {
                         /* Check for self-reference and throw self-reference error if there is one */
                         if (filename == this.filename)
-                            throw new ContextError(ContextError.SELF_REFERENCE_ERROR);
+                            throw new ContextError(ContextError.SELF_REFERENCE_ERROR, nameToken);
 
                         /* Throw a cross-reference error */
                         else
-                            throw new ContextError(ContextError.CROSS_REFERENCE_ERROR);
+                            throw new ContextError(ContextError.CROSS_REFERENCE_ERROR, nameToken);
                     }
                 }
             }
@@ -347,7 +347,7 @@ namespace Musika
                 ConsumeNewlines();
             }
             else
-                throw new SyntaxError(next.Type, TokenType.AUTHOR, TokenType.COAUTHORS);
+                throw new SyntaxError(next, TokenType.AUTHOR, TokenType.COAUTHORS);
 
             /* Parse the key, time, tempo, and octave */
             ParseMusicInfo();
@@ -458,7 +458,7 @@ namespace Musika
                         /* Make sure the reference is a valid accompaniment name */
                         idName = next.Content;
                         if (!noteSheet.Accompaniments.ContainsKey(idName))
-                            throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR);
+                            throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
 
                         /* Look up the referred value and set the title to it */
                         referenceSheet = noteSheet.Accompaniments[idName];
@@ -471,7 +471,7 @@ namespace Musika
             }
 
             /* Neither a literal nor a reference was specified */
-            else throw new SyntaxError(next.Type, TokenType.STRING, TokenType.ID);
+            else throw new SyntaxError(next, TokenType.STRING, TokenType.ID);
         }
 
         private void ParseAuthorDefine() /* author_define -> author NEWLINE* coauthors | coauthors NEWLINE* author | author */
@@ -525,7 +525,7 @@ namespace Musika
                         /* Make sure the reference is a valid accompaniment name */
                         idName = next.Content;
                         if (!noteSheet.Accompaniments.ContainsKey(idName))
-                            throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR);
+                            throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
 
                         /* Look up the referred value and set the author to it */
                         referenceSheet = noteSheet.Accompaniments[idName];
@@ -538,7 +538,7 @@ namespace Musika
             }
 
             /* Neither a literal nor a reference was specified */
-            else throw new SyntaxError(next.Type, TokenType.STRING, TokenType.ID);
+            else throw new SyntaxError(next, TokenType.STRING, TokenType.ID);
         }
 
         private void ParseCoauthors() /* coauthors -> COAUTHORS COLON STRING NEWLINE | AUTHOR COLON ID NEWLINE */
@@ -569,7 +569,7 @@ namespace Musika
                         /* Make sure the reference is a valid accompaniment name */
                         idName = next.Content;
                         if (!noteSheet.Accompaniments.ContainsKey(idName))
-                            throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR);
+                            throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
 
                         /* Look up the referred value and set the coauthors to it */
                         referenceSheet = noteSheet.Accompaniments[idName];
@@ -582,7 +582,7 @@ namespace Musika
             }
 
             /* Neither a literal nor a reference was specified */
-            else throw new SyntaxError(next.Type, TokenType.STRING, TokenType.ID);
+            else throw new SyntaxError(next, TokenType.STRING, TokenType.ID);
         }
 
         private void ParseKey(bool endWithNewline) /* key -> KEY COLON SIGN NEWLINE | KEY COLON ID NEWLINE */
@@ -606,7 +606,7 @@ namespace Musika
                     if (noteSheet.KeySignuatureExists(next.Content))
                         noteSheet.Key = NoteSheet.KeyConversion[next.Content];
                     else
-                        throw new ContextError(ContextError.KEY_ERROR);
+                        throw new ContextError(ContextError.KEY_ERROR, next);
 
                 /* If the value is a refrence, search for the referred value */
                 else
@@ -616,7 +616,7 @@ namespace Musika
                         /* Make sure the reference is a valid accompaniment name */
                         idName = next.Content;
                         if (!noteSheet.Accompaniments.ContainsKey(idName))
-                            throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR);
+                            throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
 
                         /* Look up the referred value and set the key to it */
                         referenceSheet = noteSheet.Accompaniments[idName];
@@ -630,7 +630,7 @@ namespace Musika
             }
 
             /* Neither a literal nor a reference was specified */
-            else throw new SyntaxError(next.Type, TokenType.SIGN, TokenType.ID);
+            else throw new SyntaxError(next, TokenType.SIGN, TokenType.ID);
         }
 
         private void ParseTime(bool endWithNewline) /* time -> TIME COLON (KeyWord2) NEWLINE | TIME COLON ID NEWLINE | TIME COLON NUMBER SLASH NUMBER NEWLINE | TIME COLON NUMBER NEWLINE */
@@ -674,16 +674,16 @@ namespace Musika
                 {
                     /* Check that the time signature was initialized (there must be an initial value before you can modify it) */
                     if (noteSheet.Time.baseNote == 0 && noteSheet.Time.beatsPerMeasure == 0 && !ignoreContext)
-                        throw new ContextError(ContextError.TIME_ERROR);
+                        throw new ContextError(ContextError.TIME_ERROR, next);
                     else
                     {
                         /* Check that the time was not set to 0 (because that would not make much sense) */
                         if (firstNumber == 0)
-                            throw new ContextError(ContextError.ZERO_TIME_ERROR);
+                            throw new ContextError(ContextError.ZERO_TIME_ERROR, next);
 
                         /* Increase/Decrease the beats per measure by the same order of magnitude (so that the true time signature remains the same */
                         /* Example: if the original time signature is 4 / 4, and the base note is set to 8, the new time signature is 8 / 8         */
-                        baseNoteRatio = (float)firstNumber / (float)noteSheet.Time.baseNote;
+                        baseNoteRatio = firstNumber / noteSheet.Time.baseNote;
                         noteSheet.Time.baseNote = firstNumber;
                         noteSheet.Time.beatsPerMeasure *= baseNoteRatio;
                     }
@@ -701,7 +701,7 @@ namespace Musika
                 /* This should never happend because the token is already checked to be a Tier 2 keyword and all Tier 2 keywords should be keys in the */
                 /* time signature dictionary (NoteSheet class)                                                                                         */
                 else
-                    throw new ContextError(ContextError.TIER_2_DICT_ERROR); /* This should never happen */
+                    throw new ContextError(ContextError.TIER_2_DICT_ERROR, next); /* This should never happen */
             }
 
             /* If the value is a refrence, search for the referred value */
@@ -712,7 +712,7 @@ namespace Musika
                     /* Make sure the reference is a valid accompaniment name */
                     idName = next.Content;
                     if (!noteSheet.Accompaniments.ContainsKey(idName))
-                        throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR);
+                        throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
 
                     /* Look up the referred value and set the time to it */
                     referenceSheet = noteSheet.Accompaniments[idName];
@@ -721,7 +721,7 @@ namespace Musika
             }
 
             /* Invalid token */
-            else throw new SyntaxError(next.Type, TokenType.NUMBER, TokenType.COMMON, TokenType.CUT, TokenType.ID);
+            else throw new SyntaxError(next, TokenType.NUMBER, TokenType.COMMON, TokenType.CUT, TokenType.ID);
 
             /* Continue parsing */
             if (endWithNewline)
@@ -795,7 +795,7 @@ namespace Musika
                     /* Make sure the reference is a valid accompaniment name */
                     idName = next.Content;
                     if (!noteSheet.Accompaniments.ContainsKey(idName)) /* Make sure accompaniment exists */
-                        throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR);
+                        throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
 
                     /* Look up the referred value and set the tempo to it */
                     referenceSheet = noteSheet.Accompaniments[idName];
@@ -806,7 +806,7 @@ namespace Musika
                 }
             }
 
-            else throw new SyntaxError(next.Type, TokenType.NUMBER, TokenType.ID);
+            else throw new SyntaxError(next, TokenType.NUMBER, TokenType.ID);
 
             /* Continue parsing */
             if (endWithNewline)
@@ -845,12 +845,12 @@ namespace Musika
 
                     /* Throw an error if the new octave is below 0 */
                     if (noteSheet.Octave < 0 && !ignoreContext)
-                        throw new ContextError(ContextError.OCTAVE_ERROR);
+                        throw new ContextError(ContextError.OCTAVE_ERROR, next);
                 }
 
                 /* Plus was followed by a non-number token: throw a syntax error */
                 else
-                    throw new SyntaxError(next.Type, TokenType.NUMBER);
+                    throw new SyntaxError(next, TokenType.NUMBER);
             }
 
             /* Value is an integer */
@@ -864,7 +864,7 @@ namespace Musika
                     noteSheet.Octave += newOctave;
 
                 if (noteSheet.Octave < 0 && !ignoreContext)
-                    throw new ContextError(ContextError.OCTAVE_ERROR);
+                    throw new ContextError(ContextError.OCTAVE_ERROR, next);
             }
 
             /* If the value is a refrence, search for the referred value */
@@ -875,7 +875,7 @@ namespace Musika
                     /* Make sure the reference is a valid accompaniment name */
                     idName = next.Content;
                     if (!noteSheet.Accompaniments.ContainsKey(idName))
-                        throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR);
+                        throw new ContextError(ContextError.INVALID_ACC_REFERENCE_ERROR, next);
 
                     /* Look up the referred value and set the octave to it */
                     referenceSheet = noteSheet.Accompaniments[idName];
@@ -883,7 +883,7 @@ namespace Musika
                 }
             }
 
-            else throw new SyntaxError(next.Type, TokenType.NUMBER, TokenType.ID);
+            else throw new SyntaxError(next, TokenType.NUMBER, TokenType.ID);
         }
 
         private void ParsePcDefinition() /* pc_definition -> PATTERN L_BRACKET ID R_BRACKET COLON NEWLINE NEWLINE* music | CHORD ID IS chord_type */
@@ -931,7 +931,7 @@ namespace Musika
                 /* Make sure the pattern name does not exist */
                 if (noteSheet.Patterns.ContainsKey(patternName))
                 {
-                    throw new ContextError(ContextError.DUPLICATE_NAME_ERROR);
+                    throw new ContextError(ContextError.DUPLICATE_NAME_ERROR, next);
                 }
 
                 /* Add the generated sheet to the list of patterns */
@@ -963,11 +963,11 @@ namespace Musika
                 }
                 else
                 {
-                    throw new ContextError(ContextError.DUPLICATE_NAME_ERROR);
+                    throw new ContextError(ContextError.DUPLICATE_NAME_ERROR, next);
                 }
             }
 
-            else throw new SyntaxError(next.Type, TokenType.PATTERN, TokenType.CHORD);
+            else throw new SyntaxError(next, TokenType.PATTERN, TokenType.CHORD);
         }
 
         private NoteSet ParseChordType() /* chord_type -> NOTE | NOTE octave_change | NOTE SEMICOLON chord_type | NOTE octave_change SEMICOLON chord_type */
@@ -1025,7 +1025,7 @@ namespace Musika
                 return ParseRiff(layerPositionSheetPairs);
 
             /* If the next token was not in the function or riff first set, throw a syntax error */
-            else throw new SyntaxError(next.Type, TokenType.REPEAT, TokenType.LAYER, TokenType.NOTE, TokenType.ID, TokenType.CARET, TokenType.BANG);
+            else throw new SyntaxError(next, TokenType.REPEAT, TokenType.LAYER, TokenType.NOTE, TokenType.ID, TokenType.CARET, TokenType.BANG);
         }
 
         private Sheet ParseFunction(List<PositionSheetPair> layerPositionSheetPairs, string patternName = null) /* function -> repeat | layer */
@@ -1046,7 +1046,7 @@ namespace Musika
                 return null; /* A layer does not produce any note sheets for the main sheet */
             }
 
-            else throw new SyntaxError(next.Type, TokenType.REPEAT, TokenType.LAYER);
+            else throw new SyntaxError(next, TokenType.REPEAT, TokenType.LAYER);
         }
 
         private Sheet ParseRepeat() /* repeat -> REPEAT L_PAREN NUMBER R_PAREN L_BRACE music R_BRACE */
@@ -1082,7 +1082,7 @@ namespace Musika
             if (repeatNum == 0)
                 return null;
             else if (repeatNum < 0)
-                throw new ContextError(ContextError.INVALID_REPEAT_NUM_ERROR);
+                throw new ContextError(ContextError.INVALID_REPEAT_NUM_ERROR, numberTok);
 
             /* Add a layer to the note count tracker to count only the notes in the repeat section */
             AddNoteCountTrackerLayer();
@@ -1133,12 +1133,13 @@ namespace Musika
             PositionSheetPair returnValue;      /* Layer as position-sheet music pair to return                             */
             Sheet             pattern;          /* Layered music                                                            */
             SheetSet          newLayerList;     /* Layer list to set as the layer list if not already initialized           */
+            Token             layerTok;         /* Indicates the token of the layer statement                               */
             int               position;         /* Position of layered music in song                                        */
             int               absolutePosition; /* Position of a layer call in the invoked pattern                          */
             /* / Local Variables */
 
             /* Parse declaration */
-            Expect(TokenType.LAYER);
+            layerTok = Expect(TokenType.LAYER);
             Expect(TokenType.LPAREN);
 
             if (!ignoreContext)
@@ -1163,11 +1164,11 @@ namespace Musika
                     case CallbackType.INVALID_CALLBACK:
                     case CallbackType.ACCOMPANIMENT_CHORD:
                     case CallbackType.LOCAL_CHORD:
-                        throw new ContextError(ContextError.LAYER_NO_PATTERN_ERROR);
+                        throw new ContextError(ContextError.LAYER_NO_PATTERN_ERROR, layerTok);
 
                     /* THIS SHOULD NEVER HAPPEN SINCE ALL CALLBACK TYPES SHOULD BE COVERED */
                     default:
-                        throw new ContextError(ContextError.NULL_PATTERN_ERROR);
+                        throw new ContextError(ContextError.NULL_PATTERN_ERROR, layerTok);
                 }
 
                 /* Set the position to the current note count so that the layer begins when that many notes have passed */
@@ -1287,7 +1288,7 @@ namespace Musika
                 {
                     /* Make sure a last note exists */
                     if (returnValue.Count == 0 && !ignoreContext)
-                        throw new ContextError(ContextError.REPEAT_NOTHING_ERROR);
+                        throw new ContextError(ContextError.REPEAT_NOTHING_ERROR, next);
 
                     else if (!ignoreContext)
                         for (i = 0; i < elementReturn - 1; ++i) /* subtract 1 because it is already in the list once */
@@ -1495,7 +1496,7 @@ namespace Musika
                                 break;
 
                             default:
-                                throw new ContextError(ContextError.PC_REFERENCE_ERROR);
+                                throw new ContextError(ContextError.PC_REFERENCE_ERROR, next);
                         }
                     }
                 }
@@ -1532,13 +1533,13 @@ namespace Musika
                         break;
 
                     default:
-                        throw new SyntaxError(next.Type, TokenType.KEY, TokenType.TIME, TokenType.TEMPO, TokenType.OCTAVE);
+                        throw new SyntaxError(next, TokenType.KEY, TokenType.TIME, TokenType.TEMPO, TokenType.OCTAVE);
                 }
 
                 /* Finish parsing */
                 Expect(TokenType.BANG);
             }
-            else throw new SyntaxError(next.Type, TokenType.NOTE, TokenType.ID, TokenType.CARET, TokenType.BANG);
+            else throw new SyntaxError(next, TokenType.NOTE, TokenType.ID, TokenType.CARET, TokenType.BANG);
 
             return returnValue;
         }

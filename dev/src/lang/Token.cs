@@ -5,17 +5,19 @@
     {
         /* PROPERTIES */
 
-        public readonly string Content;
         public readonly TokenType Type;
+        public readonly int LineNumber;
+        public readonly string Content;
 
         /* / PROPERTIES */
 
         /* CONSTRUCTOR */
 
-        public Token(string content, TokenType type)
+        public Token(string content, TokenType type, int lineNum)
         {
-            this.Content = content;
-            this.Type = type;
+            Content     = content;
+            Type        = type;
+            LineNumber  = lineNum;
         }
 
         /* / CONSTRUCTOR */

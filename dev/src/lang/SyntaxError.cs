@@ -6,16 +6,16 @@ namespace Musika
     /* Exception subclass that is thrown when a syntax error is made in the parser */
     public partial class SyntaxError : Exception
     {
-        public SyntaxError(TokenType actual, params TokenType[] expected) : base(CreateErrorString(actual, expected)) { }
+        public SyntaxError(Token actual, params TokenType[] expected) : base(CreateErrorString(actual, expected)) { }
 
-        private static string CreateErrorString(TokenType actual, TokenType[] expected)
+        private static string CreateErrorString(Token actual, TokenType[] expected)
         {
             /* Local Variables */
             string errorMsg;    /* Buffer for syntax error message */
             int i;              /* Increment variable */
             /* / Local Variables */
 
-            errorMsg = "SYNTAX ERROR: expected: ";
+            errorMsg = $"SYNTAX ERROR at line number {actual.LineNumber}: expected: ";
 
             if (expected.Length == 1) /* expected: THIS; received: THAT */
                 errorMsg += expected[0];
@@ -30,7 +30,7 @@ namespace Musika
                 errorMsg += "or " + expected.Last();
             }
 
-            errorMsg += "; received: " + actual;
+            errorMsg += "; received: " + actual.Type + " of value \"" + actual.Content + "\"";
 
             return errorMsg;
         }
