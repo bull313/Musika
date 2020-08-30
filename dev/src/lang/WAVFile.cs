@@ -14,6 +14,7 @@ namespace Musika
             /* CONSTANTS */
 
             public const double ANGULAR_FREQUENCY_COEFFICIENT = (2 * Math.PI) / WAVDataChunk.SAMPLES_PER_SEC_PER_CHANNEL;   /* Angular frequency of the sine wave function adjusted for the samples per second per channel  */
+            public const double NOTE_VALUE_CUTOFF_PERCENTAGE = 0.9995;                                                      /* Indicates the percentage of each note to keep; the remaining time will be cut off to allow space between notes */
             public const int BITS_IGNORED = 8;                                                                              /* Number of bits ignored when calculating WAV file size                                        */
             public const string WAV_FILE_EXT = ".wav";                                                                      /* File extension WAV files                                                                     */
 
@@ -63,6 +64,7 @@ namespace Musika
                 /* Local Variables */
                 double amplitude;                   /* Sine wave function amplitude                                 */
                 double elapsedTime;                 /* Time (in seconds) of already processed sample data           */
+                double cutoffTime;                  /* Indicates amount of time for chord to be cut off             */
                 int chordIndex;                     /* Increment variable for chords (collection of frequencies)    */
                 int freqIndex;                      /* Increment variable for the current frequency in a chord      */
                 int timeIndex;                      /* Increment variable for the current time/sample               */
@@ -80,6 +82,8 @@ namespace Musika
 
                 for (chordIndex = 0; chordIndex < durationTable.Length; ++chordIndex)
                 {
+                    cutoffTime = ( (int)ConvertSecondsToSamples(elapsedTime + durationTable[chordIndex]) ) * NOTE_VALUE_CUTOFF_PERCENTAGE;
+
                     for (
                         timeIndex = (int)ConvertSecondsToSamples(elapsedTime);
                         timeIndex < (int)ConvertSecondsToSamples(elapsedTime + durationTable[chordIndex]);
@@ -88,10 +92,18 @@ namespace Musika
                     {
                         for (freqIndex = 0; freqIndex < frequencyTable[chordIndex].Length; ++freqIndex)
                         {
-                            returnData[timeIndex] += (short)
-                            (
-                                amplitude * Math.Sin(ANGULAR_FREQUENCY_COEFFICIENT * frequencyTable[chordIndex][freqIndex] * timeIndex)
-                            );
+                            if (timeIndex <= cutoffTime)
+                            {
+                                returnData[timeIndex] += (short)
+                                (
+                                    amplitude * Math.Sin(ANGULAR_FREQUENCY_COEFFICIENT * frequencyTable[chordIndex][freqIndex] * timeIndex)
+                                );
+                            }
+                            else
+                            {
+                                /* Cutoff time reached - fill remaining data with space */
+                                returnData[timeIndex] += 0;
+                            }
                         }
                     }
 

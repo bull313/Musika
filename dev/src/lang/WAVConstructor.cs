@@ -40,13 +40,13 @@ namespace Musika
             private void ConstructFreqAndDurationTables(Sheet sheet, out double[][] frequencyTable, out double[] durationTable) /* Takes a Sheet of music and converts it into 2 tables:                    */
             {                                                                                                                   /* A table of chords laid out by frequencies and a table of note durations  */
                 /* Local Variables */
-                List<List<double>> frequencyTableList;  /* Table to dynamically add frequenices to a table */
-                List<double> durationTableList;         /* Table to dynamically add durations to a table   */
+                List<List<double>>  frequencyTableList;  /* Table to dynamically add frequenices to a table */
+                List<double>        durationTableList;   /* Table to dynamically add durations to a table   */
                 /* / Local Variables */
 
                 /* Initialize dynamic tables */
-                frequencyTableList = new List<List<double>>();
-                durationTableList = new List<double>();
+                frequencyTableList  = new List<List<double>>();
+                durationTableList   = new List<double>();
 
                 /* Get the list of list of frequencies and maximum durations from the note sheet */
                 foreach (NoteSet noteSet in sheet)
@@ -56,8 +56,8 @@ namespace Musika
                 }
 
                 /* Convert dynamic tables to arrays */
-                frequencyTable = frequencyTableList.Select(chord => chord.ToArray()).ToArray();
-                durationTable = durationTableList.ToArray();
+                frequencyTable  = frequencyTableList.Select(chord => chord.ToArray()).ToArray();
+                durationTable   = durationTableList.ToArray();
             }
 
             /* / PRIVATE METHODS */
@@ -119,7 +119,7 @@ namespace Musika
                                 offset,
                                 new FrequencyDurationTableList
                                 {
-                                new FrequencyDurationTable(layerFrequencyTable, layerDurationTable)
+                                    new FrequencyDurationTable(layerFrequencyTable, layerDurationTable)
                                 }
                             );
                         }
