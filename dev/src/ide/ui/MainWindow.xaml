@@ -54,15 +54,15 @@
         <KeyBinding Command="New"                           Key="N"     Modifiers="Control"                     />
         <KeyBinding Command="Open"                          Key="O"     Modifiers="Control"                     />
         <KeyBinding Command="Save"                          Key="S"     Modifiers="Control"                     />
-        <KeyBinding Command="SaveAs"                        Key="L"     Modifiers="Control"                       />
+        <KeyBinding Command="SaveAs"                        Key="S"     Modifiers="Alt"                         />
         <KeyBinding Command="Close"                         Key="Q"     Modifiers="Control"                     />
 
         <!-- View -->
-        <KeyBinding Command="PrintPreview"                  Key="F"     Modifiers="Control"                     />
+        <KeyBinding Command="PrintPreview"                  Key="F"     Modifiers="Alt"                         />
 
 
         <!-- Build -->
-        <KeyBinding Command="Help"                          Key="P"     Modifiers="Control"                     />
+        <KeyBinding Command="Help"                          Key="D"     Modifiers="Control"                     />
         <KeyBinding Command="Properties"                    Key="W"     Modifiers="Control"                     />
 
 
@@ -87,7 +87,7 @@
                 <MenuItem Header="New"                          x:Name="File_New"                       Command="New"                               InputGestureText="Ctrl+N"                           />
                 <MenuItem Header="Open"                         x:Name="File_Open"                      Command="Open"                              InputGestureText="Ctrl+O"                           />
                 <MenuItem Header="Save"                         x:Name="File_Save"                      Command="Save"                              InputGestureText="Ctrl+S"                           />
-                <MenuItem Header="Save As"                      x:Name="File_SaveAs"                    Command="SaveAs"                            InputGestureText="Ctrl+Shift+S"                     />
+                <MenuItem Header="Save As"                      x:Name="File_SaveAs"                    Command="SaveAs"                            InputGestureText="Alt+S"                            />
                 <MenuItem Header="Exit"                         x:Name="File_Exit"                      Command="Close"                             InputGestureText="Ctrl+Q"                           />
 
             </MenuItem>
@@ -95,14 +95,14 @@
             <!-- View -->
             <MenuItem Header="View">
 
-                <MenuItem Header="Toggle Syntax Highlighting"   x:Name="View_ToggleSyntaxHighlighting"  Command="PrintPreview"                      InputGestureText="Ctrl+Shift+F" IsCheckable="true"  />
+                <MenuItem Header="Toggle Syntax Highlighting"   x:Name="View_ToggleSyntaxHighlighting"  Command="PrintPreview"                      InputGestureText="Alt+F" IsCheckable="true"         />
 
             </MenuItem>
 
             <!-- Build -->
             <MenuItem Header="Build">
 
-                <MenuItem Header="Build Note Sheet"             x:Name="Build_BuildNoteSheet"           Command="Help"                              InputGestureText="Ctrl+B"                           />
+                <MenuItem Header="Build Note Sheet"             x:Name="Build_BuildNoteSheet"           Command="Help"                              InputGestureText="Ctrl+D"                           />
                 <MenuItem Header="Build WAV File"               x:Name="Build_BuildWAVFile"             Command="Properties"                        InputGestureText="Ctrl+W"                           />
 
             </MenuItem>
@@ -111,7 +111,7 @@
             <MenuItem Header="Play">
 
                 <MenuItem Header="Play Song"                    x:Name="Play_PlaySong"                  Command="Print"                             InputGestureText="F5"                               />
-                <MenuItem Header="Stop Song"                    x:Name="Play_StopSong"                  Command="CancelPrint"                       InputGestureText="Shift+F5"                         />
+                <MenuItem Header="Stop Song"                    x:Name="Play_StopSong"                  Command="CancelPrint"                       InputGestureText="Ctrl+F5"                          />
 
             </MenuItem>
 

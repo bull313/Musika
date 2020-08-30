@@ -17,12 +17,12 @@ namespace MusikaIDE
         /*
         *  ---------------- CONSTANTS ----------------
         */
-        public const int EXIT_OK_CODE = 0;                                                                                                                                                                                    /* Application quitting on its own with no issues                       */
-        public const string MUSIKA_FILE_FILTER = "Musika Files(*.ka)|*.ka|All(*.*)|*";                                                                                                                                                 /* Filters Musika files in file dialogs                                 */
-        public const string NOTESHEET_FILE_EXT = ".mkc";                                                                                                                                                                               /* Serialized note sheet file extension                                 */
-        public const string UKNOWN_ISSUE_MESSAGE = "Musika IDE ran into a problem processing your last request.\nPlease consult your nearest Musika engineer.\nSorry for the inconvenience.";                                            /* Error message if an unknown exception occurrs                        */
+        public const int EXIT_OK_CODE                               = 0;                                                                                                                                                                                    /* Application quitting on its own with no issues                       */
+        public const string MUSIKA_FILE_FILTER                      = "Musika Files(*.ka)|*.ka|All(*.*)|*";                                                                                                                                                 /* Filters Musika files in file dialogs                                 */
+        public const string NOTESHEET_FILE_EXT                      = ".mkc";                                                                                                                                                                               /* Serialized note sheet file extension                                 */
+        public const string UKNOWN_ISSUE_MESSAGE                    = "Musika IDE ran into a problem processing your last request.\nPlease consult your nearest Musika engineer.\nSorry for the inconvenience.";                                            /* Error message if an unknown exception occurrs                        */
         public const string VIEW_TOGGLE_SYNTAX_HIGHLIGHTING_WARNING = "WARNING:\nThe syntax highlighting feature allows you to view Musika code in a more visual style, but currently the process of highlighting is VERY slow.\nPlease use with caution";  /* Syntax highlighting is slow warning message when user turns it on    */
-        public const string WAV_FILE_EXT = ".wav";                                                                                                                                                                               /* WAV audio file extension                                             */
+        public const string WAV_FILE_EXT                            = ".wav";                                                                                                                                                                               /* WAV audio file extension                                             */
         /*
         *  ---------------- / CONSTANTS ----------------
         */
@@ -31,18 +31,24 @@ namespace MusikaIDE
         /*
         *  ---------------- PROPERTIES ----------------
         */
-        private readonly Dictionary<TokenType, Style> tokenTypeStyleDict;             /* Determines which token types are styled and how they are styled                                  */
-        private readonly Dictionary<string, Style> wordStyleDict;                  /* Determines which words are styled and how they are styled                                        */
-        private readonly List<StyleText> styledTextRanges;               /* Used to keep track of the keywords in in the text box                                            */
-        private readonly Style multiLineCommentStyle;          /* Styling data for multi-line comments                                                             */
-        private readonly Style singleLineCommentStyle;         /* Styling data for single line comments                                                            */
+        private readonly Dictionary<TokenType, Style>   tokenTypeStyleDict;             /* Determines which token types are styled and how they are styled                                  */
+        private readonly Dictionary<string, Style>      wordStyleDict;                  /* Determines which words are styled and how they are styled                                        */
+        private readonly List<StyleText>                styledTextRanges;               /* Used to keep track of the keywords in in the text box                                            */
+        private readonly Style                          multiLineCommentStyle;          /* Styling data for multi-line comments                                                             */
+        private readonly Style                          singleLineCommentStyle;         /* Styling data for single line comments                                                            */
+        private readonly string                         baseTitle;                      /* Base IDE title without save synchronization message                                              */
 
 
-        private SongPlayer songPlayer;                     /* Environment object to play a WAV song                                                            */
-        bool inMultiLineComment;             /* Checks if the current text is in a multi line comment based on the context of the previous run   */
-        bool viewSyntaxHighlighting;         /* If and only if enabled, syntax highlighting functionality is on                                  */
-        private string currentDirectory;               /* Keeps track of the directory of the current file                                                 */
-        private string savedFilename;                  /* Name of file we are writing to (initialized to the bin directory of the executable               */
+        private SongPlayer                              songPlayer;                     /* Environment object to play a WAV song                                                            */
+        bool                                            inMultiLineComment;             /* Checks if the current text is in a multi line comment based on the context of the previous run   */
+        bool                                            viewSyntaxHighlighting;         /* If and only if enabled, syntax highlighting functionality is on                                  */
+        private string                                  currentDirectory;               /* Keeps track of the directory of the current file                                                 */
+        private string                                  buildTitle;                     /* Title indication of if the current build exists                                                  */
+        private string                                  openTitle;                      /* Title indication of current opened file                                                          */
+        private string                                  savedFilename;                  /* Name of file we are writing to (initialized to the bin directory of the executable               */
+        private string                                  saveTitle;                      /* Title indication of current save synchronization status                                          */
+        private string                                  wavTitle;                       /* Title indication of if the current WAV file exists                                               */
+
         /*
         *  ---------------- / PROPERTIES ----------------
         */
@@ -68,26 +74,27 @@ namespace MusikaIDE
             /* Initialize properties */
             InitializeComponent();
             styledTextRanges = new List<StyleText>();
+            baseTitle = Title;
 
             /* Create Styles */
 
             /* Intialize all style Variables */
-            Style bangStyle = new Style(),  /* Bangs !                                      */
-                    breakStyle = new Style(),  /* Break token (\n---\n)                        */
-                    caretStyle = new Style(),  /* Carets ^                                     */
-                    dotStyle = new Style(),  /* Dots .                                       */
-                    greaterThanStyle = new Style(),  /* Greater than symbol >                        */
-                    keySignStyle = new Style(),  /* Key signature keywords (Cmaj, Am, etc.)      */
-                    noteStyle = new Style(),  /* Note names (C, D, G, etc.)                   */
-                    numberStyle = new Style(),  /* Numbers 1234567890                           */
+            Style bangStyle             = new Style(),  /* Bangs !                                      */
+                    breakStyle          = new Style(),  /* Break token (\n---\n)                        */
+                    caretStyle          = new Style(),  /* Carets ^                                     */
+                    dotStyle            = new Style(),  /* Dots .                                       */
+                    greaterThanStyle    = new Style(),  /* Greater than symbol >                        */
+                    keySignStyle        = new Style(),  /* Key signature keywords (Cmaj, Am, etc.)      */
+                    noteStyle           = new Style(),  /* Note names (C, D, G, etc.)                   */
+                    numberStyle         = new Style(),  /* Numbers 1234567890                           */
                     octaveModifierStyle = new Style(),  /* Commas, and apostrophes' (octave modifiers)  */
-                    stringStyle = new Style(),  /* "Strings"                                    */
-                    tier1 = new Style(),  /* Tier-1 keywords (see grammar.html)           */
-                    tier2 = new Style(),  /* Tier-2 keywords (see grammar.html)           */
-                    tier3 = new Style();  /* Tier-3 keywords (see grammar.html)           */
+                    stringStyle         = new Style(),  /* "Strings"                                    */
+                    tier1               = new Style(),  /* Tier-1 keywords (see grammar.html)           */
+                    tier2               = new Style(),  /* Tier-2 keywords (see grammar.html)           */
+                    tier3               = new Style();  /* Tier-3 keywords (see grammar.html)           */
 
-            multiLineCommentStyle = new Style();  /* => Multi Line Comments <=                    */
-            singleLineCommentStyle = new Style();  /* & Signle Line Comments                       */
+            multiLineCommentStyle       = new Style();  /* => Multi Line Comments <=                    */
+            singleLineCommentStyle      = new Style();  /* & Signle Line Comments                       */
 
             /* Add Colors */
             bangStyle.AddColor(Colors.DarkTurquoise);
@@ -154,14 +161,14 @@ namespace MusikaIDE
         private void CheckWordsInRun(Run r) /* Scans a run for keywords and stores the keywords with their information in the buffer */
         {
             /* Local Variables */
-            StyleText styleText;                  /* Contains the beginning and end positions of a styled token along with the style object to style the token    */
-            LexicalAnalyzer lexer;                      /* Identifies tokens in the text to be colored                                                                  */
-            Token nextToken;                  /* Pointer to the current token                                                                                 */
+            StyleText styleText;            /* Contains the beginning and end positions of a styled token along with the style object to style the token    */
+            LexicalAnalyzer lexer;          /* Identifies tokens in the text to be colored                                                                  */
+            Token nextToken;                /* Pointer to the current token                                                                                 */
             int textOffset;                 /* Start position of the current text ignoring the prefix under a multi-line comment                            */
             int leftRangePointer;           /* Pointer to the beginning position of the current token in the text                                           */
             int previousLeftRangePointer;   /* Stores the left range pointer for adjusting BREAK tokens                                                     */
             int rightRangePointer;          /* Pointer to the end position of the current token in the text                                                 */
-            string currentText;                /* Current text to process                                                                                      */
+            string currentText;             /* Current text to process                                                                                      */
             /* / Local Variables */
 
             /* Create new lexical analyzer and start reading tokens */
@@ -189,20 +196,20 @@ namespace MusikaIDE
                 /* Build style text object and add it to the words to style buffer */
                 styleText = new StyleText
                 {
-                    Start = r.ContentStart.GetPositionAtOffset(leftRangePointer),
-                    End = r.ContentStart.GetPositionAtOffset(rightRangePointer),
-                    Style = multiLineCommentStyle
+                    Start   = r.ContentStart.GetPositionAtOffset(leftRangePointer),
+                    End     = r.ContentStart.GetPositionAtOffset(rightRangePointer),
+                    Style   = multiLineCommentStyle
                 };
 
                 styledTextRanges.Add(styleText);
 
                 /* Reset lexer to ignore the commented out section */
-                currentText = currentText.Substring(rightRangePointer);
-                lexer = new LexicalAnalyzer(currentText);
-                textOffset = rightRangePointer;
-                nextToken = lexer.GetToken();
-                rightRangePointer = textOffset + lexer.GetTextPosition() + 1;
-                leftRangePointer = rightRangePointer - nextToken.Content.Length;
+                currentText         = currentText.Substring(rightRangePointer);
+                lexer               = new LexicalAnalyzer(currentText);
+                textOffset          = rightRangePointer;
+                nextToken           = lexer.GetToken();
+                rightRangePointer   = textOffset + lexer.GetTextPosition() + 1;
+                leftRangePointer    = rightRangePointer - nextToken.Content.Length;
             }
 
             /* Find keywords in program by checking each run */
@@ -238,9 +245,9 @@ namespace MusikaIDE
                 {
                     styleText = new StyleText
                     {
-                        Start = r.ContentStart.GetPositionAtOffset(leftRangePointer),
-                        End = r.ContentStart.GetPositionAtOffset(rightRangePointer),
-                        Style = tokenTypeStyleDict[nextToken.Type]
+                        Start   = r.ContentStart.GetPositionAtOffset(leftRangePointer),
+                        End     = r.ContentStart.GetPositionAtOffset(rightRangePointer),
+                        Style   = tokenTypeStyleDict[nextToken.Type]
                     };
 
                     styledTextRanges.Add(styleText);
@@ -251,18 +258,18 @@ namespace MusikaIDE
                 {
                     styleText = new StyleText
                     {
-                        Start = r.ContentStart.GetPositionAtOffset(leftRangePointer),
-                        End = r.ContentStart.GetPositionAtOffset(rightRangePointer),
-                        Style = wordStyleDict[nextToken.Content]
+                        Start   = r.ContentStart.GetPositionAtOffset(leftRangePointer),
+                        End     = r.ContentStart.GetPositionAtOffset(rightRangePointer),
+                        Style   = wordStyleDict[nextToken.Content]
                     };
 
                     styledTextRanges.Add(styleText);
                 }
 
                 /* Get the next token and update the left and right pointers accordingly */
-                nextToken = lexer.GetToken();
-                rightRangePointer = textOffset + lexer.GetTextPosition() + 1;
-                leftRangePointer = rightRangePointer - nextToken.Content.Length;
+                nextToken           = lexer.GetToken();
+                rightRangePointer   = textOffset + lexer.GetTextPosition() + 1;
+                leftRangePointer    = rightRangePointer - nextToken.Content.Length;
             }
 
             /* Style comments */
@@ -270,9 +277,9 @@ namespace MusikaIDE
             {
                 styleText = new StyleText
                 {
-                    Start = r.ContentStart.GetPositionAtOffset(positionCommentPair.Key),
-                    End = r.ContentStart.GetPositionAtOffset(textOffset + positionCommentPair.Key + positionCommentPair.Value.Length),
-                    Style = singleLineCommentStyle
+                    Start   = r.ContentStart.GetPositionAtOffset(positionCommentPair.Key),
+                    End     = r.ContentStart.GetPositionAtOffset(textOffset + positionCommentPair.Key + positionCommentPair.Value.Length),
+                    Style   = singleLineCommentStyle
                 };
 
                 styledTextRanges.Add(styleText);
@@ -285,9 +292,9 @@ namespace MusikaIDE
 
                 styleText = new StyleText
                 {
-                    Start = r.ContentStart.GetPositionAtOffset(positionCommentPair.Key),
-                    End = r.ContentStart.GetPositionAtOffset(textOffset + positionCommentPair.Key + positionCommentPair.Value.Length),
-                    Style = multiLineCommentStyle,
+                    Start   = r.ContentStart.GetPositionAtOffset(positionCommentPair.Key),
+                    End     = r.ContentStart.GetPositionAtOffset(textOffset + positionCommentPair.Key + positionCommentPair.Value.Length),
+                    Style   = multiLineCommentStyle,
                 };
 
                 styledTextRanges.Add(styleText);
@@ -296,8 +303,23 @@ namespace MusikaIDE
 
         private string GetProgramText() /* Get the text currently in the editor */
         {
-            string text = new TextRange(Editor.Document.ContentStart, Editor.Document.ContentEnd).Text;
-            return text.Substring(0, text.Length - 2); /* Remove final added whitespace character */
+            /* Local Variables */
+            string text;    /* Current text stored in the editor        */
+            string result;  /* Program text to return after processing  */
+            /* / Local Variables */
+
+            text = new TextRange(Editor.Document.ContentStart, Editor.Document.ContentEnd).Text;
+
+            if (text.Length > 2)
+            {
+                result = text.Substring(0, text.Length - 2); /* Remove final added whitespace character */
+            }
+            else
+            {
+                result = text; /* Leave text unchanged */
+            }
+
+            return result;
         }
 
         private void ClearDocumentFormatting() /* Remove all current formatting properties */
@@ -352,6 +374,70 @@ namespace MusikaIDE
             }
         }
 
+        private void UpdateTitleStrings(bool fromSaveCommand = false) /* Use the title to notify the user if the current text is out of sync with the most recent save */
+        {
+            /* Local Variables */
+            string currentText;     /* Current text in editor               */
+            string currentSaveText; /* Program text in the most recent save */
+            /* / Local Variables */
+
+            /* Check if the file name and directory exist */
+            if (savedFilename != null && currentDirectory != null)
+            {
+                /* Update current opened file name */
+                openTitle = $"File: {Path.Combine(currentDirectory, savedFilename)}";
+
+                /* Get current and saved program texts */
+                currentText     = GetProgramText();
+                currentSaveText = File.ReadAllText(Path.Combine(currentDirectory, savedFilename));
+
+                /* Alter the IDE title to notify user if the text is synchronized or not */
+                if (currentText == currentSaveText)
+                {
+                    /* Text is in sync - alter message based off of if this was from a save or a manual sync */
+                    if (fromSaveCommand)
+                    {
+                        saveTitle = "- Saved!";
+                    }
+                    else
+                    {
+                        saveTitle = "";
+                    }
+                }
+                else
+                {
+                    saveTitle = "- Changes currently unsaved"; /* Text is not in sync */
+                }
+
+                /* Check if the build and WAV file exist */
+                if (File.Exists(Path.Combine(currentDirectory, Path.ChangeExtension(savedFilename, NOTESHEET_FILE_EXT))))
+                {
+                    buildTitle = "Build exists;";
+                }
+                else
+                {
+                    buildTitle = "";
+                }
+
+                if (File.Exists(Path.Combine(currentDirectory, Path.ChangeExtension(savedFilename, WAV_FILE_EXT))))
+                {
+                    wavTitle = "WAV file playable";
+                }
+                else
+                {
+                    wavTitle = "";
+                }
+
+                /* Refresh the Musika IDE title */
+                RefreshTitle();
+            }
+        }
+
+        private void RefreshTitle() /* Refresh the current Musika IDE title to indicate save and open status */
+        {
+            Title = $"{baseTitle} {openTitle} {buildTitle} {wavTitle} {saveTitle}";
+        }
+
         /*
          *  ---------------- / HELPER FUNCTIONS --------------
         */
@@ -367,6 +453,9 @@ namespace MusikaIDE
             {
                 /* Temporarily disable TextChanged event handler */
                 Editor.TextChanged -= Editor_TextChanged;
+
+                /* Notify user that text is out of sync with current save if it is different */
+                UpdateTitleStrings();
 
                 /* Clear the buffer that holds the words to be styled */
                 styledTextRanges.Clear();
@@ -406,29 +495,32 @@ namespace MusikaIDE
             /* Clear text */
             Editor.Document.Blocks.Clear();
             savedFilename = null; /* Clear the saved file buffer to always prompt a filename on first save */
+
+            /* Resync title */
+            UpdateTitleStrings();
         }
 
         private void File_Open_Execute(object sender, RoutedEventArgs e) /* Open a file's content and store it's location */
         {
             /* Local Variables */
-            OpenFileDialog ofDialog;           /* File chooser to open a file                  */
-            bool? validFileRequested; /* Was a valid file selected from the dialog?   */
-            string fileText;           /* Text inside a valid selected file            */
-            string filename;           /* Name of the valid selected file              */
+            OpenFileDialog ofDialog;    /* File chooser to open a file                  */
+            bool? validFileRequested;   /* Was a valid file selected from the dialog?   */
+            string fileText;            /* Text inside a valid selected file            */
+            string filename;            /* Name of the valid selected file              */
             /* / Local Variables */
 
             /* Open a Musika file */
             ofDialog = new OpenFileDialog()
             {
                 /* Set up the open file dialog */
-                InitialDirectory = currentDirectory,
-                Filter = MUSIKA_FILE_FILTER,
-                RestoreDirectory = true             /* Set the default open directory to the location of the last valid open */
+                InitialDirectory    = currentDirectory,
+                Filter              = MUSIKA_FILE_FILTER,
+                RestoreDirectory    = true                  /* Set the default open directory to the location of the last valid open */
             };
 
             /* If a valid file was requested to open, store the filename */
-            validFileRequested = ofDialog.ShowDialog();
-            filename = (validFileRequested == true) ? ofDialog.FileName : null;
+            validFileRequested  = ofDialog.ShowDialog();
+            filename            = (validFileRequested == true) ? ofDialog.FileName : null;
 
             /* If a filename was stored, open the file */
             if (filename != null)
@@ -443,6 +535,9 @@ namespace MusikaIDE
                 /* Set the new directory to the directory of the opened file */
                 currentDirectory = Path.GetDirectoryName(filename);
                 savedFilename = Path.GetFileName(filename);
+
+                /* Resync title */
+                UpdateTitleStrings();
             }
         }
 
@@ -452,6 +547,9 @@ namespace MusikaIDE
             if (currentDirectory != null && savedFilename != null)
             {
                 File.WriteAllText(Path.Combine(currentDirectory, savedFilename), GetProgramText());
+
+                /* Re-run a save sync (notify method that this came from save) */
+                UpdateTitleStrings(fromSaveCommand: true);
             }
 
             /* This is an unsaved file, so treat this function just like Save As */
@@ -464,8 +562,8 @@ namespace MusikaIDE
         private void File_SaveAs_Execute(object sender, RoutedEventArgs e) /* Prompt the user for a save location/file and performa a Save operation */
         {
             /* Local Variables */
-            SaveFileDialog dialog;         /* File chooser to select a location/file name to save to   */
-            bool? fileSelected;   /* Was a valid file selected?                               */
+            SaveFileDialog  dialog;         /* File chooser to select a location/file name to save to   */
+            bool?           fileSelected;   /* Was a valid file selected?                               */
             /* / Local Variables */
 
             /* File or create a file to save to */
@@ -479,8 +577,8 @@ namespace MusikaIDE
             /* Store the file name and location to save more quickly later */
             if (fileSelected == true)
             {
-                currentDirectory = Path.GetDirectoryName(dialog.FileName);
-                savedFilename = Path.GetFileName(dialog.FileName);
+                currentDirectory    = Path.GetDirectoryName(dialog.FileName);
+                savedFilename       = Path.GetFileName(dialog.FileName);
 
                 File_Save_Execute(sender, e); /* Perform a Save operation */
             }
@@ -559,6 +657,9 @@ namespace MusikaIDE
                 if (outputMessage != null)
                 {
                     MessageBox.Show(outputMessage);
+
+                    /* Resync title */
+                    UpdateTitleStrings();
                 }
             }
         }
@@ -566,7 +667,7 @@ namespace MusikaIDE
         private void Build_BuildWAVFile_Execute(object sender, RoutedEventArgs e) /* Construct a note sheet as a WAV file */
         {
             /* Local Variables */
-            Compiler compiler;               /* Object to compile source code down to a note sheet   */
+            Compiler compiler;             /* Object to compile source code down to a note sheet   */
             string noteSheetFilename;      /* Name + extension of the note sheet file              */
             string noteSheetFileAddress;   /* Location of the note sheet file                      */
             string outputMessage;          /* Message to display to the user after build           */
@@ -624,6 +725,9 @@ namespace MusikaIDE
                 if (outputMessage != null)
                 {
                     MessageBox.Show(outputMessage);
+
+                    /* Resync title */
+                    UpdateTitleStrings();
                 }
             }
         }
