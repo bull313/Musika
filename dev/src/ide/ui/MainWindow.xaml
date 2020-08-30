@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MusikaIDE"
         mc:Ignorable="d"
         Title="Musika IDE" Height="500" Width="750">
 
@@ -22,6 +21,54 @@
     </Window.Resources>
     <!-- ================ -->
 
+    <!-- Menu Item Commands -->
+    <Window.CommandBindings>
+
+        <!-- File -->
+        <CommandBinding Command="New"                       Executed="File_New_Execute"                         />
+        <CommandBinding Command="Open"                      Executed="File_Open_Execute"                        />
+        <CommandBinding Command="Save"                      Executed="File_Save_Execute"                        />
+        <CommandBinding Command="SaveAs"                    Executed="File_SaveAs_Execute"                      />
+        <CommandBinding Command="Close"                     Executed="File_Exit_Execute"                        />
+
+        <!-- View -->
+        <CommandBinding Command="PrintPreview"              Executed="View_ToggleSyntaxHighlighting_Execute"    />
+
+        <!-- Build -->
+        <CommandBinding Command="Help"                      Executed="Build_BuildNoteSheet_Execute"             />
+        <CommandBinding Command="Properties"                Executed="Build_BuildWAVFile_Execute"               />
+
+        <!-- Play -->
+        <CommandBinding Command="Print"                     Executed="Play_PlaySong_Execute"                    />
+        <CommandBinding Command="CancelPrint"               Executed="Play_StopSong_Execute"                    />
+
+    </Window.CommandBindings>
+
+    <Window.InputBindings>
+        
+        <!-- File -->
+        <KeyBinding Command="New"                           Key="N"     Modifiers="Control"                     />
+        <KeyBinding Command="Open"                          Key="O"     Modifiers="Control"                     />
+        <KeyBinding Command="Save"                          Key="S"     Modifiers="Control"                     />
+        <KeyBinding Command="SaveAs"                        Key="L"     Modifiers="Control"                       />
+        <KeyBinding Command="Close"                         Key="Q"     Modifiers="Control"                     />
+
+        <!-- View -->
+        <KeyBinding Command="PrintPreview"                  Key="F"     Modifiers="Control"                     />
+
+
+        <!-- Build -->
+        <KeyBinding Command="Help"                          Key="P"     Modifiers="Control"                     />
+        <KeyBinding Command="Properties"                    Key="W"     Modifiers="Control"                     />
+
+
+        <!-- Play -->
+        <KeyBinding Command="Print"                         Key="F5"                                            />
+        <KeyBinding Command="CancelPrint"                   Key="F5"    Modifiers="Control"                     />
+
+    </Window.InputBindings>
+    <!-- ================ -->
+
     <!-- Content -->
     <DockPanel>
 
@@ -31,34 +78,34 @@
             <!-- File -->
             <MenuItem Header="File">
 
-                <MenuItem Header="New"      x:Name="File_New"       Click="File_New_Click"      />
-                <MenuItem Header="Open"     x:Name="File_Open"      Click="File_Open_Click"     />
-                <MenuItem Header="Save"     x:Name="File_Save"      Click="File_Save_Click"     />
-                <MenuItem Header="Save As"  x:Name="File_SaveAs"    Click="File_SaveAs_Click"   />
-                <MenuItem Header="Exit"     x:Name="File_Exit"      Click="File_Exit_Click"     />
+                <MenuItem Header="New"                          x:Name="File_New"                       Command="New"                               InputGestureText="Ctrl+N"                           />
+                <MenuItem Header="Open"                         x:Name="File_Open"                      Command="Open"                              InputGestureText="Ctrl+O"                           />
+                <MenuItem Header="Save"                         x:Name="File_Save"                      Command="Save"                              InputGestureText="Ctrl+S"                           />
+                <MenuItem Header="Save As"                      x:Name="File_SaveAs"                    Command="SaveAs"                            InputGestureText="Ctrl+Shift+S"                     />
+                <MenuItem Header="Exit"                         x:Name="File_Exit"                      Command="Close"                             InputGestureText="Ctrl+Q"                           />
 
             </MenuItem>
 
             <!-- View -->
             <MenuItem Header="View">
 
-                <MenuItem Header="Toggle Syntax Highlighting"    x:Name="View_ToggleSyntaxHighlighting"    Click="View_ToggleSyntaxHighlighting_Click"   />
+                <MenuItem Header="Toggle Syntax Highlighting"   x:Name="View_ToggleSyntaxHighlighting"  Command="PrintPreview"                      InputGestureText="Ctrl+Shift+F" IsCheckable="true"  />
 
             </MenuItem>
 
             <!-- Build -->
             <MenuItem Header="Build">
 
-                <MenuItem Header="Build Note Sheet" x:Name="Build_BuildNoteSheet"   Click="Build_BuildNoteSheet_Click"  />
-                <MenuItem Header="Build WAV File"   x:Name="Build_BuildWAVFile"     Click="Build_BuildWAVFile_Click"    />
+                <MenuItem Header="Build Note Sheet"             x:Name="Build_BuildNoteSheet"           Command="Help"                              InputGestureText="Ctrl+B"                           />
+                <MenuItem Header="Build WAV File"               x:Name="Build_BuildWAVFile"             Command="Properties"                        InputGestureText="Ctrl+W"                           />
 
             </MenuItem>
 
             <!-- Play -->
             <MenuItem Header="Play">
 
-                <MenuItem Header="Play Song"    x:Name="Play_PlaySong"    Click="Play_PlaySong_Click"   />
-                <MenuItem Header="Stop Song"    x:Name="Play_StopSong"    Click="Play_StopSong_Click"   />
+                <MenuItem Header="Play Song"                    x:Name="Play_PlaySong"                  Command="Print"                             InputGestureText="F5"                               />
+                <MenuItem Header="Stop Song"                    x:Name="Play_StopSong"                  Command="CancelPrint"                       InputGestureText="Shift+F5"                         />
 
             </MenuItem>
 
