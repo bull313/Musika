@@ -22,6 +22,8 @@
     <!-- ================ -->
 
     <!-- Menu Item Commands -->
+
+    <!-- Command Definitions and Callback Functions -->
     <Window.CommandBindings>
 
         <!-- File -->
@@ -43,7 +45,9 @@
         <CommandBinding Command="CancelPrint"               Executed="Play_StopSong_Execute"                    />
 
     </Window.CommandBindings>
+    <!-- ================ -->
 
+    <!-- Command-Hotkey Pairings -->
     <Window.InputBindings>
         
         <!-- File -->
@@ -67,6 +71,8 @@
         <KeyBinding Command="CancelPrint"                   Key="F5"    Modifiers="Control"                     />
 
     </Window.InputBindings>
+    <!-- ================ -->
+    
     <!-- ================ -->
 
     <!-- Content -->
