@@ -13,10 +13,11 @@ namespace Musika
         {
             /* CONSTANTS */
 
-            public const double ANGULAR_FREQUENCY_COEFFICIENT = (2 * Math.PI) / WAVDataChunk.SAMPLES_PER_SEC_PER_CHANNEL;   /* Angular frequency of the sine wave function adjusted for the samples per second per channel  */
-            public const double NOTE_VALUE_CUTOFF_PERCENTAGE = 0.9995;                                                      /* Indicates the percentage of each note to keep; the remaining time will be cut off to allow space between notes */
-            public const int BITS_IGNORED = 8;                                                                              /* Number of bits ignored when calculating WAV file size                                        */
-            public const string WAV_FILE_EXT = ".wav";                                                                      /* File extension WAV files                                                                     */
+            public const double ANGULAR_FREQUENCY_COEFFICIENT = (2 * Math.PI) / WAVDataChunk.SAMPLES_PER_SEC_PER_CHANNEL;   /* Angular frequency of the sine wave function adjusted for the samples per second per channel                      */
+            public const double NOTE_VALUE_CUTOFF_PERCENTAGE = 0.9995;                                                      /* Indicates the percentage of each note to keep; the remaining time will be cut off to allow space between notes   */
+            public const double AMPLITUDE_PROPORTION = 0.95;                                                                /* Indicates percentage of amplitude to threshold each of the data samples                                          */
+            public const int BITS_IGNORED = 8;                                                                              /* Number of bits ignored when calculating WAV file size                                                            */
+            public const string WAV_FILE_EXT = ".wav";                                                                      /* File extension WAV files                                                                                         */
 
             /* / CONSTANTS */
 
@@ -245,7 +246,7 @@ namespace Musika
                     }
 
                     /* Reduce sample data values to ensure the maximum is the max amplitude */
-                    amplitudeReducer = WAVDataChunk.MAX_AMPLITUDE / ((double)sampleData.Max());
+                    amplitudeReducer = ( WAVDataChunk.MAX_AMPLITUDE * AMPLITUDE_PROPORTION ) / ((double)sampleData.Max());
 
                     for (timeIndex = 0; timeIndex < sampleData.Length; ++timeIndex)
                     {

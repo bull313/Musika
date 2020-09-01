@@ -7,7 +7,7 @@ namespace Musika
     /* Serializes and deserializes note sheets to allow storage and access in persistent memory */
     static partial class Serializer
     {
-        public static readonly string SERIALIZE_EXT = ".mkc"; /* File extension of serialized NoteSheet objects */
+        public const string SERIALIZE_EXT = ".mkc"; /* File extension of serialized NoteSheet objects */
 
         public static void Serialize(NoteSheet instance, string filepath, string filename) /* Takes a NoteSheet instance, file name, and file path and uses them to */
                                                                                            /* serialize the instance and store it at the path with the name         */

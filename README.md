@@ -4,6 +4,7 @@ The purpose of the Musika programming language is to provide a quick and easy wa
 
 ## Table of Contents
 * Musika Features
+* Compiler Binary Use
 * Musika Programming Guide
     * Comments
     * Basic Musika Anatomy
@@ -71,6 +72,17 @@ The following indicate the key features of the Musika programming language:
 *   Layer music segments on top of each other to create harmonies
 *   Write comments in the code to make developer/composer notes
 *   Import other Musika files to utilize their patterns/music in a file (custom or from standard library)
+
+## Compiler Binary Use
+Use "compiler.exe" in a command line in order to use the compiler by itself. The binary receives 1 or 2 arguments
+* Name of file to compile
+* -d flag for double compilation (optional)
+
+Be sure to specify the file extension in the file argument! This will be the file to compile. If the file is of extension ".ka", the binary will convert the text in that file into a note sheet binary. This binary will be stored in the same directory with the same file name and a ".mkc" file extension. All files specified as arguments are assumed to be in the same directory.
+
+If a note sheet is passed in as an argument (".mkc" file extension), the compiler binary will convert that note sheet into an audible ".wav" file. It will store this file in the same directory with the same name and an extension of ".wav". This wav file can be played in any ".wav" audio player.
+
+The "-d" flag can be added before or after the file argument. This can only be used for ".ka" files. If this flag is set, the specified file will first be converted into a ".mkc" note sheet binary, and that binary will then immediately be converted into an audible ".wav" file (both files will be available after the operation). This essentially combines the two compilation steps into one.
 
 ## Musika Programming Guide
 
