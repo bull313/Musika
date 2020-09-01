@@ -41,7 +41,7 @@ namespace Musika
         class PositionSheetMap : List<PositionSheetPair> { }
         class FrequencyDurationTableList : List<FrequencyDurationTable> { }
         class OffsetFrequencyDurationTableListMap : Dictionary<double, FrequencyDurationTableList> { }
-        class OffsetSampleDatasetListMap : Dictionary<double, List<short[]>> { }
-        class OffsetSampleDatasetMap : Dictionary<double, short[]> { }
+        class OffsetSampleDatasetListMap : Dictionary<double, List<int[]>> { }
+        class OffsetSampleDatasetMap : Dictionary<double, int[]> { }
     }
 }

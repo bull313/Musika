@@ -1150,44 +1150,6 @@ namespace Musika
                     });
                 }
 
-                /* Add any relative patterns from the layered pattern (nested layer call) */
-                switch (idPatternRef)
-                {
-                    case CallbackType.ACCOMPANIMENT_SHEET:
-                        foreach (KeyValuePair<int, SheetSet> posSheetSetPair in noteSheet.Accompaniments[name].Layers)
-                        {
-                            absolutePosition = position + posSheetSetPair.Key;
-
-                            foreach (Sheet sheet in posSheetSetPair.Value)
-                            {
-                                noteSheet.RelativeLayerPositions[patternName].Add(new PositionSheetPair(absolutePosition, sheet));
-                            }
-                        }
-                        break;
-
-                    case CallbackType.ACCOMPANIMENT_PATTERN:
-                        if (noteSheet.Accompaniments[accname].RelativeLayerPositions.ContainsKey(name))
-                        {
-                            foreach (PositionSheetPair posSheetPair in noteSheet.RelativeLayerPositions[name])
-                            {
-                                absolutePosition = position + posSheetPair.Key;
-                                noteSheet.RelativeLayerPositions[patternName].Add(new PositionSheetPair(absolutePosition, posSheetPair.Value));
-                            }
-                        }
-                        break;
-
-                    case CallbackType.LOCAL_PATTERN:
-                        if (noteSheet.RelativeLayerPositions.ContainsKey(name))
-                        {
-                            foreach (PositionSheetPair posSheetPair in noteSheet.RelativeLayerPositions[name])
-                            {
-                                absolutePosition = position + posSheetPair.Key;
-                                noteSheet.RelativeLayerPositions[patternName].Add(new PositionSheetPair(absolutePosition, posSheetPair.Value));
-                            }
-                        }
-                        break;
-                }
-
                 /* Do not return an explicit value: return empty pair */
                 returnValue = new PositionSheetPair(-1, null);
             }
@@ -1203,10 +1165,101 @@ namespace Musika
                         pattern
                     };
                     noteSheet.Layers.Add(position, newLayerList);
-                }
+                }                
 
                 /* Construct the position-pattern pair from the calculated position and received pattern */
                 returnValue = new PositionSheetPair(position, pattern);
+            }
+
+            /* Add any relative patterns from the layered pattern (nested layer call) */
+            switch (idPatternRef)
+            {
+                case CallbackType.ACCOMPANIMENT_SHEET:
+                    foreach (KeyValuePair<int, SheetSet> posSheetSetPair in noteSheet.Accompaniments[name].Layers)
+                    {
+                        absolutePosition = position + posSheetSetPair.Key;
+
+                        foreach (Sheet sheet in posSheetSetPair.Value)
+                        {
+                            if (patternName != null)
+                            {
+                                noteSheet.RelativeLayerPositions[patternName].Add(new PositionSheetPair(absolutePosition, sheet));
+                            }
+                            else
+                            {
+                                if (noteSheet.Layers.ContainsKey(absolutePosition))
+                                {
+                                    noteSheet.Layers[absolutePosition].Add(sheet);
+                                }
+                                else
+                                {
+                                    noteSheet.Layers.Add(absolutePosition, new SheetSet()
+                                    {
+                                        sheet
+                                    });
+                                }
+                            }
+                        }
+                    }
+                    break;
+
+                case CallbackType.ACCOMPANIMENT_PATTERN:
+                    if (noteSheet.Accompaniments[accname].RelativeLayerPositions.ContainsKey(name))
+                    {
+                        foreach (PositionSheetPair posSheetPair in noteSheet.RelativeLayerPositions[name])
+                        {
+                            absolutePosition = position + posSheetPair.Key;
+
+                            if (patternName != null)
+                            {
+                                noteSheet.RelativeLayerPositions[patternName].Add(new PositionSheetPair(absolutePosition, posSheetPair.Value));
+                            }
+                            else
+                            {
+                                if (noteSheet.Layers.ContainsKey(absolutePosition))
+                                {
+                                    noteSheet.Layers[absolutePosition].Add(posSheetPair.Value);
+                                }
+                                else
+                                {
+                                    noteSheet.Layers.Add(absolutePosition, new SheetSet()
+                                    {
+                                        posSheetPair.Value
+                                    });
+                                }
+                            }
+                        }
+                    }
+                    break;
+
+                case CallbackType.LOCAL_PATTERN:
+                    if (noteSheet.RelativeLayerPositions.ContainsKey(name))
+                    {
+                        foreach (PositionSheetPair posSheetPair in noteSheet.RelativeLayerPositions[name])
+                        {
+                            absolutePosition = position + posSheetPair.Key;
+
+                            if (patternName != null)
+                            {
+                                noteSheet.RelativeLayerPositions[patternName].Add(new PositionSheetPair(absolutePosition, posSheetPair.Value));
+                            }
+                            else
+                            {
+                                if (noteSheet.Layers.ContainsKey(absolutePosition))
+                                {
+                                    noteSheet.Layers[absolutePosition].Add(posSheetPair.Value);
+                                }
+                                else
+                                {
+                                    noteSheet.Layers.Add(absolutePosition, new SheetSet()
+                                    {
+                                        posSheetPair.Value
+                                    });
+                                }
+                            }
+                        }
+                    }
+                    break;
             }
 
             /* Finish parsing and return */
@@ -1427,9 +1480,9 @@ namespace Musika
                                         else
                                         {
                                             newLayerList = new SheetSet
-                                                {
-                                                    layerSheet
-                                                };
+                                            {
+                                                layerSheet
+                                            };
 
                                             noteSheet.Layers.Add(layerAbsolutePosition, newLayerList);
                                         }

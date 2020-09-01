@@ -646,6 +646,11 @@ namespace MusikaIDE
                 outputMessage = "CONTEXTUAL ERROR\n\n" + ce.Message;
             }
 
+            catch (IOException)
+            {
+                outputMessage = "FILE IO ERROR\n\nA file being used by another process was trying to be accessed. Please try the action again and consult your nearest tech support engineer if the problem persists";
+            }
+
             catch
             {
                 outputMessage = "UNKNOWN ERROR\n\n" + "An unkown error occurred when constructing your WAV file. Please consult your nearest tech support engineer.";
